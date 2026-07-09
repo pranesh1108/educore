@@ -1,0 +1,168 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1">Students & Instructors</h3>
+  <p class="text-muted mb-0">Search, filter, and sort student and instructor records.</p>
+</div>
+
+<ul class="nav nav-pills mb-3">
+  <li class="nav-item">
+    <button class="nav-link" [class.active]="role === 'student'" (click)="switchRole('student')">
+      <i class="bi bi-mortarboard me-1"></i>Students
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" [class.active]="role === 'instructor'" (click)="switchRole('instructor')">
+      <i class="bi bi-person-workspace me-1"></i>Instructors
+    </button>
+  </li>
+</ul>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body p-4">
+    <form [formGroup]="filterForm" (ngSubmit)="search()" novalidate>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label small">Name</label>
+          <input type="text" class="form-control" formControlName="name" placeholder="Search by name" />
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small">Status</label>
+          <select class="form-select" formControlName="status">
+            <option value="">All</option>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+        </div>
+
+        <ng-container *ngIf="role === 'student'">
+          <div class="col-md-3">
+            <label class="form-label small">Field of Interest</label>
+            <input type="text" class="form-control" formControlName="fieldOfInterest" placeholder="e.g. AI" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Enrolled Course</label>
+            <input type="text" class="form-control" formControlName="enrolledCourse" placeholder="Course title" />
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="role === 'instructor'">
+          <div class="col-md-3">
+            <label class="form-label small">Skill</label>
+            <input type="text" class="form-control" formControlName="skill" placeholder="e.g. JAVA" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Min. Experience (yrs)</label>
+            <input type="number" min="0" class="form-control" formControlName="experience" placeholder="0" />
+          </div>
+        </ng-container>
+
+        <div class="col-md-3">
+          <label class="form-label small">Sort By</label>
+          <select class="form-select" formControlName="sortBy">
+            <option value="name">Name</option>
+            <option *ngIf="role === 'student'" value="fieldOfInterest">Field of Interest</option>
+            <option *ngIf="role === 'instructor'" value="experience">Experience</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small">Sort Direction</label>
+          <select class="form-select" formControlName="sortDir">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+
+        <div class="col-md-6 d-flex align-items-end gap-2">
+          <button type="submit" class="btn btn-primary flex-grow-1" [disabled]="loading">
+            <i class="bi bi-search me-1"></i>Search
+          </button>
+          <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">
+            Reset
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<app-loader *ngIf="loading" [message]="'Loading ' + role + 's...'"></app-loader>
+
+<div class="alert alert-danger" role="alert" *ngIf="!loading && errorMessage">{{ errorMessage }}</div>
+
+<div class="card border-0 shadow-sm" *ngIf="!loading && !errorMessage">
+  <div class="card-body p-4">
+
+    <!-- Students table -->
+    <div class="table-responsive" *ngIf="role === 'student'">
+      <table class="table align-middle">
+        <thead>
+          <tr class="text-muted small text-uppercase">
+            <th>Name</th>
+            <th>Email</th>
+            <th>Field of Interest</th>
+            <th>Enrolled Courses</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of pagedStudents">
+            <td class="fw-semibold">{{ s.name }}</td>
+            <td>{{ s.email }}</td>
+            <td>{{ s.fieldOfInterest || '—' }}</td>
+            
+            <td>
+              <span class="badge bg-light text-dark border me-1" *ngFor="let c of s.enrolledCourses">{{ c }}</span>
+              <span class="text-muted small" *ngIf="s.enrolledCourses.length === 0">None</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="text-muted small text-center py-3" *ngIf="students.length === 0">No students match your filters.</p>
+    </div>
+
+    <!-- Instructors table -->
+    <div class="table-responsive" *ngIf="role === 'instructor'">
+      <table class="table align-middle">
+        <thead>
+          <tr class="text-muted small text-uppercase">
+            <th>Name</th>
+            <th>Email</th>
+            <th>Skill</th>
+            <th>Experience</th>
+            <th>Status</th>
+            <th>Assigned Courses</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let i of pagedInstructors">
+            <td class="fw-semibold">{{ i.name }}</td>
+            <td>{{ i.email }}</td>
+            <td>{{ i.skill || '—' }}</td>
+            <td>{{ i.experience }} yrs</td>
+            <td>
+              <span class="badge" [class.bg-success]="i.status === 'ACTIVE'" [class.bg-secondary]="i.status !== 'ACTIVE'">
+                {{ i.status }}
+              </span>
+            </td>
+            <td>
+              <span class="badge bg-light text-dark border me-1" *ngFor="let c of i.assignedCourses">{{ c }}</span>
+              <span class="text-muted small" *ngIf="i.assignedCourses.length === 0">None</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="text-muted small text-center py-3" *ngIf="instructors.length === 0">No instructors match your filters.</p>
+    </div>
+
+    <div class="mt-3" *ngIf="totalResults > 0">
+      <app-pagination
+        [totalItems]="totalResults"
+        [pageSize]="pageSize"
+        [currentPage]="currentPage"
+        (pageChange)="setPage($event)"
+      ></app-pagination>
+    </div>
+  </div>
+</div>

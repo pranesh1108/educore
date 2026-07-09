@@ -1,0 +1,27 @@
+.registrar-shell {
+  min-height: calc(100vh - 56px);
+}
+
+.registrar-sidebar {
+  width: 240px;
+  min-width: 240px;
+}
+
+.registrar-nav-link {
+  color: #495057;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.registrar-nav-link:hover {
+  background-color: #f1f3f9;
+  color: #0d6efd;
+}
+.registrar-nav-link.active {
+  background-color: #e7f0ff;
+  color: #0d6efd;
+}
+
+.registrar-content {
+  min-width: 0;
+  background-color: #f8f9fb;
+}

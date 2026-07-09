@@ -1,0 +1,49 @@
+.text-purple {
+  color: #6f42c1 !important;
+}
+
+.border-purple {
+  border-color: #6f42c1 !important;
+}
+
+.btn-purple {
+  background-color: #6f42c1;
+  color: white;
+  border: none;
+}
+.btn-purple:hover {
+  background-color: #59339e;
+  color: white;
+}
+
+.btn-outline-purple {
+  border-color: #6f42c1;
+  color: #6f42c1;
+  background-color: transparent;
+}
+.btn-outline-purple:hover {
+  background-color: #6f42c1;
+  color: white;
+}
+
+.btn-tab {
+  color: #495057;
+  font-weight: 500;
+  border-radius: 20px;
+  padding: 8px 18px;
+  background-color: #f1f3f9;
+  border: none;
+}
+.btn-tab.active {
+  background-color: #6f42c1 !important;
+  color: white !important;
+}
+
+.course-card {
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.course-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}

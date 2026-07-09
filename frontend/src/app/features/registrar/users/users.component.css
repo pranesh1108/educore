@@ -1,0 +1,12 @@
+.nav-pills .nav-link {
+  color: #495057;
+  cursor: pointer;
+}
+.nav-pills .nav-link.active {
+  background-color: #0d6efd;
+  color: #fff;
+}
+
+.table thead th {
+  border-top: none;
+}

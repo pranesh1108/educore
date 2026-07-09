@@ -1,0 +1,26 @@
+.active-course {
+  background-color: #e8f5e9 !important;
+  color: #198754 !important;
+  border-left: 4px solid #198754 !important;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+.btn-success {
+  background-color: #198754;
+  border: none;
+  color: white;
+}
+.btn-success:hover {
+  background-color: #157347;
+}
+
+.btn-link.text-success {
+  color: #198754 !important;
+  text-decoration: none;
+}
+.btn-link.text-success:hover {
+  color: #157347 !important;
+}

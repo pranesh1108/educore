@@ -1,0 +1,17 @@
+.bg-green-light {
+  background-color: #e8f5e9 !important;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+.btn-success {
+  background-color: #198754;
+  color: white;
+  border: none;
+  font-weight: 500;
+}
+.btn-success:hover:not(:disabled) {
+  background-color: #157347;
+}

@@ -1,0 +1,91 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1">Publish Results</h3>
+  <p class="text-muted mb-0">Record exam marks and finalize student course completions.</p>
+</div>
+
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+
+<div class="alert alert-success" role="alert" *ngIf="successMessage">
+  {{ successMessage }}
+</div>
+
+<app-loader *ngIf="loading" message="Loading active exams..."></app-loader>
+
+<div class="row g-3" *ngIf="!loading">
+  <div class="col-md-6 mx-auto">
+    <div class="card border-0 shadow-sm p-4">
+      <h5 class="fw-bold mb-4 text-cyan"><i class="bi bi-file-earmark-check me-2"></i>Publish Exam Result</h5>
+      <form (ngSubmit)="publishResult()">
+        
+        <!-- Select Exam -->
+        <div class="mb-3">
+          <label for="examSelect" class="form-label small fw-bold">Select Active Exam</label>
+          <select
+            class="form-select"
+            id="examSelect"
+            [(ngModel)]="selectedExamId"
+            name="examId"
+            (change)="onExamChange()"
+            required
+          >
+            <option [ngValue]="null" disabled selected>Select exam track...</option>
+            <option *ngFor="let ex of exams" [ngValue]="ex.examId">
+              {{ ex.courseTitle }} - {{ ex.title }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Select Student -->
+        <div class="mb-3" *ngIf="selectedExamId">
+          <label for="studentSelect" class="form-label small fw-bold">Select Allocated Student</label>
+          <app-loader *ngIf="studentsLoading" message="Loading student roster..."></app-loader>
+          
+          <select
+            class="form-select"
+            id="studentSelect"
+            [(ngModel)]="selectedStudentId"
+            name="studentId"
+            *ngIf="!studentsLoading"
+            required
+          >
+            <option [ngValue]="null" disabled selected>Select student...</option>
+            <option *ngFor="let s of allocatedStudents" [ngValue]="s.studentId">
+              {{ s.studentName }} ({{ s.email }})
+            </option>
+          </select>
+          <div *ngIf="!studentsLoading && allocatedStudents.length === 0" class="text-danger small mt-1">
+            No students are currently enrolled in this exam's course.
+          </div>
+        </div>
+
+        <!-- Input Score -->
+        <div class="mb-4" *ngIf="selectedExamId && selectedStudentId">
+          <label for="scoreInput" class="form-label small fw-bold">Score (0 - 100%)</label>
+          <input
+            type="number"
+            class="form-control"
+            id="scoreInput"
+            [(ngModel)]="score"
+            name="score"
+            min="0"
+            max="100"
+            step="0.5"
+            required
+          >
+          <small class="text-muted mt-1 d-block">Passing mark threshold is set by the exam coordinator configurations.</small>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-cyan w-100"
+          [disabled]="submitting || !selectedExamId || !selectedStudentId"
+        >
+          <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="submitting"></span>
+          Publish Final Grade
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

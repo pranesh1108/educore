@@ -1,0 +1,227 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1">Course Management</h3>
+  <p class="text-muted mb-0">Provision new courses and assign an instructor to each one.</p>
+</div>
+
+<div class="row g-4">
+  <div class="col-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-3">New Course</h5>
+
+        <div class="alert alert-danger py-2" role="alert" *ngIf="formError">{{ formError }}</div>
+        <div class="alert alert-success py-2" role="alert" *ngIf="formSuccess">{{ formSuccess }}</div>
+
+        <form [formGroup]="courseForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="title" class="form-label">Course Title</label>
+                <input
+                  id="title"
+                  type="text"
+                  class="form-control"
+                  formControlName="title"
+                  placeholder="Introduction to Spring Boot"
+                  [class.is-invalid]="f['title'].invalid && f['title'].touched"
+                />
+                <div class="invalid-feedback" *ngIf="f['title'].invalid && f['title'].touched">
+                  <span *ngIf="f['title'].errors?.['required']">Course title is required.</span>
+                  <span *ngIf="f['title'].errors?.['minlength']">Title must be at least 3 characters.</span>
+                  <span *ngIf="f['title'].errors?.['maxlength']">Title cannot exceed 100 characters.</span>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea
+                  id="description"
+                  class="form-control"
+                  rows="4"
+                  formControlName="description"
+                  placeholder="What will students learn in this course?"
+                  [class.is-invalid]="f['description'].invalid && f['description'].touched"
+                ></textarea>
+                <div class="invalid-feedback" *ngIf="f['description'].invalid && f['description'].touched">
+                  Description cannot exceed 2000 characters.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-sm-6 mb-3">
+                  <label for="prerequisite" class="form-label">Prerequisite</label>
+                  <select id="prerequisite" class="form-select" formControlName="prerequisite">
+                    <option value="">None specified</option>
+                    <option *ngFor="let p of prerequisiteOptions" [value]="p">{{ p.replace('_', ' ') }}</option>
+                  </select>
+                </div>
+
+                <div class="col-sm-6 mb-3">
+                  <label for="enrollmentDeadlineDate" class="form-label">Enrollment Deadline</label>
+                  <input
+                    id="enrollmentDeadlineDate"
+                    type="date"
+                    class="form-control"
+                    formControlName="enrollmentDeadlineDate"
+                    [class.is-invalid]="f['enrollmentDeadlineDate'].invalid && f['enrollmentDeadlineDate'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="f['enrollmentDeadlineDate'].invalid && f['enrollmentDeadlineDate'].touched">
+                    Enrollment deadline date is required.
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-6 mb-3">
+                  <label for="startDate" class="form-label">Course Start Date</label>
+                  <input
+                    id="startDate"
+                    type="date"
+                    class="form-control"
+                    formControlName="startDate"
+                    [class.is-invalid]="f['startDate'].invalid && f['startDate'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="f['startDate'].invalid && f['startDate'].touched">
+                    Course start date is required.
+                  </div>
+                </div>
+
+                <div class="col-sm-6 mb-3">
+                  <label for="endDate" class="form-label">Course End Date</label>
+                  <input
+                    id="endDate"
+                    type="date"
+                    class="form-control"
+                    formControlName="endDate"
+                    [class.is-invalid]="f['endDate'].invalid && f['endDate'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="f['endDate'].invalid && f['endDate'].touched">
+                    Course end date is required.
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+  <div class="col-12 mb-3">
+    <label for="syllabusFile" class="form-label small fw-bold text-primary">Syllabus Document (PDF Only)</label>
+    <input
+      id="syllabusFile"
+      type="file"
+      class="form-control"
+      accept="application/pdf"
+      (change)="onFileSelected($event)"
+    />
+    <div class="form-text">The selected document will be embedded directly into the course properties.</div>
+  </div>
+</div>
+
+              <div class="mb-3">
+                <label for="instructorId" class="form-label">Assign Instructor</label>
+                <select
+                  id="instructorId"
+                  class="form-select"
+                  formControlName="instructorId"
+                  [class.is-invalid]="f['instructorId'].invalid && f['instructorId'].touched"
+                >
+                  <option value="" disabled selected>{{ loadingInstructors ? 'Loading instructors...' : 'Select an instructor' }}</option>
+                  <option *ngFor="let ins of instructors" [value]="ins.instructorId">
+                    {{ ins.name }} — {{ ins.skill || 'No skill set' }} ({{ ins.experience || 0 }} yrs)
+                  </option>
+                </select>
+                <div class="invalid-feedback" *ngIf="f['instructorId'].invalid && f['instructorId'].touched">
+                  Please select an instructor.
+                </div>
+                <div class="form-text" *ngIf="!loadingInstructors && instructors.length === 0">
+                  No active instructors with a complete profile are available yet.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-2">
+            <button type="submit" class="btn btn-primary px-4" [disabled]="submitting">
+              <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+              {{ submitting ? 'Provisioning...' : 'Provision Course' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <h5 class="fw-bold mb-0">Course Catalogue</h5>
+          <input
+            type="text"
+            class="form-control form-control-sm search-box"
+            style="max-width: 300px;"
+            placeholder="Search by title or instructor name"
+            [(ngModel)]="searchTerm"
+            [ngModelOptions]="{standalone: true}"
+            (ngModelChange)="applyFilter()"
+          />
+        </div>
+
+        <app-loader *ngIf="loadingCourses" message="Loading courses..."></app-loader>
+
+        <div class="alert alert-danger py-2" role="alert" *ngIf="!loadingCourses && coursesError">
+          {{ coursesError }}
+        </div>
+
+        <div *ngIf="!loadingCourses && !coursesError">
+          <p class="text-muted small" *ngIf="filteredCourses.length === 0">No courses match your search.</p>
+          
+          <div class="row g-3">
+            <div class="col-md-6 col-lg-4" *ngFor="let course of pagedCourses">
+              <div class="card h-100 border p-3 bg-white">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="fw-bold mb-0 text-dark">{{ course.title }}</h6>
+                </div>
+                
+                <p class="text-muted small mb-3 flex-grow-1">{{ course.description || 'No description provided.' }}</p>
+                
+                <div class="mt-auto border-top pt-2">
+                  <div class="d-flex flex-column gap-1.5 mb-2">
+                    <span class="badge bg-light text-dark border text-start py-1.5 px-2">
+                      <i class="bi bi-calendar-range text-primary me-1"></i>Timeline: 
+                      {{ course.startDate ? (course.startDate | date:'mediumDate') : 'Not Configured' }} to 
+                      {{ course.endDate ? (course.endDate | date:'mediumDate') : 'Not Configured' }}
+                    </span>
+                    
+                    <span class="badge bg-light text-danger border text-start py-1.5 px-2">
+                      <i class="bi bi-hourglass-split me-1"></i>Deadline: 
+                      {{ course.enrollmentDeadlineDate ? (course.enrollmentDeadlineDate | date:'mediumDate') : 'Not Configured' }}
+                    </span>
+
+                    <span class="badge bg-light text-dark border text-start py-1.5 px-2" *ngIf="course.prerequisite && course.prerequisite !== 'NONE'">
+                      <i class="bi bi-signpost me-1"></i>Prerequisite: {{ course.prerequisite.replace('_', ' ') }}
+                    </span>
+                  </div>
+
+                  <div class="bg-light p-2 rounded d-flex justify-content-between align-items-center">
+                    <span class="small fw-semibold text-dark">{{ course.instructorName }}</span>
+                    <span class="small text-muted font-monospace" style="font-size: 0.7rem;">{{ course.instructorEmail }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4" *ngIf="filteredCourses.length > 0">
+            <app-pagination
+              [totalItems]="filteredCourses.length"
+              [pageSize]="pageSize"
+              [currentPage]="currentPage"
+              (pageChange)="setPage($event)"
+            ></app-pagination>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,218 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1">Manage Exams</h3>
+  <p class="text-muted mb-0">Schedule exam terms and provision student evaluation tracks.</p>
+</div>
+
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+
+<div class="alert alert-success" role="alert" *ngIf="successMessage">
+  {{ successMessage }}
+</div>
+
+<app-loader *ngIf="loading" message="Loading exam parameters..."></app-loader>
+
+<div class="row g-3" *ngIf="!loading">
+  <div class="col-md-5">
+    <div class="card border-0 shadow-sm p-4">
+      <h5 class="fw-bold mb-3 text-cyan"><i class="bi bi-calendar-plus me-2"></i>Schedule Exam</h5>
+      <form (ngSubmit)="createExam()">
+        <div class="mb-3">
+          <label for="examTitle" class="form-label small fw-bold">Exam Title</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="examTitle"
+            placeholder="e.g. Database Systems Fall Midterm"
+            [(ngModel)]="title"
+            name="title"
+            required
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="examDesc" class="form-label small fw-bold">Description</label>
+          <textarea
+            class="form-control form-control-sm"
+            id="examDesc"
+            rows="2"
+            placeholder="Add specific instructions for examiners..."
+            [(ngModel)]="description"
+            name="description"
+          ></textarea>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-sm-6">
+            <label for="courseSelect" class="form-label small fw-bold">Course Track</label>
+            <select
+              class="form-select form-select-sm"
+              id="courseSelect"
+              [(ngModel)]="selectedCourseId"
+              name="courseId"
+              required
+            >
+              <option [ngValue]="null" disabled selected>Select course...</option>
+              <option *ngFor="let course of courses" [ngValue]="course.courseId">{{ course.title }}</option>
+            </select>
+          </div>
+          <div class="col-sm-6">
+            <label for="instSelect" class="form-label small fw-bold">Instructor</label>
+            <select
+              class="form-select form-select-sm"
+              id="instSelect"
+              [(ngModel)]="selectedInstructorId"
+              name="instructorId"
+              required
+            >
+              <option [ngValue]="null" disabled selected>Select examiner...</option>
+              <option *ngFor="let inst of instructors" [ngValue]="inst.instructorId">{{ inst.name }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-sm-6">
+            <label for="termSelect" class="form-label small fw-bold">Academic Term</label>
+            <select
+              class="form-select form-select-sm"
+              id="termSelect"
+              [(ngModel)]="term"
+              name="term"
+              required
+            >
+              <option value="SPRING_2026">Spring 2026</option>
+              <option value="FALL_2026">Fall 2026</option>
+              <option value="WINTER_2026">Winter 2026</option>
+              <option value="SUMMER_2026">Summer 2026</option>
+            </select>
+          </div>
+          <div class="col-sm-6">
+            <label for="examDate" class="form-label small fw-bold">Date & Time</label>
+            <input
+              type="datetime-local"
+              class="form-control form-control-sm"
+              id="examDate"
+              [(ngModel)]="examDateInput"
+              name="examDate"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="row g-2 mb-4">
+          <div class="col-sm-4">
+            <label for="duration" class="form-label small fw-bold">Duration (Mins)</label>
+            <input
+              type="number"
+              class="form-control form-control-sm"
+              id="duration"
+              [(ngModel)]="durationMinutes"
+              name="durationMinutes"
+              min="1"
+              required
+            >
+          </div>
+          <div class="col-sm-4">
+            <label for="totalMarks" class="form-label small fw-bold">Total Marks</label>
+            <input
+              type="number"
+              class="form-control form-control-sm"
+              id="totalMarks"
+              [(ngModel)]="totalMarks"
+              name="totalMarks"
+              min="1"
+              required
+            >
+          </div>
+          <div class="col-sm-4">
+            <label for="passMarks" class="form-label small fw-bold">Pass Marks</label>
+            <input
+              type="number"
+              class="form-control form-control-sm"
+              id="passMarks"
+              [(ngModel)]="passingMarks"
+              name="passingMarks"
+              min="1"
+              required
+            >
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-cyan w-100"
+          [disabled]="submitting || !selectedCourseId || !selectedInstructorId || !examDateInput || !title"
+        >
+          <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="submitting"></span>
+          Provision Exam Schedule
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card border-0 shadow-sm p-3 mb-3">
+      <div class="row g-2">
+        <div class="col-sm-6">
+          <select class="form-select form-select-sm" [(ngModel)]="filterCourseId" (change)="searchExams()">
+            <option [ngValue]="null">All Courses</option>
+            <option *ngFor="let c of courses" [ngValue]="c.courseId">{{ c.title }}</option>
+          </select>
+        </div>
+        <div class="col-sm-6">
+          <select class="form-select form-select-sm" [(ngModel)]="filterTerm" (change)="searchExams()">
+            <option value="">All Terms</option>
+            <option value="SPRING_2026">Spring 2026</option>
+            <option value="FALL_2026">Fall 2026</option>
+            <option value="WINTER_2026">Winter 2026</option>
+            <option value="SUMMER_2026">Summer 2026</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm p-4">
+      <h5 class="fw-bold mb-3">Scheduled Exams</h5>
+      <div class="table-responsive">
+        <table class="table align-middle" *ngIf="exams.length > 0; else noExams">
+          <thead>
+            <tr>
+              <th>Course & Exam</th>
+              <th>Date & Time</th>
+              <th>Actions</th> </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ex of exams">
+              <td>
+                <span class="fw-bold d-block text-dark small">{{ ex.courseTitle }}</span>
+                <small class="text-muted d-block">{{ ex.title }}</small>
+                <small class="text-muted d-block text-cyan" *ngIf="ex.roomName"><i class="bi bi-geo-alt me-1"></i>{{ ex.roomName }} (#{{ ex.roomNumber }})</small>
+              </td>
+              <td>
+                <span class="small text-dark fw-medium d-block">{{ ex.examDate }}</span>
+                <small class="text-muted d-block">{{ ex.durationMinutes }} Mins | Pass: {{ ex.passingMarks }}/{{ ex.totalMarks }}</small>
+              </td>
+              <td>
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  title="Delete Exam Setup"
+                  (click)="deleteExam(ex.examId)"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <ng-template #noExams>
+          <div class="text-center py-5">
+            <i class="bi bi-calendar-x display-4 text-muted mb-2 d-block"></i>
+            <p class="text-muted mb-0">No exam tracks scheduled matching the filters.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

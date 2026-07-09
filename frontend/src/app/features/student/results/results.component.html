@@ -1,0 +1,54 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1">Academic Results</h3>
+  <p class="text-muted mb-0">Check published final examination results and scores.</p>
+</div>
+
+<app-loader *ngIf="loading" message="Loading your scorecard..."></app-loader>
+
+<div class="alert alert-danger" role="alert" *ngIf="!loading && errorMessage">
+  {{ errorMessage }}
+</div>
+
+<div class="card border-0 shadow-sm p-4" *ngIf="!loading">
+  <div class="table-responsive" *ngIf="results.length > 0; else noResults">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Course & Exam</th>
+          <th>Date Published</th>
+          <th>Score Obtained</th>
+          <th>Academic Status</th>
+          <th>Evaluation Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let res of results">
+          <td>
+            <span class="fw-bold d-block text-dark">{{ res.courseTitle }}</span>
+            <small class="text-muted d-block">Exam: {{ res.examTitle }}</small>
+          </td>
+          <td>
+            <span class="text-dark">{{ res.publishedAt | date:'mediumDate' }}</span>
+          </td>
+          <td>
+            <span class="fw-bold text-dark fs-5">{{ res.score }}%</span>
+          </td>
+          <td>
+            <span class="badge px-3 py-2 rounded-pill" [class.bg-success]="res.result === 'PASS'" [class.bg-danger]="res.result === 'FAIL'">
+              {{ res.result }}
+            </span>
+          </td>
+          <td>
+            <span class="text-muted small">{{ res.message || 'No remarks provided.' }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #noResults>
+    <div class="text-center py-5">
+      <i class="bi bi-patch-minus display-4 text-muted mb-2 d-block"></i>
+      <p class="text-muted mb-0">No exam results have been published for you yet.</p>
+    </div>
+  </ng-template>
+</div>

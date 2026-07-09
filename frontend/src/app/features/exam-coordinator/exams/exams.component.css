@@ -1,0 +1,26 @@
+.text-cyan {
+  color: #00838f !important;
+}
+
+.btn-cyan {
+  background-color: #00838f;
+  border: none;
+  color: white;
+  font-weight: 500;
+}
+.btn-cyan:hover {
+  background-color: #006064;
+  color: white;
+}
+
+thead th {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #6c757d;
+  font-weight: 700;
+  border-bottom: 2px solid #f1f3f9;
+}
+
+tbody tr {
+  border-bottom: 1px solid #f1f3f9;
+}

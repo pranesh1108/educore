@@ -1,0 +1,191 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1">Publish Resources</h3>
+  <p class="text-muted mb-0">Upload course materials and publish student assignment evaluations.</p>
+</div>
+
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+
+<div class="alert alert-success" role="alert" *ngIf="successMessage">
+  {{ successMessage }}
+</div>
+
+<app-loader *ngIf="loading" message="Loading assigned courses..."></app-loader>
+
+<div class="row g-3" *ngIf="!loading">
+  <div class="col-lg-3">
+    <div class="card border-0 shadow-sm p-3">
+      <h6 class="fw-bold mb-3 text-muted text-uppercase small">Assigned Courses ({{ courses?.length || 0 }})</h6>
+      <div class="list-group gap-1 border-0">
+        <button
+          *ngFor="let course of courses"
+          class="list-group-item list-group-item-action border-0 rounded text-start py-2"
+          [class.active-course]="selectedCourse?.courseId === course.courseId"
+          (click)="selectCourse(course)"
+        >
+          <span class="fw-bold d-block text-truncate">{{ course.title }}</span>
+          <small class="text-muted d-block text-truncate">{{ course.duration }}</small>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-9" *ngIf="selectedCourse">
+    <div class="row g-3">
+      
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm p-3 mb-3">
+          <h5 class="fw-bold mb-3 text-success"><i class="bi bi-file-earmark-pdf me-2"></i>Publish Handout</h5>
+          <form (ngSubmit)="publishMaterial()">
+            <div class="mb-2">
+              <label for="materialFile" class="form-label small fw-bold">PDF Handout File</label>
+              <input
+                type="file"
+                class="form-control form-control-sm"
+                id="materialFile"
+                accept="application/pdf"
+                (change)="onMaterialFileSelected($event)"
+                required
+              >
+            </div>
+            <div class="mb-3">
+              <label for="matText" class="form-label small fw-bold">Description Notes</label>
+              <textarea
+                class="form-control form-control-sm"
+                id="matText"
+                rows="2"
+                placeholder="e.g. Read Chapters 3 and 4 before next lecture"
+                [(ngModel)]="materialTextContent"
+                name="textContent"
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-sm btn-success w-100"
+              [disabled]="submitting || !materialFile"
+            >
+              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="submitting"></span>
+              Upload Handout
+            </button>
+          </form>
+        </div>
+
+        <div class="card border-0 shadow-sm p-3">
+          <h5 class="fw-bold mb-3">Course Library</h5>
+          <app-loader *ngIf="resourcesLoading" message="Loading resources..."></app-loader>
+
+          <ng-container *ngIf="!resourcesLoading && resources">
+            <div class="mb-4">
+              <h6 class="fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-file-earmark-pdf me-2"></i>Handouts</h6>
+              <div class="list-group gap-2 border-0" *ngIf="resources.materials.length > 0; else noMaterials">
+                <div class="list-group-item rounded border p-2 d-flex justify-content-between align-items-center" *ngFor="let mat of resources.materials">
+                  <div class="text-truncate me-2">
+                    <span class="fw-bold d-block text-truncate small">{{ mat.fileName }}</span>
+                    <small class="text-muted" style="font-size: 0.7rem;" *ngIf="mat.textContent">{{ mat.textContent }}</small>
+                  </div>
+                  <small class="text-muted flex-shrink-0" style="font-size: 0.75rem;">{{ mat.uploadedAt | date:'shortDate' }}</small>
+                </div>
+              </div>
+              <ng-template #noMaterials>
+                <p class="text-muted small">No handouts published.</p>
+              </ng-template>
+            </div>
+
+            <div>
+              <h6 class="fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-journal-check me-2"></i>Assignments</h6>
+              <div class="d-flex flex-column gap-2" *ngIf="resources.assignmentFiles.length > 0; else noAssignments">
+                <div class="card border p-2" *ngFor="let assign of resources.assignmentFiles">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <span class="fw-bold d-block text-truncate small">{{ assign.assignmentTitle }}</span>
+                  </div>
+                  <small class="text-muted text-truncate" style="font-size: 0.7rem;"><i class="bi bi-paperclip me-1"></i>{{ assign.fileName }}</small>
+                  <small class="text-muted text-end" style="font-size: 0.7rem;">Published: {{ assign.uploadedAt | date:'shortDate' }}</small>
+                </div>
+              </div>
+              <ng-template #noAssignments>
+                <p class="text-muted small">No evaluation tasks published.</p>
+              </ng-template>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm p-3 h-100">
+          <h5 class="fw-bold mb-3 text-success"><i class="bi bi-journal-plus me-2"></i>Publish Assignment</h5>
+          <form (ngSubmit)="publishAssignment()">
+            <div class="mb-2">
+              <label for="assignTitle" class="form-label small fw-bold">Title</label>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                id="assignTitle"
+                placeholder="e.g. Homework 1: Relational Algebra"
+                [(ngModel)]="assignmentTitle"
+                name="title"
+                required
+              >
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6">
+                <label for="assignMarks" class="form-label small fw-bold">Total Marks</label>
+                <input
+                  type="number"
+                  class="form-control form-control-sm"
+                  id="assignMarks"
+                  [(ngModel)]="assignmentTotalMarks"
+                  name="totalMarks"
+                  min="0"
+                  required
+                >
+              </div>
+              <div class="col-sm-6">
+                <label for="assignFile" class="form-label small fw-bold">Assignment File</label>
+                <input
+                  type="file"
+                  class="form-control form-control-sm"
+                  id="assignmentFile"
+                  accept="application/pdf"
+                  (change)="onAssignmentFileSelected($event)"
+                  required
+                >
+              </div>
+            </div>
+            <div class="mb-2">
+              <label for="assignDueDate" class="form-label small fw-bold">Due Date & Time</label>
+              <input
+                type="datetime-local"
+                class="form-control form-control-sm"
+                id="assignDueDate"
+                [(ngModel)]="assignmentDueDateInput"
+                name="dueDate"
+                required
+              >
+            </div>
+            <div class="mb-3">
+              <label for="assignInst" class="form-label small fw-bold">Instructions</label>
+              <textarea
+                class="form-control form-control-sm"
+                id="assignInst"
+                rows="4"
+                placeholder="Add supplementary grading guidelines..."
+                [(ngModel)]="assignmentInstructions"
+                name="instructions"
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-sm btn-success w-100 mt-2"
+              [disabled]="submitting || !assignmentTitle || !assignmentFile || !assignmentDueDateInput"
+            >
+              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="submitting"></span>
+              Publish Evaluation Task
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

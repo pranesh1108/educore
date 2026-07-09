@@ -1,0 +1,27 @@
+.instructor-shell {
+  min-height: calc(100vh - 56px);
+}
+
+.instructor-sidebar {
+  width: 240px;
+  min-width: 240px;
+}
+
+.instructor-nav-link {
+  color: #495057;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.instructor-nav-link:hover {
+  background-color: #f1f3f9;
+  color: #198754;
+}
+.instructor-nav-link.active {
+  background-color: #e8f5e9;
+  color: #198754;
+}
+
+.instructor-content {
+  min-width: 0;
+  background-color: #fcfdfe;
+}

@@ -1,0 +1,9 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container-fluid">
+    <span class="navbar-brand fw-bold">Educore</span>
+
+    <div class="d-flex align-items-center gap-3 ms-auto text-white" *ngIf="currentUser as user">
+      <button class="btn btn-outline-light btn-sm" (click)="logout()">Logout</button>
+    </div>
+  </div>
+</nav>

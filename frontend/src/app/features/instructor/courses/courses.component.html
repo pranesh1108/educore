@@ -1,0 +1,116 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1 text-dark">Assigned Courses</h3>
+  <p class="text-muted mb-0">Browse assigned courses and active student enrollments.</p>
+</div>
+
+<div class="alert alert-danger border-0 shadow-sm mb-4" role="alert" *ngIf="errorMessage">
+  <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
+</div>
+
+<app-loader *ngIf="loading" message="Loading assigned courses..."></app-loader>
+
+<div class="row g-4" *ngIf="!loading">
+  <div class="col-md-4 col-lg-3">
+    <div class="card border-0 shadow-sm p-3 bg-white sticky-top" style="top: 20px; z-index: 10;">
+      <h6 class="fw-bold mb-3 text-muted text-uppercase tracking-wider small">Assigned Courses ({{ courses?.length || 0 }})</h6>
+      <div class="list-group gap-2 border-0">
+        <button
+          *ngFor="let course of courses"
+          class="list-group-item list-group-item-action border-0 rounded-3 text-start py-2.5 px-3 transition-all course-nav-btn"
+          [class.active-course]="selectedCourse?.courseId === course.courseId"
+          (click)="selectCourse(course)"
+        >
+          <span class="fw-bold d-block text-truncate mb-0" [class.text-dark]="selectedCourse?.courseId !== course.courseId">
+            {{ course.title }}
+          </span>
+        </button>
+      </div>
+      
+      <div *ngIf="courses.length === 0" class="text-center py-5">
+        <i class="bi bi-journal-x display-6 text-muted mb-2 d-block"></i>
+        <small class="text-muted d-block fw-medium">No courses assigned to you.</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8 col-lg-9" *ngIf="selectedCourse">
+    
+    <div class="card border-0 shadow-sm p-4 bg-white mb-4 position-relative overflow-hidden">
+      <div class="position-absolute top-0 start-0 w-100 bg-success" style="height: 4px;"></div>
+      
+      <div class="pt-2">
+        <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+          <i class="bi bi-journal-bookmark-fill text-success fs-5"></i>
+          {{ selectedCourse.title }}
+        </h4>
+
+        <div class="mb-4">
+          <p class="text-secondary small mb-0 lh-base" style="color: #5f6368 !important; font-size: 0.88rem;">
+            {{ selectedCourse.description || 'No description provided for this catalog entry.' }}
+          </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 pt-3 border-top border-light-subtle">
+          <span class="text-muted text-uppercase tracking-wider fw-bold" style="font-size: 0.72rem;">
+            <i class="bi bi-shield-check me-1"></i> Prerequisite
+          </span>
+          <span 
+            class="badge text-success border rounded-pill fw-semibold ms-1"
+            style="background-color: #e6f4ea; border-color: #ceead6 !important; font-size: 0.72rem; padding: 0.35rem 0.65rem;"
+          >
+            {{ (selectedCourse.prerequisite || 'NONE').replace('_', ' ') }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm p-4 bg-white">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+          <i class="bi bi-people text-muted"></i>
+          Enrolled Students
+        </h5>
+        <span class="badge bg-light text-dark border px-2.5 py-1.5 rounded-pill small fw-bold">
+          Total: {{ enrolledStudents.length }}
+        </span>
+      </div>
+
+      <app-loader *ngIf="studentsLoading" message="Loading student register..."></app-loader>
+
+      <div class="table-responsive" *ngIf="!studentsLoading">
+        <table class="table align-middle custom-roster-table" *ngIf="enrolledStudents.length > 0; else noStudents">
+          <thead>
+            <tr>
+              <th scope="col" class="ps-3">Student Name</th>
+              <th scope="col">Enrolled Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stud of enrolledStudents">
+              <td class="ps-3 py-3">
+                <div class="d-flex align-items-center gap-2.5">
+                  <div class="avatar-sm bg-light text-success rounded-circle d-flex align-items-center justify-content-center fw-bold small text-uppercase">
+                    {{ (stud.studentName || 'S').charAt(0) }}
+                  </div>
+                  <span class="fw-semibold text-dark">{{ stud.studentName }}</span>
+                </div>
+              </td>
+              <td class="text-secondary small">
+                <i class="bi bi-calendar-event text-muted me-1.5"></i>
+                {{ stud.enrolledAt ? (stud.enrolledAt | date:'mediumDate') : 'TBD' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <ng-template #noStudents>
+          <div class="text-center py-5 border rounded-3 bg-light-subtle">
+            <i class="bi bi-person-x display-5 text-muted mb-2 d-block"></i>
+            <p class="text-muted mb-0 fw-medium">No students are currently enrolled in this course.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,14 @@
+.text-cyan {
+  color: #00838f !important;
+}
+
+.btn-cyan {
+  background-color: #00838f;
+  color: white;
+  border: none;
+  font-weight: 500;
+}
+.btn-cyan:hover {
+  background-color: #006064;
+  color: white;
+}

@@ -1,0 +1,28 @@
+.text-cyan {
+  color: #00838f !important;
+}
+
+.bg-purple {
+  background-color: #6f42c1 !important;
+}
+
+.btn-cyan {
+  background-color: #00838f;
+  color: white;
+  border: none;
+}
+.btn-cyan:hover {
+  background-color: #006064;
+  color: white;
+}
+
+.bg-light-cyan {
+  background-color: #f2fcfc !important;
+  border-color: rgba(0, 131, 143, 0.1) !important;
+}
+
+.active-course {
+  background-color: #e0f7fa !important;
+  color: #00838f !important;
+  border-left: 4px solid #00838f !important;
+}

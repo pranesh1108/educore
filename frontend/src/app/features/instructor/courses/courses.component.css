@@ -1,0 +1,60 @@
+/* Custom Interaction Animations on Sidebar Elements */
+.course-nav-btn {
+  transition: all 0.25s ease;
+  background: #fafafa;
+}
+
+.course-nav-btn:hover {
+  background-color: #f1f3f9;
+  transform: translateX(3px);
+}
+
+/* Active Highlight Focus Layout Rule override */
+.active-course {
+  background-color: #e6f4ea !important;
+  color: #137333 !important;
+  border-left: 4px solid #137333 !important;
+  transform: translateX(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* Polished Datatable Styling Container Blocks */
+.custom-roster-table thead th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: #6c757d;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #edf2f7;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.custom-roster-table tbody tr {
+  border-bottom: 1px solid #edf2f7;
+  transition: background-color 0.2s ease;
+}
+
+.custom-roster-table tbody tr:hover {
+  background-color: #fcfdfe;
+}
+
+.custom-roster-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* Micro Initials Circle Avatar Layout */
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  background-color: #e6f4ea;
+  color: #137333;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+/* Dynamic CSS Transitions Utility Helper */
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}

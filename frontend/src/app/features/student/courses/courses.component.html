@@ -1,0 +1,145 @@
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div>
+    <h3 class="fw-bold mb-1">Courses</h3>
+    <p class="text-muted mb-0">Browse and enroll in available academic course tracks.</p>
+  </div>
+</div>
+
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+
+<div class="alert alert-success" role="alert" *ngIf="successMessage">
+  {{ successMessage }}
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-8">
+    <div class="card border-0 shadow-sm p-3">
+      <div class="row g-2">
+        <div class="col-sm-6">
+          <div class="input-group">
+            <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input
+              type="text"
+              class="form-control border-start-0"
+              placeholder="Search by title..."
+              [(ngModel)]="titleSearch"
+              (keyup.enter)="searchCourses()"
+            >
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by topic/module..."
+            [(ngModel)]="topicSearch"
+            (keyup.enter)="searchCourses()"
+          >
+        </div>
+        <div class="col-sm-2">
+          <button class="btn btn-purple w-100" (click)="searchCourses()">Filter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ul class="nav nav-pills gap-2 mb-4" id="pills-tab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button #catalogueTab class="nav-link active btn-tab" id="pills-catalogue-tab" data-bs-toggle="pill" data-bs-target="#pills-catalogue" type="button" role="tab" aria-controls="pills-catalogue" aria-selected="true">
+      Course Catalogue
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link btn-tab" id="pills-enrolled-tab" data-bs-toggle="pill" data-bs-target="#pills-enrolled" type="button" role="tab" aria-controls="pills-enrolled" aria-selected="false">
+      My Enrolled Courses ({{ myEnrollments.length }})
+    </button>
+  </li>
+</ul>
+
+<app-loader *ngIf="loading" message="Loading course catalogue..."></app-loader>
+
+<div class="tab-content" id="pills-tabContent" *ngIf="!loading">
+  <div class="tab-pane fade show active" id="pills-catalogue" role="tabpanel" aria-labelledby="pills-catalogue-tab">
+    <div class="row g-3" *ngIf="courses.length > 0; else noCourses">
+      <div class="col-md-6 col-lg-4" *ngFor="let course of courses">
+        <div class="card border-0 shadow-sm h-100 course-card">
+          <div class="card-body d-flex flex-column">
+            <span class="badge bg-light text-purple align-self-start mb-2">{{ (course.prerequisite || 'NONE').replace('_', ' ') }}</span>
+            <h5 class="fw-bold mb-2 text-dark">{{ course.title }}</h5>
+            <p class="text-muted small mb-3 flex-grow-1">{{ course.description }}</p>
+            
+            <div class="mb-3">
+              <small class="text-muted d-block mb-1">
+                <i class="bi bi-calendar3 me-1"></i>Schedule: 
+                <span class="fw-medium text-dark">{{ course.startDate ? (course.startDate | date:'mediumDate') : 'TBD' }}</span> to 
+                <span class="fw-medium text-dark">{{ course.endDate ? (course.endDate | date:'mediumDate') : 'TBD' }}</span>
+              </small>
+              <small class="text-danger d-block mb-1">
+                <i class="bi bi-exclamation-circle me-1"></i>Last Day to Register: 
+                <span class="fw-bold">{{ course.enrollmentDeadlineDate ? (course.enrollmentDeadlineDate | date:'mediumDate') : 'Immediate' }}</span>
+              </small>
+              <small class="text-muted d-block"><i class="bi bi-person me-1"></i>Instructor: {{ course.instructorName }}</small>
+            </div>
+            
+            <div class="course-topics mb-3" *ngIf="course.courseContent && course.courseContent.length > 0">
+              <span class="d-block small fw-bold text-muted mb-1">Topics:</span>
+              <span class="badge bg-light text-secondary me-1 mb-1" *ngFor="let module of course.courseContent">
+                {{ module.topic }}
+              </span>
+            </div>
+
+            <button
+              class="btn w-100 mt-auto text-decoration-none"
+              [class.btn-outline-purple]="!isEnrolled(course.courseId)"
+              [class.btn-success]="isEnrolled(course.courseId)"
+              [disabled]="enrollingId === course.courseId"
+              [routerLink]="['/student/courses', course.courseId]"
+            >
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" *ngIf="enrollingId === course.courseId"></span>
+              {{ isEnrolled(course.courseId) ? 'Enrolled (View Syllabus)' : 'View Syllabus & Register' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #noCourses>
+      <div class="text-center py-5">
+        <p class="text-muted mb-0">No courses match your search criteria.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="tab-pane fade" id="pills-enrolled" role="tabpanel" aria-labelledby="pills-enrolled-tab">
+    <div class="row g-3" *ngIf="myEnrollments.length > 0; else noEnrollments">
+      <div class="col-md-6 col-lg-4" *ngFor="let enrol of myEnrollments">
+        <div class="card border-0 shadow-sm h-100 course-card border-start border-purple border-4">
+          <div class="card-body d-flex flex-column">
+            <span class="badge bg-success align-self-start mb-2">ACTIVE</span>
+            <h5 class="fw-bold mb-2 text-dark">{{ enrol.courseTitle }}</h5>
+            <p class="text-muted small mb-3 flex-grow-1">{{ enrol.courseDescription }}</p>
+            
+            <div class="mb-3">
+              <small class="text-muted d-block"><i class="bi bi-person me-1"></i>Instructor: {{ enrol.instructorName }}</small>
+              <small class="text-muted d-block"><i class="bi bi-hash me-1"></i>Enrollment: {{ enrol.enrollmentNumber }}</small>
+              <small class="text-muted d-block"><i class="bi bi-calendar-check me-1"></i>Date Joined: {{ enrol.enrolledAt | date:'mediumDate' }}</small>
+            </div>
+            
+            <a routerLink="/student/assignments" class="btn btn-purple w-100 mt-auto">
+              Open Course Room
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #noEnrollments>
+      <div class="text-center py-5">
+        <i class="bi bi-journal-x display-4 text-muted mb-2 d-block"></i>
+        <p class="text-muted mb-3">You are not enrolled in any courses yet.</p>
+        <button class="btn btn-purple" (click)="catalogueTab.click()">Browse Catalogue</button>
+      </div>
+    </ng-template>
+  </div>
+</div>

@@ -1,0 +1,162 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1">Venues & Rooms</h3>
+  <p class="text-muted mb-0">Provision physical rooms and allocate student seating for active exam terms.</p>
+</div>
+
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+
+<div class="alert alert-success" role="alert" *ngIf="successMessage">
+  {{ successMessage }}
+</div>
+
+<app-loader *ngIf="loading" message="Loading venue properties..."></app-loader>
+
+<div class="row g-3" *ngIf="!loading">
+  <div class="col-md-5">
+    <div class="card border-0 shadow-sm p-3 mb-3">
+      <h5 class="fw-bold mb-3 text-cyan"><i class="bi bi-plus-circle me-2"></i>Create Physical Room</h5>
+      <form (ngSubmit)="createRoom()">
+        <div class="mb-2">
+          <label for="roomNameInput" class="form-label small fw-bold">Room Name / Code</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            id="roomNameInput"
+            placeholder="e.g. Lab A, Lecture Hall 1"
+            [(ngModel)]="roomName"
+            name="roomName"
+            required
+          >
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-sm-7">
+            <label for="roomLocation" class="form-label small fw-bold">Building / Location</label>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              id="roomLocation"
+              placeholder="e.g. Science Block, 3rd Floor"
+              [(ngModel)]="location"
+              name="location"
+              required
+            >
+          </div>
+          <div class="col-sm-5">
+            <label for="roomCap" class="form-label small fw-bold">Capacity</label>
+            <input
+              type="number"
+              class="form-control form-control-sm"
+              id="roomCap"
+              [(ngModel)]="capacity"
+              name="capacity"
+              min="1"
+              max="200"
+              required
+            >
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="btn btn-sm btn-cyan w-100"
+          [disabled]="submitting || !roomName || !location"
+        >
+          <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="submitting"></span>
+          Provision Physical Room
+        </button>
+      </form>
+    </div>
+
+    <div class="card border-0 shadow-sm p-3">
+      <h5 class="fw-bold mb-3 text-cyan"><i class="bi bi-bounding-box-circles me-2"></i>Allocate Room to Exam</h5>
+      <form (ngSubmit)="allocateRoom()">
+        <div class="mb-2">
+          <label for="allocExam" class="form-label small fw-bold">Select Scheduled Exam</label>
+          <select
+            class="form-select form-select-sm"
+            id="allocExam"
+            [(ngModel)]="allocateExamId"
+            name="allocateExamId"
+            required
+          >
+            <option [ngValue]="null" disabled selected>Select exam...</option>
+            <option *ngFor="let ex of exams" [ngValue]="ex.examId">
+              {{ ex.title }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="allocRoom" class="form-label small fw-bold">Select Available Room</label>
+          <select
+            class="form-select form-select-sm"
+            id="allocRoom"
+            [(ngModel)]="allocateRoomId"
+            name="allocateRoomId"
+            required
+          >
+            <option [ngValue]="null" disabled selected>Select room...</option>
+            <option *ngFor="let rm of getAvailableRooms()" [ngValue]="rm.roomId">
+              {{ rm.roomName }} (Capacity: {{ rm.capacity }})
+            </option>
+          </select>
+        </div>
+        <button
+          type="submit"
+          class="btn btn-sm btn-cyan w-100"
+          [disabled]="submitting || !allocateExamId || !allocateRoomId"
+        >
+          <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="submitting"></span>
+          Distribute & Allocate Students
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card border-0 shadow-sm p-4 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h5 class="fw-bold mb-0">Venue Allocation Summary</h5>
+        <select
+          class="form-select form-select-sm"
+          style="width: 220px;"
+          [(ngModel)]="selectedExamId"
+          (change)="loadAllocationsForExam()"
+        >
+          <option [ngValue]="null">Select exam to view allocations...</option>
+          <option *ngFor="let ex of exams" [ngValue]="ex.examId">{{ ex.title }}</option>
+        </select>
+      </div>
+
+      <app-loader *ngIf="allocationsLoading" message="Loading student roster allocations..."></app-loader>
+
+      <div *ngIf="!allocationsLoading">
+        <div *ngIf="selectedExamAllocations.length > 0; else noAllocs">
+          <div class="mb-4 border rounded p-3 bg-light-cyan" *ngFor="let alloc of selectedExamAllocations">
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+              <div>
+                <span class="fw-bold text-dark d-block">{{ alloc.roomName }}</span>
+                <small class="text-muted d-block"><i class="bi bi-geo-alt me-1"></i>{{ alloc.location }} (Room #{{ alloc.roomNumber }})</small>
+              </div>
+              <span class="badge bg-purple">{{ alloc.studentsAllocated }} / {{ alloc.capacity }} Occupied</span>
+            </div>
+
+            <h6 class="fw-bold small text-muted mb-2">Allocated Students</h6>
+            <ul class="list-group gap-1 border-0 bg-transparent">
+              <li class="list-group-item d-flex justify-content-between align-items-center py-1 border-0 bg-transparent px-0" *ngFor="let stud of alloc.students">
+                <span class="small fw-medium">{{ stud.studentName }}</span>
+                <span class="small font-monospace text-muted">{{ stud.email }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <ng-template #noAllocs>
+          <div class="text-center py-5">
+            <i class="bi bi-bounding-box display-4 text-muted mb-2 d-block"></i>
+            <p class="text-muted mb-0">Select a scheduled exam to display allocated venues and distributed rosters.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

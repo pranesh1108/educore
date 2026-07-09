@@ -1,0 +1,16 @@
+<app-navbar></app-navbar>
+
+<div class="container py-5" *ngIf="currentUser as user">
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4 p-md-5 text-center">
+      <h2 class="fw-bold mb-2">Welcome, {{ user.userName }} 👋</h2>
+      <p class="text-muted mb-0">
+        You are logged in as <span class="badge bg-primary">{{ user.role }}</span>
+      </p>
+      <p class="text-muted small mt-3 mb-0">
+        Role-specific dashboards for Student, Instructor, Exam Coordinator, and Registrar
+        will be built out here next.
+      </p>
+    </div>
+  </div>
+</div>

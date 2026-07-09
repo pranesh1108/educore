@@ -1,0 +1,62 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1">Assigned Exams</h3>
+  <p class="text-muted mb-0">Track formal examination schedules and room alignments.</p>
+</div>
+
+<app-loader *ngIf="loading" message="Loading exam schedule..."></app-loader>
+
+<div class="alert alert-danger" role="alert" *ngIf="!loading && errorMessage">
+  {{ errorMessage }}
+</div>
+
+<div class="card border-0 shadow-sm p-4" *ngIf="!loading">
+  <div class="table-responsive" *ngIf="exams.length > 0; else noExams">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Course Title</th>
+          <th>Exam Title</th>
+          <th>Term</th>
+          <th>Date & Time</th>
+          <th>Duration</th>
+          <th>Passing Marks</th>
+          <th>Assigned Venue</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let exam of exams">
+          <td>
+            <span class="fw-bold d-block text-dark">{{ exam.courseTitle }}</span>
+          </td>
+          <td>
+            <span class="text-dark fw-medium">{{ exam.title }}</span>
+            <small class="text-muted d-block" *ngIf="exam.description">{{ exam.description }}</small>
+          </td>
+          <td>
+            <span class="badge bg-success">{{ exam.term.replace('_', ' ') }}</span>
+          </td>
+          <td>
+            <span class="fw-medium text-dark">{{ exam.examDate }}</span>
+          </td>
+          <td>{{ exam.durationMinutes }} Mins</td>
+          <td>{{ exam.passingMarks }} / {{ exam.totalMarks }}</td>
+          <td>
+            <div *ngIf="exam.roomName; else noRoom">
+              <span class="fw-bold d-block text-success">{{ exam.roomName }} (Room #{{ exam.roomNumber }})</span>
+              <small class="text-muted d-block"><i class="bi bi-geo-alt me-1"></i>Location: {{ exam.roomLocation }}</small>
+            </div>
+            <ng-template #noRoom>
+              <span class="badge bg-secondary">Unallocated</span>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #noExams>
+    <div class="text-center py-5">
+      <i class="bi bi-calendar-x display-4 text-muted mb-2 d-block"></i>
+      <p class="text-muted mb-0">No examinations assigned to your courses.</p>
+    </div>
+  </ng-template>
+</div>

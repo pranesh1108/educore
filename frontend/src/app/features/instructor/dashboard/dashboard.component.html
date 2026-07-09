@@ -1,0 +1,88 @@
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
+  <div>
+    <h3 class="fw-bold mb-1">Instructor Dashboard</h3>
+    <p class="text-muted mb-0" *ngIf="profile">Welcome back, {{ profile.name }}.</p>
+  </div>
+</div>
+
+<app-loader *ngIf="loading" message="Loading your dashboard..."></app-loader>
+
+<div class="alert alert-danger" role="alert" *ngIf="!loading && errorMessage">
+  {{ errorMessage }}
+</div>
+
+<ng-container *ngIf="!loading && profile">
+  <!-- ── REMOVED: Top row containing the 3 summary cards (Account Status, Assigned Courses, Upcoming Exams) ── -->
+
+  <div class="row g-3">
+    <!-- Card 1: Assigned Courses with count -->
+    <div class="col-md-6 col-lg-4">
+      <a routerLink="/instructor/courses" class="text-decoration-none">
+        <div class="card border-0 shadow-sm h-100 quick-link bg-white">
+          <div class="card-body">
+            <h5 class="fw-bold mb-1">
+              <i class="bi bi-journal-bookmark me-2 text-success"></i>Assigned Courses ({{ coursesCount }})
+            </h5>
+            <p class="text-muted small mb-0">View your active assigned courses and student registers.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Card 2: Publish Handouts -->
+    <div class="col-md-6 col-lg-4">
+      <a routerLink="/instructor/assignments" class="text-decoration-none">
+        <div class="card border-0 shadow-sm h-100 quick-link bg-white">
+          <div class="card-body">
+            <h5 class="fw-bold mb-1">
+              <i class="bi bi-file-earmark-arrow-up me-2 text-success"></i>Publish Handouts
+            </h5>
+            <p class="text-muted small mb-0">Upload new PDF study files and assignments for your students.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Card 3: Submissions & Grading -->
+    <div class="col-md-6 col-lg-4">
+      <a routerLink="/instructor/grading" class="text-decoration-none">
+        <div class="card border-0 shadow-sm h-100 quick-link bg-white">
+          <div class="card-body">
+            <h5 class="fw-bold mb-1">
+              <i class="bi bi-check2-square me-2 text-success"></i>Submissions & Grading
+            </h5>
+            <p class="text-muted small mb-0">Review student PDF uploads and apply grades with feedback.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Card 4: My Exams with count -->
+    <div class="col-md-6 col-lg-4">
+      <a routerLink="/instructor/exams" class="text-decoration-none">
+        <div class="card border-0 shadow-sm h-100 quick-link bg-white">
+          <div class="card-body">
+            <h5 class="fw-bold mb-1">
+              <i class="bi bi-calendar-event me-2 text-success"></i>Assigned Exams ({{ examsCount }})
+            </h5>
+            <p class="text-muted small mb-0">Check schedules for exams assigned.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Card 5: Edit Profile -->
+    <div class="col-md-6 col-lg-4">
+      <a routerLink="/instructor/profile" class="text-decoration-none">
+        <div class="card border-0 shadow-sm h-100 quick-link bg-white">
+          <div class="card-body">
+            <h5 class="fw-bold mb-1">
+              <i class="bi bi-person-circle me-2 text-success"></i>Edit Profile
+            </h5>
+            <p class="text-muted small mb-0">Update your core teaching skills and years of experience.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</ng-container>

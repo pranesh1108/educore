@@ -1,0 +1,7 @@
+package com.cts.enumerate;
+
+public enum AcademicTerm {
+    SPRING_2025, FALL_2025, SUMMER_2025, WINTER_2025,
+    SPRING_2026, FALL_2026, SUMMER_2026, WINTER_2026,
+    SPRING_2027, FALL_2027, SUMMER_2027, WINTER_2027
+}

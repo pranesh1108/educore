@@ -1,0 +1,18 @@
+package com.cts.enumerate;
+
+public enum Prerequisite {
+    NONE,
+    BASIC_JAVA,
+    BASIC_PYTHON,
+    BASIC_PROGRAMMING,
+    DATA_STRUCTURES,
+    ALGORITHMS,
+    DATABASE_FUNDAMENTALS,
+    WEB_BASICS,
+    NETWORKING_BASICS,
+    MATHEMATICS,
+    STATISTICS,
+    MACHINE_LEARNING_BASICS,
+    SPRING_BASICS,
+    CLOUD_BASICS
+}

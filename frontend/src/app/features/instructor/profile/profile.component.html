@@ -1,0 +1,103 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1 text-dark">My Profile</h3>
+  <p class="text-muted mb-0">View and configure your professional teaching credentials.</p>
+</div>
+
+<app-loader *ngIf="loading" message="Fetching authenticated instructor dossier structures..."></app-loader>
+
+<div class="row g-4" *ngIf="!loading">
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm p-4 text-center h-100 bg-white">
+      <div class="avatar-circle mx-auto mb-3 bg-light text-success d-flex align-items-center justify-content-center rounded-circle text-uppercase" style="width: 80px; height: 80px; font-size: 2rem; font-weight: bold;">
+        {{ initials }}
+      </div>
+      <h4 class="fw-bold mb-1 text-capitalize">{{ profile?.name || 'Instructor' }}</h4>
+      <p class="text-muted small mb-4">{{ profile?.email || 'authenticated-context@edu.com' }}</p>
+      
+      <div class="border-top pt-3 text-start w-100">
+        <span class="d-block small fw-bold text-muted mb-2">
+          <i class="bi bi-tags-fill me-1 text-success"></i> My Active Skillsets
+        </span>
+        
+        <div class="d-flex flex-wrap gap-1" *ngIf="savedSkills && savedSkills.length > 0; else noSkillsYet">
+          <span 
+            *ngFor="let activeSkill of savedSkills" 
+            class="badge text-success border rounded-pill small fw-medium"
+            style="background-color: #e6f4ea; border-color: #ceead6 !important; font-size: 0.75rem; padding: 0.4rem 0.65rem;"
+          >
+            {{ activeSkill.replace('_', ' ') }}
+          </span>
+        </div>
+
+        <ng-template #noSkillsYet>
+          <small class="text-muted fst-italic d-block p-3 bg-light rounded border text-center">
+            No professional skills selected yet.
+          </small>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm p-4 h-100 bg-white">
+      <h5 class="fw-bold mb-4 text-dark">Update Professional Settings</h5>
+      
+      <div class="alert alert-success border-0 shadow-sm mb-3 d-flex align-items-center" role="alert" *ngIf="successMessage">
+        <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+        <div>{{ successMessage }}</div>
+      </div>
+      
+      <div class="alert alert-danger border-0 shadow-sm mb-3 d-flex align-items-center" role="alert" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+        <div>{{ errorMessage }}</div>
+      </div>
+      
+      <form [formGroup]="profileForm" (ngSubmit)="onSave()">
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label for="dob" class="form-label small fw-bold text-muted">
+              Date of Birth <span class="text-danger">*</span>
+            </label>
+            <input type="date" id="dob" class="form-control" formControlName="dateOfBirth">
+          </div>
+          <div class="col-md-6">
+            <label for="experience" class="form-label small fw-bold text-muted">
+              Years of Experience <span class="text-danger">*</span>
+            </label>
+            <input type="number" id="experience" class="form-control" formControlName="experience" placeholder="e.g. 5">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-bold d-block mb-2 text-muted">
+            Subject Skillsets <span class="text-danger">*</span>
+          </label>
+          <div class="d-flex flex-wrap gap-2">
+            <button 
+              type="button" 
+              *ngFor="let skill of availableSkills" 
+              class="btn btn-sm rounded-pill px-3 shadow-sm transition-all"
+              [class.btn-success]="isSelected(skill)"
+              [class.btn-outline-secondary]="!isSelected(skill)"
+              [disabled]="saving"
+              (click)="toggleSkill(skill)"
+            >
+              {{ skill.replace('_', ' ') }}
+            </button>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+          <button 
+            type="submit" 
+            class="btn btn-success px-4 py-2 shadow-sm d-flex align-items-center" 
+            [disabled]="profileForm.invalid || selectedSkills.length === 0 || saving"
+          >
+            <span class="spinner-border spinner-border-sm anonymity-loader me-2" role="status" *ngIf="saving"></span>
+            {{ saving ? 'Saving Changes...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

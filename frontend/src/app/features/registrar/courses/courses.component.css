@@ -1,0 +1,7 @@
+.search-box {
+  max-width: 260px;
+}
+
+.course-item:last-child {
+  border-bottom: none !important;
+}

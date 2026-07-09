@@ -1,0 +1,75 @@
+<div class="mb-4">
+  <button class="btn btn-sm btn-outline-secondary mb-2" routerLink="/student/courses">
+    <i class="bi bi-arrow-left me-1"></i> Back to Catalogue
+  </button>
+  <h3 class="fw-bold mb-1">Course Exploration Details</h3>
+</div>
+
+<app-loader *ngIf="loading" message="Syncing course resources securely..."></app-loader>
+
+<div class="alert alert-danger" role="alert" *ngIf="!loading && errorMessage">
+  {{ errorMessage }}
+</div>
+
+<div class="alert alert-success" role="alert" *ngIf="successMessage">
+  {{ successMessage }}
+</div>
+
+<div class="row g-4" *ngIf="!loading && course">
+  
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm p-4 h-100 bg-white d-flex flex-column">
+      <span class="badge bg-light text-purple align-self-start mb-2">
+        {{ (course.prerequisite || 'NONE').replace('_', ' ') }}
+      </span>
+      <h3 class="fw-bold text-dark mb-2">{{ course.title }}</h3>
+      <p class="text-muted small mb-4 lh-base">{{ course.description || 'No summary description provided for this catalog entry.' }}</p>
+
+      <div class="mt-3 p-3 bg-light rounded small text-secondary">
+        <p class="mb-2"><i class="bi bi-calendar3 me-2 text-purple"></i>Start Date: <strong>{{ course.startDate | date:'mediumDate' }}</strong></p>
+        <p class="mb-2"><i class="bi bi-calendar-x me-2 text-danger"></i>End Date: <strong>{{ course.endDate | date:'mediumDate' }}</strong></p>
+        <p class="mb-0"><i class="bi bi-person me-2 text-purple"></i>Assigned Faculty: <strong>{{ course.instructorName }}</strong></p>
+      </div>
+
+      <div class="mt-auto pt-4">
+        <button 
+          class="btn btn-purple w-100 py-2.5 text-white fw-bold shadow-sm" 
+          style="background-color: #6b21a8;"
+          [disabled]="submitting"
+          (click)="registerAndEnroll()"
+        >
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="submitting"></span>
+          Confirm & Register Enrollment
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm p-3 h-100 bg-white" style="min-height: 600px;">
+      <h5 class="fw-bold text-muted mb-3"><i class="bi bi-file-pdf me-2 text-danger"></i>Embedded Interactive Syllabus Preview</h5>
+      
+      <div class="w-100 h-100 d-flex flex-column border rounded" style="min-height: 550px;">
+        <object 
+          *ngIf="course?.syllabusPath"
+          [data]="'http://localhost:9098/api/v1/courses/' + course.courseId + '/syllabus' | safe" 
+          type="application/pdf" 
+          width="100%" 
+          height="550px"
+        >
+          <div class="p-4 text-center my-auto">
+            <i class="bi bi-file-earmark-pdf display-1 text-muted mb-3 d-block"></i>
+            <p class="text-muted">Your native browser framework cannot render this inline stream asset link directly.</p>
+          </div>
+        </object>
+
+        <div *ngIf="!course?.syllabusPath" class="text-center my-auto py-5">
+          <i class="bi bi-file-earmark-x display-4 text-muted mb-3 d-block"></i>
+          <p class="text-muted mb-0 fw-medium">No specialized syllabus or structural outcome document was uploaded for this track by the registrar.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

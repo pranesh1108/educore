@@ -1,0 +1,19 @@
+package com.cts.enumerate;
+
+public enum InstructorSkill {
+    JAVA,
+    PYTHON,
+    SPRING_BOOT,
+    MACHINE_LEARNING,
+    DATA_SCIENCE,
+    WEB_DEVELOPMENT,
+    DATABASE,
+    DEVOPS,
+    CLOUD_COMPUTING,
+    CYBERSECURITY,
+    ARTIFICIAL_INTELLIGENCE,
+    MOBILE_DEVELOPMENT,
+    ALGORITHMS,
+    NETWORKING,
+    SOFTWARE_TESTING
+}

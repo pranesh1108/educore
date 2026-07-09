@@ -1,0 +1,45 @@
+.active-course {
+  background-color: #f3ebff !important;
+  color: #6f42c1 !important;
+  border-left: 4px solid #6f42c1 !important;
+}
+
+.text-purple {
+  color: #6f42c1 !important;
+}
+
+.bg-purple {
+  background-color: #6f42c1 !important;
+}
+
+.bg-success-light {
+  background-color: #ebfaf1 !important;
+}
+
+.btn-outline-purple {
+  border-color: #6f42c1;
+  color: #6f42c1;
+  background-color: transparent;
+}
+.btn-outline-purple:hover {
+  background-color: #6f42c1;
+  color: white;
+}
+
+.btn-purple {
+  background-color: #6f42c1;
+  color: white;
+}
+.btn-purple:hover {
+  background-color: #59339e;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+@media (min-width: 992px) {
+  .border-end-lg {
+    border-right: 1px solid #dee2e6 !important;
+  }
+}

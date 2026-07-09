@@ -1,0 +1,19 @@
+.bg-purple {
+  background-color: #6f42c1 !important;
+}
+
+.text-purple {
+  color: #6f42c1 !important;
+}
+
+thead th {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #6c757d;
+  font-weight: 700;
+  border-bottom: 2px solid #f1f3f9;
+}
+
+tbody tr {
+  border-bottom: 1px solid #f1f3f9;
+}

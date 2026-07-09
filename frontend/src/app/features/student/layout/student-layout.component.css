@@ -1,0 +1,27 @@
+.student-shell {
+  min-height: calc(100vh - 56px);
+}
+
+.student-sidebar {
+  width: 240px;
+  min-width: 240px;
+}
+
+.student-nav-link {
+  color: #495057;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.student-nav-link:hover {
+  background-color: #f1f3f9;
+  color: #6f42c1;
+}
+.student-nav-link.active {
+  background-color: #f3ebff;
+  color: #6f42c1;
+}
+
+.student-content {
+  min-width: 0;
+  background-color: #fcfbfe;
+}

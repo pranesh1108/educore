@@ -1,0 +1,27 @@
+.coordinator-shell {
+  min-height: calc(100vh - 56px);
+}
+
+.coordinator-sidebar {
+  width: 240px;
+  min-width: 240px;
+}
+
+.coordinator-nav-link {
+  color: #495057;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.coordinator-nav-link:hover {
+  background-color: #f1f3f9;
+  color: #0dcaf0;
+}
+.coordinator-nav-link.active {
+  background-color: #e0f7fa;
+  color: #00838f;
+}
+
+.coordinator-content {
+  min-width: 0;
+  background-color: #fafdfd;
+}

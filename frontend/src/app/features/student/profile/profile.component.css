@@ -1,0 +1,22 @@
+.text-purple {
+  color: #6f42c1 !important;
+}
+
+.bg-purple-light {
+  background-color: #f3ebff !important;
+}
+
+.btn-purple {
+  background-color: #6f42c1;
+  color: white;
+  border: none;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+.btn-purple:hover:not(:disabled) {
+  background-color: #59339e;
+  color: white;
+}
+.btn-purple:disabled {
+  opacity: 0.65;
+}

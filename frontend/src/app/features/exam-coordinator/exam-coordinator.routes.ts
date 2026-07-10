@@ -29,11 +29,6 @@ export const EXAM_COORDINATOR_ROUTES: Routes = [
         path: 'results',
         loadComponent: () =>
           import('./results/results.component').then(m => m.ResultsComponent)
-      },
-      {
-        path: 'profile',
-        loadComponent: () =>
-          import('./profile/profile.component').then(m => m.ProfileComponent)
       }
     ]
   }

@@ -16,7 +16,6 @@ export class ExamCoordinatorLayoutComponent {
     { path: '/exam-coordinator/dashboard', label: 'Dashboard', icon: 'bi-speedometer2' },
     { path: '/exam-coordinator/exams', label: 'Manage Exams', icon: 'bi-calendar-event' },
     { path: '/exam-coordinator/exam-rooms', label: 'Venues & Rooms', icon: 'bi-building' },
-    { path: '/exam-coordinator/results', label: 'Publish Results', icon: 'bi-check2-all' },
-    { path: '/exam-coordinator/profile', label: 'My Profile', icon: 'bi-person-circle' }
+    { path: '/exam-coordinator/results', label: 'Publish Results', icon: 'bi-check2-all' }
   ];
 }

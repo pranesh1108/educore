@@ -76,4 +76,12 @@ export class StudentApiService {
   getMyResults(studentId: number): Observable<ExamResult[]> {
     return this.http.get<ExamResult[]>(`${this.resultsUrl}/student/${studentId}`);
   }
+
+  // Add this inside your StudentApiService class
+  getCourseSyllabus(courseId: number) {
+    // Make sure the port matches your backend (9098 based on your HTML)
+    return this.http.get(`http://localhost:9098/api/v1/courses/${courseId}/syllabus`, {
+      responseType: 'blob' // THIS IS CRITICAL: Tells Angular it's a file, not JSON
+    });
+  }
 }

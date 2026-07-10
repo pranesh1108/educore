@@ -1,10 +1,12 @@
 package com.cts.service;
 
 import com.cts.dto.*;
+
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import org.springframework.core.io.Resource;
+
 
 public interface StudentService {
 
@@ -25,5 +27,7 @@ public interface StudentService {
     SubmissionOutputDTO submitAssignment(Long assignmentId, MultipartFile file);
     List<SubmissionOutputDTO> getMySubmissions();
     List<ExamOutputDTO> getMyExams();
+
+    Resource getSyllabusResource(Long courseId);
 
 }

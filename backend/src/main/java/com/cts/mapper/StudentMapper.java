@@ -28,7 +28,9 @@ public class StudentMapper {
                         .prerequisite(course.getPrerequisite())
                         .startDate(course.getStartDate())
                         .endDate(course.getEndDate())
-                        .enrollmentDeadlineDate(course.getEnrollmentDeadlineDate());
+                        .enrollmentDeadlineDate(course.getEnrollmentDeadlineDate())
+                        // ── CRITICAL FIX: Transfer syllabus string data to the client DTO ──
+                        .syllabusPath(course.getSyllabusPath());
 
         if (course.getInstructor() != null) {
             builder.instructorId(course.getInstructor().getInstructorId());
@@ -116,18 +118,5 @@ public class StudentMapper {
                 .courseId(s.getCourse().getCourseId())
                 .courseTitle(s.getCourse().getTitle())
                 .build();
-    }
-
-    private List<CourseContentDTO> parseCourseContent(List<String> jsonList) {
-        if (jsonList == null || jsonList.isEmpty()) return Collections.emptyList();
-        return jsonList.stream()
-                .map(json -> {
-                    try {
-                        return objectMapper.readValue(json, CourseContentDTO.class);
-                    } catch (JsonProcessingException e) {
-                        return CourseContentDTO.builder().topic(json).build();
-                    }
-                })
-                .collect(Collectors.toList());
     }
 }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// ── ADDED: Router Module support for redirection mapping links ──
 import { RouterModule } from '@angular/router'; 
 
 import { StudentApiService } from '../services/student-api.service';
@@ -12,7 +11,6 @@ import { LoaderComponent } from '../../../shared/components/loader/loader.compon
 @Component({
   selector: 'app-student-courses',
   standalone: true,
-  // ── CHANGED: Appended RouterModule here so [routerLink] functions in the template ──
   imports: [CommonModule, FormsModule, LoaderComponent, RouterModule],
   templateUrl: './courses.component.html',
   styleUrl: './courses.component.css'
@@ -26,7 +24,6 @@ export class CoursesComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  // Search filters
   titleSearch = '';
   topicSearch = '';
 
@@ -48,7 +45,6 @@ export class CoursesComponent implements OnInit {
         this.searchCourses();
       },
       error: (err) => {
-        // Handle the backend throwing exception for zero enrollments gracefully
         if (err?.error?.message?.includes('not enrolled') || err?.message?.includes('not enrolled')) {
           this.myEnrollments = [];
           this.enrolledCourseIds = new Set();
@@ -68,12 +64,10 @@ export class CoursesComponent implements OnInit {
       topic: this.topicSearch || undefined
     }).subscribe({
       next: (response) => {
-        // Filter out any empty or corrupt course records
         this.courses = (response.content || []).filter((c: any) => c.title && c.title.trim() !== '');
         this.loading = false;
       },
       error: (err) => {
-        // Handle the backend throwing exception for empty queries gracefully
         if (err?.error?.message?.includes('No courses match') || err?.message?.includes('No courses match')) {
           this.courses = [];
           this.errorMessage = '';

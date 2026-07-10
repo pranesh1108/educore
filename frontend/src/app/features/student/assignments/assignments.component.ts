@@ -47,10 +47,9 @@ export class AssignmentsComponent implements OnInit {
       error: (err) => {
         const errorMsg = err?.error?.message || err?.message || '';
 
-        // ── FIX: Intercept empty enrollment notifications and suppress banner ──
         if (errorMsg.includes('not enrolled') || err?.status === 404) {
           this.myEnrollments = [];
-          this.errorMessage = ''; // Keeps the banner invisible
+          this.errorMessage = ''; 
         } else {
           this.errorMessage = errorMsg || 'Failed to load enrolled courses.';
         }
@@ -82,12 +81,20 @@ export class AssignmentsComponent implements OnInit {
   loadSubmissions(): void {
     this.studentApi.getMySubmissions().subscribe({
       next: (submissions) => {
-        this.mySubmissions = submissions;
+        this.mySubmissions = submissions || [];
         this.contentLoading = false;
         this.loading = false;
       },
       error: (err) => {
-        this.errorMessage = err?.error?.message || err?.message || 'Failed to load submissions.';
+        const errorMsg = err?.error?.message || err?.message || '';
+
+        // ── FIX: Intercept empty student submission exceptions and clear the banner ──
+        if (errorMsg.includes('No submissions found') || err?.status === 404) {
+          this.mySubmissions = []; // Clear local list safely
+          this.errorMessage = '';  // Force the red error banner to disappear!
+        } else {
+          this.errorMessage = errorMsg || 'Failed to load submissions.';
+        }
         this.contentLoading = false;
         this.loading = false;
       }

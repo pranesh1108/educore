@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; 
 import { StudentApiService } from '../services/student-api.service';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
-import { SafePipe } from './safe.pipe';
 
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, LoaderComponent, SafePipe],
+  // We don't need SafeUrlPipe here anymore!
+  imports: [CommonModule, RouterModule, LoaderComponent],
   templateUrl: './course-detail.html',
   styleUrl: './course-detail.css'
 })
@@ -20,10 +21,16 @@ export class CourseDetailComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
+  // Variables for the secure PDF
+  syllabusPdfUrl: SafeResourceUrl | null = null;
+  pdfLoading = false;
+  pdfError = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private studentApi: StudentApiService
+    private studentApi: StudentApiService,
+    private sanitizer: DomSanitizer // Injected to make the PDF URL safe
   ) {}
 
   ngOnInit(): void {
@@ -41,6 +48,10 @@ export class CourseDetailComponent implements OnInit {
         
         if (matchingCourse) {
           this.course = matchingCourse;
+          // If the backend says a syllabus exists, download it securely!
+          if (this.course.syllabusPath) {
+            this.fetchSecureSyllabus();
+          }
         } else {
           this.errorMessage = 'The requested course track properties could not be resolved.';
         }
@@ -49,6 +60,23 @@ export class CourseDetailComponent implements OnInit {
       error: (err) => {
         this.errorMessage = err?.error?.message || 'Unable to successfully parse backend catalogue structures.';
         this.loading = false;
+      }
+    });
+  }
+
+  // This downloads the PDF using your JWT Token, bypassing the 401 error
+  fetchSecureSyllabus(): void {
+    this.pdfLoading = true;
+    this.studentApi.getCourseSyllabus(this.courseId).subscribe({
+      next: (blob: Blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        this.syllabusPdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(objectUrl);
+        this.pdfLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load syllabus PDF', err);
+        this.pdfError = true;
+        this.pdfLoading = false;
       }
     });
   }

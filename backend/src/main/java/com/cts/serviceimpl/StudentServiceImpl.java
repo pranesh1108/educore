@@ -11,19 +11,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.Operation;
-import jakarta.annotation.Resource;
-import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.Resource;    // ── CORRECT SPRING IMPORT ──
+import org.springframework.core.io.UrlResource; // ── CORRECT SPRING IMPORT ──
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cts.annotation.AuditEvent;
@@ -32,7 +25,6 @@ import com.cts.entity.*;
 import com.cts.exception.*;
 import com.cts.mapper.ExamMapper;
 import com.cts.repository.ExamRepository;
-import com.cts.dto.ExamOutputDTO;
 import com.cts.mapper.AssignmentMapper;
 import com.cts.mapper.CourseMapper;
 import com.cts.mapper.StudentMapper;
@@ -62,7 +54,6 @@ public class StudentServiceImpl implements StudentService {
     private final FileStorageService fileStorageService;
     private final ExamResultRepository examResultRepository;
 
-    // private final Path syllabusRootLocation = Paths.get("uploads/syllabi");
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private Student getLoggedInStudent() {
@@ -100,7 +91,6 @@ public class StudentServiceImpl implements StudentService {
     public List<RegistrarCourseResponseDTO> getAllCourses() {
         LocalDate today = LocalDate.now();
 
-        // Filters and fetches courses where today is before OR EQUAL TO the enrollment deadline date
         List<Course> courses = courseRepository.findAll().stream()
                 .filter(c -> c.getEnrollmentDeadlineDate() == null || !today.isAfter(c.getEnrollmentDeadlineDate()))
                 .collect(Collectors.toList());
@@ -168,7 +158,6 @@ public class StudentServiceImpl implements StudentService {
         Student student = getLoggedInStudent();
         List<CourseEnrollment> enrollments = enrollmentRepository.findByStudent_StudentId(student.getStudentId());
         if (enrollments.isEmpty()) throw new EnrollmentException("You are not enrolled in any courses yet.");
-        //return Collections.emptyList();
         return enrollments.stream().map(studentMapper::toEnrollmentOutputDTO).collect(Collectors.toList());
     }
 
@@ -296,6 +285,34 @@ public class StudentServiceImpl implements StudentService {
         return exams;
     }
 
+    // ── FIXED BUSINESS LOGIC: Complete file streaming layer migration logic ──
+    @Override
+    @AuditEvent(eventName = "COURSE_SYLLABUS_STREAMED", eventType = "READ", eventMessage = "Syllabus resource generated from disk by course ID")
+    public Resource getSyllabusResource(Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + courseId));
+
+        if (course.getSyllabusPath() == null || course.getSyllabusPath().isBlank()) {
+            throw new ResourceNotFoundException("No syllabus file path registered for course id: " + courseId);
+        }
+
+        try {
+            Path rootLocation = Paths.get("uploads/syllabi");
+            Path file = rootLocation.resolve(course.getSyllabusPath()).normalize();
+            Resource resource = new UrlResource(file.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            } else {
+                throw new ResourceNotFoundException("Syllabus PDF file could not be read or found on server storage disk.");
+            }
+        } catch (ResourceNotFoundException ex) {
+            throw ex;
+        } catch (Exception e) {
+            throw new BusinessException("Internal server failure while processing syllabus asset streams.");
+        }
+    }
+
     private void verifyEnrollment(Long studentId, Long courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + courseId));
@@ -321,7 +338,4 @@ public class StudentServiceImpl implements StudentService {
         if (code.length() > 6) code = code.substring(0, 6);
         return code + String.format("%04d", studentId);
     }
-
-
-
 }

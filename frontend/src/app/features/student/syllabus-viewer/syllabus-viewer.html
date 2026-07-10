@@ -1,0 +1,39 @@
+<div class="container-fluid py-4">
+  <div class="mb-4">
+    <button class="btn btn-sm btn-outline-secondary mb-3" routerLink="/student/courses">
+      <i class="bi bi-arrow-left me-1"></i> Back to My Courses
+    </button>
+    <h3 class="fw-bold mb-1">Course Syllabus Document</h3>
+    <p class="text-muted">Review the structural outcomes and modules for this track.</p>
+  </div>
+
+  <div class="card border-0 shadow-sm p-3 bg-white" style="height: 75vh; min-height: 600px;">
+    <div class="w-100 h-100 d-flex flex-column border rounded position-relative">
+      
+      <div *ngIf="pdfLoading" class="position-absolute top-50 start-50 translate-middle text-center">
+        <div class="spinner-border text-purple mb-2" role="status"></div>
+        <p class="text-muted small">Downloading secure document...</p>
+      </div>
+
+      <div *ngIf="pdfError" class="position-absolute top-50 start-50 translate-middle text-center">
+        <i class="bi bi-exclamation-triangle display-4 text-danger mb-2 d-block"></i>
+        <p class="text-danger small">Failed to load the secure syllabus document or no document exists.</p>
+      </div>
+
+      <object 
+        *ngIf="syllabusPdfUrl && !pdfLoading"
+        [data]="syllabusPdfUrl" 
+        type="application/pdf" 
+        width="100%" 
+        height="100%"
+        style="min-height: 100%;"
+      >
+        <div class="p-4 text-center my-auto">
+          <i class="bi bi-file-earmark-pdf display-1 text-muted mb-3 d-block"></i>
+          <p class="text-muted">Your browser cannot render this inline PDF.</p>
+        </div>
+      </object>
+
+    </div>
+  </div>
+</div>

@@ -47,7 +47,7 @@ export class AuthService {
   redirectToDashboard(): void {
     switch (this.getRole()) {
       case Role.STUDENT:
-        this.router.navigate(['/student']);
+        this.router.navigate(['/student/profile']);
         break;
       case Role.INSTRUCTOR:
         this.router.navigate(['/instructor']);

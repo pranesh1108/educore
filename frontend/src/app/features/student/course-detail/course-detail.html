@@ -49,10 +49,21 @@
     <div class="card border-0 shadow-sm p-3 h-100 bg-white" style="min-height: 600px;">
       <h5 class="fw-bold text-muted mb-3"><i class="bi bi-file-pdf me-2 text-danger"></i>Embedded Interactive Syllabus Preview</h5>
       
-      <div class="w-100 h-100 d-flex flex-column border rounded" style="min-height: 550px;">
+      <div class="w-100 h-100 d-flex flex-column border rounded position-relative" style="min-height: 550px;">
+        
+        <div *ngIf="pdfLoading" class="position-absolute top-50 start-50 translate-middle text-center w-100 pt-5 mt-5">
+          <div class="spinner-border text-purple mb-2" role="status"></div>
+          <p class="text-muted small">Downloading secure document...</p>
+        </div>
+
+        <div *ngIf="pdfError" class="position-absolute top-50 start-50 translate-middle text-center w-100 pt-5 mt-5">
+          <i class="bi bi-exclamation-triangle display-4 text-danger mb-2 d-block"></i>
+          <p class="text-danger small">Failed to load the secure syllabus document.</p>
+        </div>
+
         <object 
-          *ngIf="course?.syllabusPath"
-          [data]="'http://localhost:9098/api/v1/courses/' + course.courseId + '/syllabus' | safe" 
+          *ngIf="syllabusPdfUrl"
+          [data]="syllabusPdfUrl" 
           type="application/pdf" 
           width="100%" 
           height="550px"
@@ -63,7 +74,7 @@
           </div>
         </object>
 
-        <div *ngIf="!course?.syllabusPath" class="text-center my-auto py-5">
+        <div *ngIf="!course?.syllabusPath && !pdfLoading" class="text-center my-auto py-5">
           <i class="bi bi-file-earmark-x display-4 text-muted mb-3 d-block"></i>
           <p class="text-muted mb-0 fw-medium">No specialized syllabus or structural outcome document was uploaded for this track by the registrar.</p>
         </div>

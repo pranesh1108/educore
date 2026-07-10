@@ -14,7 +14,7 @@ export const STUDENT_ROUTES: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
+          import('./profile/profile.component').then(m => m.ProfileComponent)
       },
       {
         path: 'courses',
@@ -48,7 +48,13 @@ export const STUDENT_ROUTES: Routes = [
         path: 'profile',
         loadComponent: () =>
           import('./profile/profile.component').then(m => m.ProfileComponent)
-      }
+      },
+      
+      { 
+        path: 'syllabus/:id', 
+        loadComponent: () => 
+          import('./syllabus-viewer/syllabus-viewer').then(m => m.SyllabusViewerComponent) 
+      },
     ]
   }
 ];

@@ -83,13 +83,6 @@
               </small>
               <small class="text-muted d-block"><i class="bi bi-person me-1"></i>Instructor: {{ course.instructorName }}</small>
             </div>
-            
-            <div class="course-topics mb-3" *ngIf="course.courseContent && course.courseContent.length > 0">
-              <span class="d-block small fw-bold text-muted mb-1">Topics:</span>
-              <span class="badge bg-light text-secondary me-1 mb-1" *ngFor="let module of course.courseContent">
-                {{ module.topic }}
-              </span>
-            </div>
 
             <button
               class="btn w-100 mt-auto text-decoration-none"
@@ -127,8 +120,8 @@
               <small class="text-muted d-block"><i class="bi bi-calendar-check me-1"></i>Date Joined: {{ enrol.enrolledAt | date:'mediumDate' }}</small>
             </div>
             
-            <a routerLink="/student/assignments" class="btn btn-purple w-100 mt-auto">
-              Open Course Room
+            <a [routerLink]="['/student/syllabus', enrol.courseId]" class="btn btn-purple w-100 mt-auto">
+            View Syllabus
             </a>
           </div>
         </div>

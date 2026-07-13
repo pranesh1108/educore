@@ -56,6 +56,14 @@ public class UserServiceImpl implements UserService {
                             "REGISTRAR, EXAM_COORDINATOR");
         }
 
+        // ── STRICT BUSINESS CONSTRAINT: ONLY ONE REGISTRAR/ADMIN ALLOWED ──
+        if (verifiedRole == Role.REGISTRAR) {
+            boolean registrarExists = userRepository.existsByRole(Role.REGISTRAR);
+            if (registrarExists) {
+                throw new BusinessException("Registration Denied: A Registrar account already exists in the system.");
+            }
+        }
+
         User user = User.builder()
                 .email(registrationInputDTO.getEmail().trim())
                 .name(registrationInputDTO.getName())

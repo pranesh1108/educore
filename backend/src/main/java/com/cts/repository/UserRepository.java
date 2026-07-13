@@ -1,5 +1,6 @@
 package com.cts.repository;
 
+import com.cts.enumerate.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.cts.entity.User;
@@ -12,4 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail(String email);
     
     boolean existsByEmail(String email);
+
+    boolean existsByRole(Role role);
+
 }

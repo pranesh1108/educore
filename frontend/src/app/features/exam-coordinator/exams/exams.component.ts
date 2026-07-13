@@ -28,7 +28,6 @@ export class ExamsComponent implements OnInit {
   // Form Fields - Create Exam
   title = '';
   description = '';
-  term: 'SPRING_2026' | 'FALL_2026' | 'WINTER_2026' | 'SUMMER_2026' = 'SPRING_2026';
   examDateInput = ''; // yyyy-MM-ddTHH:mm
   durationMinutes = 180;
   totalMarks = 100;
@@ -39,7 +38,6 @@ export class ExamsComponent implements OnInit {
   // Search Filters
   filterCourseId: number | null = null;
   filterInstructorId: number | null = null;
-  filterTerm = '';
   filterStatus = '';
 
   constructor(
@@ -66,8 +64,17 @@ export class ExamsComponent implements OnInit {
             this.searchExams();
           },
           error: (err) => {
-            this.errorMessage = err?.message || 'Failed to load course list.';
-            this.loading = false;
+            const courseErrorMsg = err?.error?.message || err?.message || '';
+            
+            // ── INTERCEPT THE NO COURSES MATCH ERROR BANNER ──
+            if (courseErrorMsg.includes('No courses match') || err?.status === 404) {
+              this.courses = [];
+              this.errorMessage = ''; // Suppress the error banner completely
+              this.searchExams();      // Continue loading exams safely
+            } else {
+              this.errorMessage = courseErrorMsg || 'Failed to load course list.';
+              this.loading = false;
+            }
           }
         });
       },
@@ -77,13 +84,12 @@ export class ExamsComponent implements OnInit {
       }
     });
   }
-
+  
   searchExams(): void {
     this.errorMessage = '';
     this.coordinatorApi.searchExams({
       courseId: this.filterCourseId || undefined,
-      instructorId: this.filterInstructorId || undefined,
-      term: this.filterTerm || undefined
+      instructorId: this.filterInstructorId || undefined
     }).subscribe({
       next: (exams) => {
         this.exams = exams;
@@ -109,7 +115,6 @@ export class ExamsComponent implements OnInit {
     this.coordinatorApi.createExam({
       title: this.title,
       description: this.description || undefined,
-      term: this.term,
       examDate: formattedDate,
       durationMinutes: this.durationMinutes,
       totalMarks: this.totalMarks,

@@ -3,7 +3,6 @@ package com.cts.exception;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.cts.dto.ErrorResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -153,11 +153,11 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT);
     }
 
-    //Enrollment
-    @ExceptionHandler(EnrollmentException.class)
-    public ResponseEntity<String> handleEnrollmentException(EnrollmentException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
-    }
+//    //Enrollment
+//    @ExceptionHandler(EnrollmentException.class)
+//    public ResponseEntity<String> handleEnrollmentException(EnrollmentException ex) {
+//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+//    }
 
     @ExceptionHandler(NotEnrolledException.class)
     public ResponseEntity<String> handleNotEnrolledException(NotEnrolledException ex) {
@@ -216,7 +216,6 @@ public class GlobalExceptionHandler {
     }
 
 
-
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Object> handleMaxUploadSizeExceededException(
             MaxUploadSizeExceededException ex) {
@@ -242,6 +241,22 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(errorDTO, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(EnrollmentException.class)
+    public ResponseEntity<ErrorResponseDTO> handleEnrollmentException(
+            EnrollmentException ex,
+            org.springframework.web.context.request.WebRequest request) {
+
+        ErrorResponseDTO errorDTO = ErrorResponseDTO.builder()
+                .timestamp(java.time.LocalDateTime.now())
+                .status(HttpStatus.CONFLICT.value()) // 409 Conflict
+                .error("Enrollment Error")
+                .message(ex.getMessage())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        return new ResponseEntity<>(errorDTO, HttpStatus.CONFLICT);
     }
 
 

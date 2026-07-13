@@ -8,9 +8,6 @@ import java.util.Optional;
 @Repository
 public interface ExamCoordinatorRepository extends JpaRepository<ExamCoordinator, Long> {
 
-    boolean existsByUser_UserId(Long userId);
-
     Optional<ExamCoordinator> findByUser_Email(String email);
 
-    Optional<ExamCoordinator> findByUser_UserId(Long userId);
 }

@@ -32,8 +32,6 @@ public class User {
     @Column(name = "phone")
     private Long phone;
 
-    private String status;
-
     private LocalDate createdAt;
 
     @Column(name = "last_login_at")
@@ -42,8 +40,5 @@ public class User {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDate.now();
-        if (this.status == null) {
-            this.status = "ACTIVE";
-        }
     }
 }

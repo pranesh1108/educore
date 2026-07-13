@@ -3,7 +3,7 @@ package com.cts.dto;
 import com.cts.enumerate.Prerequisite;
 import lombok.*;
 import java.time.LocalDate;
-import java.util.List;
+
 
 @Data
 @NoArgsConstructor

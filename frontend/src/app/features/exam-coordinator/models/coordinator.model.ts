@@ -3,7 +3,6 @@ import { Exam, ExamResult } from '../../student/models/student.model';
 export interface ExamInput {
   title: string;
   description?: string;
-  term: 'SPRING_2026' | 'FALL_2026' | 'WINTER_2026' | 'SUMMER_2026';
   examDate: string; // yyyy-MM-dd HH:mm
   durationMinutes: number;
   totalMarks: number;
@@ -37,7 +36,6 @@ export interface ExamRoomOutput {
   studentsAllocated: number;
   students: ExamRoomAllocationStudent[];
   createdAt: string;
-  term: string;
 }
 
 export interface PhysicalRoomInput {

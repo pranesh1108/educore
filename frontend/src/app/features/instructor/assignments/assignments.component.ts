@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -22,7 +22,9 @@ export class AssignmentsComponent implements OnInit {
   submitting = false;
   resourcesLoading = false;
   errorMessage = '';
-  successMessage = '';
+  
+  materialSuccessMessage = signal('');
+  assignmentSuccessMessage = signal('');
 
   // Form Fields - Material
   materialFile: File | null = null;
@@ -33,7 +35,7 @@ export class AssignmentsComponent implements OnInit {
   assignmentTitle = '';
   assignmentInstructions = '';
   assignmentTotalMarks = 100;
-  assignmentDueDateInput = ''; // yyyy-MM-ddTHH:mm
+  assignmentDueDateInput = '';
 
   constructor(private instructorApi: InstructorApiService) {}
 
@@ -46,23 +48,21 @@ export class AssignmentsComponent implements OnInit {
     this.errorMessage = '';
 
     this.instructorApi.getAssignedCourses().subscribe({
-  next: (courses) => {
-    this.courses = courses || [];
-    this.loading = false;
-  },
-  error: (err) => {
-    const errorMsg = err?.error?.message || err?.message || '';
-
-    // ── SUPPRESS EMPTY COURSE ERROR BANNER ──
-    if (errorMsg.includes('No courses assigned') || err?.status === 404) {
-      this.courses = [];
-      this.errorMessage = ''; // Keeps the banner invisible
-    } else {
-      this.errorMessage = errorMsg || 'Failed to load assigned tracks.';
-    }
-    this.loading = false;
-  }
-  });
+      next: (courses) => {
+        this.courses = courses || [];
+        this.loading = false;
+      },
+      error: (err) => {
+        const errorMsg = err?.error?.message || err?.message || '';
+        if (errorMsg.includes('No courses assigned') || err?.status === 404) {
+          this.courses = [];
+          this.errorMessage = '';
+        } else {
+          this.errorMessage = errorMsg || 'Failed to load assigned tracks.';
+        }
+        this.loading = false;
+      }
+    });
   }
 
   selectCourse(course: InstructorCourse): void {
@@ -70,7 +70,8 @@ export class AssignmentsComponent implements OnInit {
     this.resourcesLoading = true;
     this.resources = null;
     this.errorMessage = '';
-    this.successMessage = '';
+    this.materialSuccessMessage.set('');
+    this.assignmentSuccessMessage.set('');
 
     this.instructorApi.getCourseResources(course.courseId).subscribe({
       next: (res) => {
@@ -99,7 +100,7 @@ export class AssignmentsComponent implements OnInit {
 
     this.submitting = true;
     this.errorMessage = '';
-    this.successMessage = '';
+    this.materialSuccessMessage.set('');
 
     this.instructorApi.publishCourseMaterial(
       this.selectedCourse.courseId,
@@ -107,14 +108,23 @@ export class AssignmentsComponent implements OnInit {
       this.materialTextContent
     ).subscribe({
       next: () => {
-        this.successMessage = 'Lecture material handout published successfully!';
+        // 1. Trigger System UI Alert Window Fallback
+        alert('Success: material is published!');
+
+        // 2. Set Signal state values
+        this.materialSuccessMessage.set('material is published');
+        
         this.materialFile = null;
         this.materialTextContent = '';
-        // Clear file input manually
         const fileInput = document.getElementById('materialFile') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
+        
         this.selectCourse(this.selectedCourse!);
         this.submitting = false;
+
+        setTimeout(() => {
+          this.materialSuccessMessage.set('');
+        }, 3000);
       },
       error: (err) => {
         this.errorMessage = err?.error?.message || err?.message || 'Failed to publish material.';
@@ -128,9 +138,8 @@ export class AssignmentsComponent implements OnInit {
 
     this.submitting = true;
     this.errorMessage = '';
-    this.successMessage = '';
+    this.assignmentSuccessMessage.set('');
 
-    // Convert standard T local format to Space format: "yyyy-MM-dd HH:mm"
     const formattedDueDate = this.assignmentDueDateInput.replace('T', ' ');
 
     this.instructorApi.publishAssignment(
@@ -142,17 +151,26 @@ export class AssignmentsComponent implements OnInit {
       this.assignmentFile
     ).subscribe({
       next: () => {
-        this.successMessage = 'Assignment task published successfully!';
+        // 1. Trigger System UI Alert Window Fallback
+        alert('Success: assignment is published!');
+
+        // 2. Set Signal state values
+        this.assignmentSuccessMessage.set('assignment is published');
+        
         this.assignmentFile = null;
         this.assignmentTitle = '';
         this.assignmentInstructions = '';
         this.assignmentTotalMarks = 100;
         this.assignmentDueDateInput = '';
-        // Clear file input manually
         const fileInput = document.getElementById('assignmentFile') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
+        
         this.selectCourse(this.selectedCourse!);
         this.submitting = false;
+
+        setTimeout(() => {
+          this.assignmentSuccessMessage.set('');
+        }, 3000);
       },
       error: (err) => {
         this.errorMessage = err?.error?.message || err?.message || 'Failed to publish assignment.';

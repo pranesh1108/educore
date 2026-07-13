@@ -14,6 +14,5 @@ public class StudentFilterOutputDTO {
     private String email;
     private String fieldOfInterest;
     private String educationLevel;
-    private String status;
     private List<String> enrolledCourses;
 }

@@ -13,25 +13,6 @@ public class FileStorageService {
     private static final String BASE_DIR = "uploads/";
     private static final long MAX_FILE_SIZE = 250 * 1024 * 1024; // 10 MB
 
-    //STORE FILE (original name)
-
-    public String storeFile(MultipartFile file, String subFolder) {
-        validateFile(file);
-        try {
-            Path uploadPath = Paths.get(BASE_DIR + subFolder);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            String fileName = file.getOriginalFilename();
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            return filePath.toString();
-        } catch (IOException e) {
-            throw new FileStorageException("Failed to store file: " + e.getMessage());
-        }
-    }
-
-    //STORE FILE (auto-generated name)
 
     public String storeFile(MultipartFile file, String subFolder, String desiredFileName) {
         validateFile(file);
@@ -48,8 +29,6 @@ public class FileStorageService {
         }
     }
 
-    //LOAD FILE
-
     public byte[] loadFile(String filePath) {
         try {
             Path path = Paths.get(filePath);
@@ -62,7 +41,6 @@ public class FileStorageService {
         }
     }
 
-    //NAME GENERATORS
 
     // Generates: {course_title}_notes_{n}.pdf  e.g. java_programming_notes_1.pdf
     public String generateMaterialFileName(String courseTitle, int number) {
@@ -84,7 +62,6 @@ public class FileStorageService {
         return title.trim().toLowerCase().replaceAll("[^a-z0-9]+", "_");
     }
 
-    //PRIVATE HELPERS
     private void validateFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new InvalidFileException("File cannot be empty.");

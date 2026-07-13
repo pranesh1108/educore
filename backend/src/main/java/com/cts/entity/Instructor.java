@@ -19,7 +19,6 @@ public class Instructor {
     @Column(name = "instructor_id")
     private Long instructorId;
 
-    // Refactored to an ElementCollection mapping table
     @ElementCollection(targetClass = InstructorSkill.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "instructor_skills", joinColumns = @JoinColumn(name = "instructor_id"))
     @Enumerated(EnumType.STRING)
@@ -31,9 +30,6 @@ public class Instructor {
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
-
-    @Column(name = "status")
-    private String status;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)

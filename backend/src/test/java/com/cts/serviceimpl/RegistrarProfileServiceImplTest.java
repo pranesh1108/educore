@@ -11,10 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.cts.dto.RegistrarOutputDTO;
 import com.cts.entity.*;
 import com.cts.enumerate.Role;
-import com.cts.exception.*;
 import com.cts.repository.*;
 
 public class RegistrarProfileServiceImplTest {

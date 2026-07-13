@@ -6,7 +6,6 @@ export interface RegistrarProfile {
   name: string;
   email: string;
   role: string;
-  status: string;
 }
 
 // Mirrors com.cts.enumerate.Prerequisite
@@ -83,7 +82,6 @@ export interface StudentFilterOutput {
   name: string;
   email: string;
   fieldOfInterest: string;
-  status: string;
   enrolledCourses: string[];
 }
 
@@ -94,20 +92,18 @@ export interface InstructorFilterOutput {
   email: string;
   skill: string;
   experience: number;
-  status: string;
   assignedCourses: string[];
 }
 
 export type FilterRole = 'student' | 'instructor';
 
-export type StudentSortBy = 'name' | 'fieldOfInterest' | 'status';
-export type InstructorSortBy = 'name' | 'experience' | 'status';
+export type StudentSortBy = 'name' | 'fieldOfInterest' ;
+export type InstructorSortBy = 'name' | 'experience';
 export type SortDirection = 'asc' | 'desc';
 
 // Query params accepted by GET /registrar/{role}/filter
 export interface RegistrarFilterParams {
   name?: string;
-  status?: string;
   fieldOfInterest?: string;
   enrolledCourse?: string;
   skill?: string;

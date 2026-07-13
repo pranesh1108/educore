@@ -1,14 +1,22 @@
+<div style="position: fixed; top: 20px; right: 20px; z-index: 99999; min-width: 300px; pointer-events: none;">
+  <div *ngIf="materialSuccessMessage()" 
+       style="background: #198754; color: white; padding: 16px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-bottom: 10px; font-weight: 600; pointer-events: auto;">
+    <i class="bi bi-check-circle-fill me-2"></i> {{ materialSuccessMessage() }}
+  </div>
+
+  <div *ngIf="assignmentSuccessMessage()" 
+       style="background: #198754; color: white; padding: 16px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 600; pointer-events: auto;">
+    <i class="bi bi-check-circle-fill me-2"></i> {{ assignmentSuccessMessage() }}
+  </div>
+</div>
+
 <div class="mb-4">
   <h3 class="fw-bold mb-1">Publish Resources</h3>
   <p class="text-muted mb-0">Upload course materials and publish student assignment evaluations.</p>
 </div>
 
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-  {{ errorMessage }}
-</div>
-
-<div class="alert alert-success" role="alert" *ngIf="successMessage">
-  {{ successMessage }}
+  <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
 </div>
 
 <app-loader *ngIf="loading" message="Loading assigned courses..."></app-loader>
@@ -32,14 +40,19 @@
   </div>
 
   <div class="col-lg-9" *ngIf="selectedCourse">
+    
+    <div class="alert alert-success border-0 shadow-sm p-3 mb-3 fw-bold small" *ngIf="materialSuccessMessage() || assignmentSuccessMessage()">
+      <i class="bi bi-bell-fill text-success me-2 animate-bounce"></i> Status Update: {{ materialSuccessMessage() || assignmentSuccessMessage() }}
+    </div>
+
     <div class="row g-3">
-      
       <div class="col-md-6">
         <div class="card border-0 shadow-sm p-3 mb-3">
           <h5 class="fw-bold mb-3 text-success"><i class="bi bi-file-earmark-pdf me-2"></i>Publish Handout</h5>
+          
           <form (ngSubmit)="publishMaterial()">
             <div class="mb-2">
-              <label for="materialFile" class="form-label small fw-bold">PDF Handout File</label>
+              <label for="materialFile" class="form-label small fw-bold">PDF Handout File<span class="text-danger">*</span></label>
               <input
                 type="file"
                 class="form-control form-control-sm"
@@ -114,9 +127,10 @@
       <div class="col-md-6">
         <div class="card border-0 shadow-sm p-3 h-100">
           <h5 class="fw-bold mb-3 text-success"><i class="bi bi-journal-plus me-2"></i>Publish Assignment</h5>
+
           <form (ngSubmit)="publishAssignment()">
             <div class="mb-2">
-              <label for="assignTitle" class="form-label small fw-bold">Title</label>
+              <label for="assignTitle" class="form-label small fw-bold">Title<span class="text-danger">*</span></label>
               <input
                 type="text"
                 class="form-control form-control-sm"
@@ -129,7 +143,7 @@
             </div>
             <div class="row g-2 mb-2">
               <div class="col-sm-6">
-                <label for="assignMarks" class="form-label small fw-bold">Total Marks</label>
+                <label for="assignMarks" class="form-label small fw-bold">Total Marks<span class="text-danger">*</span></label>
                 <input
                   type="number"
                   class="form-control form-control-sm"
@@ -141,7 +155,7 @@
                 >
               </div>
               <div class="col-sm-6">
-                <label for="assignFile" class="form-label small fw-bold">Assignment File</label>
+                <label for="assignFile" class="form-label small fw-bold">Assignment File<span class="text-danger">*</span></label>
                 <input
                   type="file"
                   class="form-control form-control-sm"
@@ -153,7 +167,7 @@
               </div>
             </div>
             <div class="mb-2">
-              <label for="assignDueDate" class="form-label small fw-bold">Due Date & Time</label>
+              <label for="assignDueDate" class="form-label small fw-bold">Due Date & Time<span class="text-danger">*</span></label>
               <input
                 type="datetime-local"
                 class="form-control form-control-sm"

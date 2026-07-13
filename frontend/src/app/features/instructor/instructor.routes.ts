@@ -39,7 +39,12 @@ export const INSTRUCTOR_ROUTES: Routes = [
         path: 'profile',
         loadComponent: () =>
           import('./profile/profile.component').then(m => m.ProfileComponent)
-      }
+      },
+      { 
+  path: 'syllabus/:id', 
+  loadComponent: () => 
+    import('./syllabus-viewer/syllabus-viewer').then(m => m.SyllabusViewerComponent) 
+}
     ]
   }
 ];

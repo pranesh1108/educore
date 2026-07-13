@@ -3,25 +3,50 @@
   <p class="text-muted mb-0">View and update your student account properties.</p>
 </div>
 
-<div class="row g-4">
+<div class="alert alert-success py-2" role="alert" *ngIf="successMessage">
+  {{ successMessage }}
+</div>
+
+<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+
+<div class="text-center py-5" *ngIf="loading">
+  <div class="spinner-border text-primary" role="status"></div>
+  <p class="text-muted small mt-2">Loading your profile details...</p>
+</div>
+
+<div class="row g-4" *ngIf="!loading && profile">
   <div class="col-lg-4">
-    <div class="card border-0 shadow-sm text-center p-4 h-100">
-      <div class="mx-auto bg-light text-primary rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; font-size: 2rem; font-weight: bold; background-color: #f3e8ff !important; color: #6b21a8 !important;">
-        S
+    <div class="card border-0 shadow-sm text-center p-4 h-100 bg-white">
+      <div class="mx-auto text-primary rounded-circle d-flex align-items-center justify-content-center mb-3" 
+           style="width: 80px; height: 80px; font-size: 2rem; font-weight: bold; background-color: #f3e8ff !important; color: #6b21a8 !important;">
+        {{ initials }}
       </div>
-      <h5 class="fw-bold mb-1">student</h5>
-      <p class="text-muted small mb-0">student1@gmail.com</p>
-      
+      <h5 class="fw-bold mb-1 text-dark">{{ profile.name }}</h5>
+      <p class="text-muted small mb-3">{{ profile.email }}</p>
+
+      <div class="border-top pt-3 text-start">
+        <span class="small fw-bold text-muted d-block mb-2"><i class="bi bi-tags me-1 text-purple"></i> My Active Interests</span>
+        <div class="d-flex flex-wrap gap-1" *ngIf="selectedInterests.size > 0; else noInterests">
+          <span *ngFor="let interest of selectedInterests" class="badge bg-purple-light text-purple border rounded-pill py-1.5 px-2.5 small">
+            {{ interest.replace('_', ' ') }}
+          </span>
+        </div>
+        <ng-template #noInterests>
+          <span class="text-muted small italic">No interests selected yet.</span>
+        </ng-template>
       </div>
+    </div>
   </div>
 
   <div class="col-lg-8">
-    <div class="card border-0 shadow-sm p-4 h-100">
-      <h5 class="fw-bold mb-3">Edit Profile Settings</h5>
+    <div class="card border-0 shadow-sm p-4 h-100 bg-white">
+      <h5 class="fw-bold mb-3 text-dark">Edit Profile Settings</h5>
       
       <form (ngSubmit)="saveProfile()">
         <div class="mb-3">
-          <label for="dob" class="form-label small fw-bold">Date of Birth</label>
+          <label for="dob" class="form-label small fw-bold">Date of Birth<span class="text-danger">*</span></label>
           <input
             type="date"
             class="form-control"
@@ -33,21 +58,33 @@
         </div>
 
         <div class="mb-3">
-          <label for="interest" class="form-label small fw-bold">Field of Interest</label>
-          <input
-            type="text"
-            class="form-control"
-            id="interest"
-            name="fieldOfInterest"
-            placeholder="e.g. Artificial Intelligence, Web Development"
-            [(ngModel)]="fieldOfInterest"
-            required
-          >
+          <label class="form-label small fw-bold">Field of Interest <span class="text-danger">*</span></label>
+          <div class="d-flex flex-wrap gap-2 p-2 border rounded bg-light-subtle" style="max-height: 200px; overflow-y: auto;">
+            <button 
+              type="button"
+              *ngFor="let option of interestOptions"
+              class="btn btn-sm rounded-pill py-1.5 px-3 border transition-all text-capitalize d-flex align-items-center gap-1.5"
+              [class.btn-purple]="selectedInterests.has(option)"
+              [class.bg-white]="!selectedInterests.has(option)"
+              [class.text-dark]="!selectedInterests.has(option)"
+              (click)="toggleInterest(option)"
+            >
+              <i class="bi bi-check-lg" *ngIf="selectedInterests.has(option)"></i>
+              {{ option.replace('_', ' ') }}
+            </button>
+          </div>
+          <div class="form-text small text-muted">Select one or more academic sub-fields above.</div>
         </div>
 
         <div class="d-flex justify-content-end mt-4">
-          <button type="submit" class="btn btn-primary px-4 purple-btn" style="background-color: #7c3aed; border-color: #7c3aed;">
-            Save Changes
+          <button 
+            type="submit" 
+            class="btn btn-purple px-4 shadow-sm" 
+            style="background-color: #7c3aed; color: white; border: none;"
+            [disabled]="saving || !dateOfBirth || selectedInterests.size === 0"
+          >
+            <span class="spinner-border spinner-border-sm me-2" *ngIf="saving"></span>
+            {{ saving ? 'Saving Changes...' : 'Save Changes' }}
           </button>
         </div>
       </form>

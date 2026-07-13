@@ -98,7 +98,7 @@ export class CoursesComponent implements OnInit {
 
   private loadInstructors(): void {
     this.loadingInstructors = true;
-    this.registrarApi.filterInstructors({ status: 'ACTIVE', sortBy: 'name', sortDir: 'asc' }).subscribe({
+    this.registrarApi.filterInstructors({  sortBy: 'name', sortDir: 'asc' }).subscribe({
       next: (instructors) => {
         this.instructors = instructors;
         this.loadingInstructors = false;

@@ -5,7 +5,6 @@ export interface StudentProfile {
   dateOfBirth?: string;
   educationLevel?: string;
   fieldOfInterest?: string;
-  status: string;
   userId: number;
   name: string;
   email: string;
@@ -29,7 +28,8 @@ export interface Enrollment {
   studentName: string;
   enrollmentNumber: string;
   enrolledAt: string;
-  status: string;
+  startDate?: string | Date;
+  endDate?: string | Date;
 }
 
 export interface CourseMaterial {
@@ -101,7 +101,6 @@ export interface Exam {
   roomLocation?: string;
   roomNumber?: number;
   createdAt: string;
-  // Changed: Removed status property
 }
 
 export interface ExamResult {

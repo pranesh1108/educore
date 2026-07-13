@@ -20,9 +20,18 @@ export class ProfileComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  // Form fields
   dateOfBirth = '';
-  fieldOfInterest = '';
+  
+  // Track selected academic topics using a Set collection structure
+  selectedInterests: Set<string> = new Set<string>();
+
+  // Mirroring the exact Enum options layout structure matching your operational needs
+  readonly interestOptions: string[] = [
+    'JAVA', 'PYTHON', 'SPRING_BOOT', 'MACHINE_LEARNING', 'DATA_SCIENCE', 
+    'WEB_DEVELOPMENT', 'DATABASE', 'DEVOPS', 'CLOUD_COMPUTING', 
+    'CYBERSECURITY', 'ARTIFICIAL_INTELLIGENCE', 'MOBILE_DEVELOPMENT', 
+    'ALGORITHMS', 'NETWORKING', 'SOFTWARE_TESTING'
+  ];
 
   constructor(private studentApi: StudentApiService) {}
 
@@ -39,7 +48,21 @@ export class ProfileComponent implements OnInit {
       next: (profile) => {
         this.profile = profile;
         this.dateOfBirth = profile.dateOfBirth || '';
-        this.fieldOfInterest = profile.fieldOfInterest || '';
+        this.selectedInterests.clear();
+        
+        // Handle incoming comma-separated strings or pre-parsed collections safely
+        if (profile.fieldOfInterest) {
+          const items = typeof profile.fieldOfInterest === 'string'
+            ? profile.fieldOfInterest.split(',')
+            : profile.fieldOfInterest;
+            
+          items.forEach((item: string) => {
+            const normalized = item.trim().toUpperCase().replace(' ', '_');
+            if (this.interestOptions.includes(normalized)) {
+              this.selectedInterests.add(normalized);
+            }
+          });
+        }
         this.loading = false;
       },
       error: (err) => {
@@ -49,19 +72,40 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  toggleInterest(interest: string): void {
+    if (this.selectedInterests.has(interest)) {
+      this.selectedInterests.delete(interest);
+    } else {
+      this.selectedInterests.add(interest);
+    }
+  }
+
   saveProfile(): void {
+    if (!this.dateOfBirth || this.selectedInterests.size === 0) return;
+    
     this.saving = true;
     this.errorMessage = '';
     this.successMessage = '';
 
+    // Convert the tracking collection back to a standard payload delivery format string
+    const interestsPayload = Array.from(this.selectedInterests).join(',');
+
     this.studentApi.updateProfile({
       dateOfBirth: this.dateOfBirth,
-      fieldOfInterest: this.fieldOfInterest
+      fieldOfInterest: interestsPayload
     }).subscribe({
-      next: (profile) => {
-        this.profile = profile;
+      next: (updatedProfile) => {
+        this.profile = {
+          ...updatedProfile,
+          name: this.profile?.name || updatedProfile.name,
+          email: this.profile?.email || updatedProfile.email
+        };
         this.successMessage = 'Profile updated successfully!';
         this.saving = false;
+        
+        setTimeout(() => {
+          this.successMessage = '';
+        }, 3000);
       },
       error: (err) => {
         this.errorMessage = err?.error?.message || err?.message || 'Unable to update profile.';
@@ -74,6 +118,7 @@ export class ProfileComponent implements OnInit {
     if (!this.profile?.name) return '?';
     return this.profile.name
       .split(' ')
+      .filter(p => p.length > 0)
       .map(p => p.charAt(0))
       .join('')
       .slice(0, 2)

@@ -8,7 +8,6 @@ import com.cts.dto.LoginDTO;
 import com.cts.dto.LoginResponseDTO;
 import com.cts.dto.RegistrationInputDTO;
 import com.cts.dto.RegistrationOutputDTO;
-import com.cts.dto.RoleIdentityDTO;
 import com.cts.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;

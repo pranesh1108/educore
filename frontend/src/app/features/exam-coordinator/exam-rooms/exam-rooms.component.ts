@@ -133,8 +133,8 @@ export class ExamRoomsComponent implements OnInit {
         this.allocateExamId = null;
         this.allocateRoomId = null;
         this.selectedExamId = allocation.examId;
-        this.loadData(); // reload rooms dropdown (since status is updated)
-        this.loadAllocationsForExam(); // reload allocations view
+        this.loadData(); 
+        this.loadAllocationsForExam();
         this.submitting = false;
       },
       error: (err) => {

@@ -15,14 +15,12 @@ public class RegistrationInputDTO {
     private String email;
 
     @NotBlank(message = "Name is required")
-    // UPDATED: Restrained maximum limit threshold explicitly to 25 characters
     @Size(min = 2, max = 25, message = "Name must be between 2 and 25 characters")
     @Pattern(regexp = "^[a-zA-Z .'\\-]{2,25}$", message = "Name must contain only letters, spaces, apostrophes or hyphens")
     @Schema(example = "John Doe", description = "Full name containing only valid characters")
     private String name;
 
     @NotBlank(message = "Password is required")
-    // UPDATED: Enforced length boundaries (8 to 20) and complex lookahead character composition requirements
     @Size(min = 8, max = 20, message = "Password length must be between 8 and 20 characters")
     @Pattern(
             regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!_\\-*./?]).{8,20}$",

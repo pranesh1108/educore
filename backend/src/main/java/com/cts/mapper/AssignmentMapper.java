@@ -1,12 +1,10 @@
 package com.cts.mapper;
 
 import org.springframework.stereotype.Component;
-
 import com.cts.dto.AssignmentFileOutputDTO;
 import com.cts.dto.AssignmentOutputDTO;
 import com.cts.entity.Assignment;
 import com.cts.entity.AssignmentFile;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +15,7 @@ public class AssignmentMapper {
         List<AssignmentFileOutputDTO> fileDTOs = null;
         if (files != null) {
             fileDTOs = files.stream()
-                    .map(this::toAssignmentFileOutputDTO) // <--- Calling your file mapper right here!
+                    .map(this::toAssignmentFileOutputDTO)
                     .collect(Collectors.toList());
         }
         return AssignmentOutputDTO.builder()

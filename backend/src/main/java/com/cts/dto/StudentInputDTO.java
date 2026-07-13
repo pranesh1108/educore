@@ -16,10 +16,12 @@ public class StudentInputDTO {
     private LocalDate dateOfBirth;
 
 
-    @Size(min = 2, max = 150, message = "Field of interest must be between 2 and 150 characters")
-    @Pattern(
-        regexp = "^[a-zA-Z0-9 ,.'&()\\-]{2,150}$",
-        message = "Field of interest contains invalid characters"
-    )
+
+    @Pattern(regexp = "^[a-zA-Z_, ]*$", message = "Field of interest contains invalid characters")
     private String fieldOfInterest;
+
+
+    private String name;
+    private String email;
+
 }

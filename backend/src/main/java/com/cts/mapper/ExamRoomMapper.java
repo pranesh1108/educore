@@ -25,7 +25,6 @@ public class ExamRoomMapper {
                 .roomNumber(room.getRoomNumber())
                 .examId(room.getExam().getExamId())
                 .examTitle(room.getExam().getTitle())
-                .term(room.getExam().getTerm())
                 .examDate(room.getExam().getExamDate())
                 .studentsAllocated(studentDTOs.size())
                 .students(studentDTOs)

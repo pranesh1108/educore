@@ -16,7 +16,6 @@ public class UserResponseDTO {
     private String name;
     private Role role;
     private Long phone;
-    private String status;
     private LocalDate createdAt;
     private LocalDateTime lastLoginAt;
 }

@@ -35,10 +35,6 @@ public class ExamInputDTO {
     @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
 
-    @NotNull(message = "Academic term is required")
-    @Schema(example = "SPRING_2026")
-    private AcademicTerm term;
-
     @NotNull(message = "Exam date is required")
     @Future(message = "Exam date must be in the future")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")

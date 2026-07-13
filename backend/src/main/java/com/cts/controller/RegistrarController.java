@@ -4,18 +4,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import com.cts.dto.*;
 import com.cts.exception.BusinessException;
 import com.cts.service.RegistrarAcademicService;
-
 import java.util.List;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-
 import java.util.Set;
 
 @RestController
@@ -23,7 +19,7 @@ import java.util.Set;
 @RequestMapping("/api/v1/registrar")
 @PreAuthorize("hasRole('REGISTRAR')")
 @Tag(name = "Registrar", description = "Course creation and filter endpoints")
-public class    RegistrarController {
+public class RegistrarController {
 
     private final RegistrarAcademicService academicService;
 
@@ -33,8 +29,6 @@ public class    RegistrarController {
             Set.of("name", "experience", "status");
     private static final Set<String> SORT_DIRECTIONS = Set.of("asc", "desc");
 
-
-    //COURSES
 
     @Operation(
             summary = "Get all configured courses",
@@ -57,8 +51,6 @@ public class    RegistrarController {
                 academicService.provisionNewCourse(createDTO), HttpStatus.CREATED);
     }
 
-    //FILTER
-
     @Operation(
             summary = "Filter students or instructors",
             description = "Filter by role (student or instructor) with optional fields. "
@@ -78,13 +70,11 @@ public class    RegistrarController {
             @RequestParam(required = false, defaultValue = "name") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortDir) {
 
-        // Validate sortDir
         if (!SORT_DIRECTIONS.contains(sortDir.toLowerCase())) {
             throw new BusinessException(
                     "Invalid sortDir '" + sortDir + "'. Allowed values: asc, desc.");
         }
 
-        // Validate sortBy based on role
         if ("student".equalsIgnoreCase(role)
                 && !STUDENT_SORT_FIELDS.contains(sortBy.toLowerCase())) {
             throw new BusinessException(

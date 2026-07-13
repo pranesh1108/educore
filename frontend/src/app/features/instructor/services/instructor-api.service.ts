@@ -82,4 +82,11 @@ export class InstructorApiService {
   getMyExams(): Observable<Exam[]> {
     return this.http.get<Exam[]>(`${this.baseUrl}/my-exams`);
   }
+
+  getCourseSyllabus(courseId: number) {
+    return this.http.get(`http://localhost:9098/api/v1/courses/${courseId}/syllabus`, {
+      responseType: 'blob'
+    });
+  }
+
 }

@@ -19,5 +19,6 @@ public class EnrollmentOutputDTO {
     private String studentName;
     private String enrollmentNumber;
     private LocalDate enrolledAt;
-    private String status;
+    private LocalDate startDate;
+    private LocalDate endDate;
 }

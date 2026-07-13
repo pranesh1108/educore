@@ -8,7 +8,7 @@ import java.util.Optional;
 @Repository
 public interface RegistrarRepository extends JpaRepository<Registrar, Long> {
 
-    boolean existsByUserUserId(Long userId);
+
 
     Optional<Registrar> findByUserUserId(Long userId);
 

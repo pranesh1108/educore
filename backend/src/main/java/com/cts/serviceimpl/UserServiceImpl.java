@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cts.annotation.AuditEvent;
 import com.cts.dto.*;
 import com.cts.entity.*;
@@ -13,7 +12,6 @@ import com.cts.exception.*;
 import com.cts.repository.*;
 import com.cts.service.UserService;
 import com.cts.util.JwtUtil;
-
 import lombok.AllArgsConstructor;
 
 @Service
@@ -32,7 +30,6 @@ public class UserServiceImpl implements UserService {
         return email != null && email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
     }
 
-    // REGISTER
     @Override
     @Transactional
     @AuditEvent(
@@ -65,7 +62,6 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncoder.encode(registrationInputDTO.getPassword()))
                 .role(verifiedRole)
                 .phone(registrationInputDTO.getPhone())
-                .status("ACTIVE") // Ensure status is assigned explicitly upon persistence
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -74,12 +70,10 @@ public class UserServiceImpl implements UserService {
             case INSTRUCTOR -> instructorRepository.save(
                     Instructor.builder()
                             .user(savedUser)
-                            .status("ACTIVE")
                             .build());
             case STUDENT -> studentRepository.save(
                     Student.builder()
                             .user(savedUser)
-                            .status("ACTIVE")
                             .build());
             case REGISTRAR -> registrarRepository.save(
                     Registrar.builder()
@@ -97,12 +91,11 @@ public class UserServiceImpl implements UserService {
                 .name(savedUser.getName())
                 .role(savedUser.getRole())
                 .phone(savedUser.getPhone())
-                .status(savedUser.getStatus())
                 .createdAt(savedUser.getCreatedAt())
                 .build();
     }
 
-    // LOGIN
+
     @Override
     @AuditEvent(
             eventName    = "USER_LOGGED_IN",
@@ -117,18 +110,13 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findByEmail(loginDTO.getEmail());
         if (user == null) {
-            // FIXED: Intercepts bad credentials with dedicated custom exception
             throw new InvalidCredentialsException("Invalid credentials provided.");
         }
 
         if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-            // FIXED: Intercepts bad credentials with dedicated custom exception
             throw new InvalidCredentialsException("Invalid credentials provided.");
         }
 
-        if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
-            throw new BusinessException("User account is not active.");
-        }
 
         user.setLastLoginAt(LocalDateTime.now());
         userRepository.save(user);
@@ -143,69 +131,5 @@ public class UserServiceImpl implements UserService {
                 .phone(user.getPhone())
                 .token(token)
                 .build();
-    }
-
-    // GET ROLE IDENTITY
-    @Override
-    @AuditEvent(
-            eventName    = "ROLE_IDENTITY_FETCHED",
-            eventType    = "READ",
-            eventMessage = "Role identity fetched by email"
-    )
-    public RoleIdentityDTO getRoleIdentity(String role, String email) {
-
-        if (!isValidEmail(email)) {
-            throw new InvalidEmailException("Invalid email format");
-        }
-
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UserNotFoundException("User not found with email: " + email);
-        }
-
-        return switch (role.toLowerCase()) {
-            case "registrar" -> {
-                Registrar r = registrarRepository.findByUserEmail(email)
-                        .orElseThrow(() -> new ResourceNotFoundException(
-                                "Registrar not found for email: " + email));
-                yield RoleIdentityDTO.builder()
-                        .roleId(r.getRegistrarId())
-                        .userId(r.getUser().getUserId())
-                        .email(email)
-                        .build();
-            }
-            case "student" -> {
-                Student s = studentRepository.findByUser_Email(email)
-                        .orElseThrow(() -> new ResourceNotFoundException(
-                                "Student not found for email: " + email));
-                yield RoleIdentityDTO.builder()
-                        .roleId(s.getStudentId())
-                        .userId(s.getUser().getUserId())
-                        .email(email)
-                        .build();
-            }
-            case "instructor" -> {
-                Instructor i = instructorRepository.findByUser_Email(email)
-                        .orElseThrow(() -> new ResourceNotFoundException(
-                                "Instructor not found for email: " + email));
-                yield RoleIdentityDTO.builder()
-                        .roleId(i.getInstructorId())
-                        .userId(i.getUser().getUserId())
-                        .email(email)
-                        .build();
-            }
-            case "exam-coordinator" -> {
-                ExamCoordinator ec = examCoordinatorRepository.findByUser_Email(email)
-                        .orElseThrow(() -> new ResourceNotFoundException(
-                                "Exam Coordinator not found for email: " + email));
-                yield RoleIdentityDTO.builder()
-                        .roleId(ec.getCoordinatorId())
-                        .userId(ec.getUser().getUserId())
-                        .email(email)
-                        .build();
-            }
-            default -> throw new BusinessException(
-                    "Invalid role '" + role + "'. Valid roles: registrar, student, instructor, exam-coordinator");
-        };
     }
 }

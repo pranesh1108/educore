@@ -72,33 +72,16 @@
           </div>
         </div>
 
-        <div class="row g-2 mb-3">
-          <div class="col-sm-6">
-            <label for="termSelect" class="form-label small fw-bold">Academic Term</label>
-            <select
-              class="form-select form-select-sm"
-              id="termSelect"
-              [(ngModel)]="term"
-              name="term"
-              required
-            >
-              <option value="SPRING_2026">Spring 2026</option>
-              <option value="FALL_2026">Fall 2026</option>
-              <option value="WINTER_2026">Winter 2026</option>
-              <option value="SUMMER_2026">Summer 2026</option>
-            </select>
-          </div>
-          <div class="col-sm-6">
-            <label for="examDate" class="form-label small fw-bold">Date & Time</label>
-            <input
-              type="datetime-local"
-              class="form-control form-control-sm"
-              id="examDate"
-              [(ngModel)]="examDateInput"
-              name="examDate"
-              required
-            >
-          </div>
+        <div class="mb-3">
+          <label for="examDate" class="form-label small fw-bold">Date & Time</label>
+          <input
+            type="datetime-local"
+            class="form-control form-control-sm"
+            id="examDate"
+            [(ngModel)]="examDateInput"
+            name="examDate"
+            required
+          >
         </div>
 
         <div class="row g-2 mb-4">
@@ -155,19 +138,10 @@
   <div class="col-md-7">
     <div class="card border-0 shadow-sm p-3 mb-3">
       <div class="row g-2">
-        <div class="col-sm-6">
+        <div class="col-12">
           <select class="form-select form-select-sm" [(ngModel)]="filterCourseId" (change)="searchExams()">
             <option [ngValue]="null">All Courses</option>
             <option *ngFor="let c of courses" [ngValue]="c.courseId">{{ c.title }}</option>
-          </select>
-        </div>
-        <div class="col-sm-6">
-          <select class="form-select form-select-sm" [(ngModel)]="filterTerm" (change)="searchExams()">
-            <option value="">All Terms</option>
-            <option value="SPRING_2026">Spring 2026</option>
-            <option value="FALL_2026">Fall 2026</option>
-            <option value="WINTER_2026">Winter 2026</option>
-            <option value="SUMMER_2026">Summer 2026</option>
           </select>
         </div>
       </div>
@@ -181,7 +155,8 @@
             <tr>
               <th>Course & Exam</th>
               <th>Date & Time</th>
-              <th>Actions</th> </tr>
+              <th>Actions</th>
+            </tr>
           </thead>
           <tbody>
             <tr *ngFor="let ex of exams">

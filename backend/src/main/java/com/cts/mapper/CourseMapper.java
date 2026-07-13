@@ -1,26 +1,18 @@
 package com.cts.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
-
 import com.cts.dto.CourseMaterialFileOutputDTO;
-import com.cts.dto.CourseContentDTO;
 import com.cts.dto.CourseOutputDTO;
 import com.cts.entity.Course;
 import com.cts.entity.CourseMaterialFile;
-
 import lombok.AllArgsConstructor;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
 public class CourseMapper {
 
-    private final ObjectMapper objectMapper;
 
     public CourseOutputDTO toCourseOutputDTO(Course course) {
         return CourseOutputDTO.builder()

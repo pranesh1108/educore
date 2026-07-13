@@ -12,8 +12,6 @@ public class StudentOutputDTO {
     private Long studentId;
     private LocalDate dateOfBirth;
     private String fieldOfInterest;
-    private String status;
-
     private Long userId;
     private String name;
     private String email;

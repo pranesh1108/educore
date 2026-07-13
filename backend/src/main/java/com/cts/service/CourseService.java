@@ -12,6 +12,5 @@ public interface CourseService {
 
     CourseMaterialFileOutputDTO publishCourseMaterial(Long courseId, MultipartFile file, String textContent);
 
-    // ADDED: New unified endpoint contract method
     InstructorResourceResponseDTO getCourseResources(Long courseId);
 }

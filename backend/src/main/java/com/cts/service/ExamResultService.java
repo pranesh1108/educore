@@ -9,7 +9,7 @@ public interface ExamResultService {
 
     ExamResultOutputDTO publishResult(ExamResultInputDTO inputDTO);
 
-    // Removed explicit Long studentId argument
+
     List<ExamResultOutputDTO> getResultsByStudent();
 
     List<ExamRoomAllocationStudentDTO> getEnrolledStudentsForExam(Long examId);

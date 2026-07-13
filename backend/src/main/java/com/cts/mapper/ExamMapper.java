@@ -20,7 +20,6 @@ public class ExamMapper {
                 .examId(exam.getExamId())
                 .title(exam.getTitle())
                 .description(exam.getDescription())
-                .term(exam.getTerm())
                 .examDate(exam.getExamDate())
                 .durationMinutes(exam.getDurationMinutes())
                 .totalMarks(exam.getTotalMarks())

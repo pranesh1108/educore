@@ -21,9 +21,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     int countByInstructor_InstructorIdIsNotNull();
 
-    // ❌ REMOVED: findByStatus(String status) because Course entity lacks a status column field
-
-    // Combined filter
     @Query("SELECT c FROM Course c WHERE " +
             "(:title IS NULL OR LOWER(c.title) LIKE LOWER(CONCAT('%', :title, '%')))")
     Page<Course> filterCourses(

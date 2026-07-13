@@ -37,7 +37,6 @@ export class UsersComponent implements OnInit {
   constructor(private fb: FormBuilder, private registrarApi: RegistrarApiService) {
     this.filterForm = this.fb.group({
       name: [''],
-      status: [''],
       fieldOfInterest: [''],
       enrolledCourse: [''],
       skill: [''],
@@ -67,7 +66,6 @@ export class UsersComponent implements OnInit {
 
     const params = {
       name: raw.name || undefined,
-      status: raw.status || undefined,
       fieldOfInterest: this.role === 'student' ? (raw.fieldOfInterest || undefined) : undefined,
       enrolledCourse: this.role === 'student' ? (raw.enrolledCourse || undefined) : undefined,
       skill: this.role === 'instructor' ? (raw.skill || undefined) : undefined,
@@ -99,7 +97,7 @@ export class UsersComponent implements OnInit {
 
   resetFilters(): void {
     this.filterForm.reset({
-      name: '', status: '', fieldOfInterest: '', enrolledCourse: '',
+      name: '', fieldOfInterest: '', enrolledCourse: '',
       skill: '', experience: '', sortBy: 'name', sortDir: 'asc'
     });
     this.search();

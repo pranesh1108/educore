@@ -14,7 +14,6 @@ public class ExamOutputDTO {
     private Long examId;
     private String title;
     private String description;
-    private AcademicTerm term;
 
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm a")
     private LocalDateTime examDate;

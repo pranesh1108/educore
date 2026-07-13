@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 public class InstructorInputDTO {
 
-    // Changed from single enum to a List collection
+
     @NotEmpty(message = "At least one skill must be provided")
     private List<InstructorSkill> skills;
 

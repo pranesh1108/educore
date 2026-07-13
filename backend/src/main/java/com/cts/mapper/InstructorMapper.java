@@ -10,10 +10,9 @@ public class InstructorMapper {
     public InstructorOutputDTO toInstructorOutputDTO(Instructor instructor) {
         return InstructorOutputDTO.builder()
                 .instructorId(instructor.getInstructorId())
-                .skills(instructor.getSkills()) // Maps collection safely
+                .skills(instructor.getSkills())
                 .experience(instructor.getExperience())
                 .dateOfBirth(instructor.getDateOfBirth())
-                .status(instructor.getStatus())
                 .userId(instructor.getUser().getUserId())
                 .name(instructor.getUser().getName())
                 .email(instructor.getUser().getEmail())

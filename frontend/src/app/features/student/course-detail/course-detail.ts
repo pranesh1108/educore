@@ -4,11 +4,11 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; 
 import { StudentApiService } from '../services/student-api.service';
 import { LoaderComponent } from '../../../shared/components/loader/loader.component';
+import { forkJoin } from 'rxjs'; 
 
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-  // We don't need SafeUrlPipe here anymore!
   imports: [CommonModule, RouterModule, LoaderComponent],
   templateUrl: './course-detail.html',
   styleUrl: './course-detail.css'
@@ -21,7 +21,6 @@ export class CourseDetailComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  // Variables for the secure PDF
   syllabusPdfUrl: SafeResourceUrl | null = null;
   pdfLoading = false;
   pdfError = false;
@@ -30,7 +29,7 @@ export class CourseDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private studentApi: StudentApiService,
-    private sanitizer: DomSanitizer // Injected to make the PDF URL safe
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -42,15 +41,31 @@ export class CourseDetailComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
-    this.studentApi.getCoursesCatalogue({ title: undefined, topic: undefined }).subscribe({
-      next: (response) => {
-        const matchingCourse = (response.content || []).find((c: any) => c.courseId === this.courseId);
+    // ── USE forkJoin TO FETCH CATALOGUE AND ENROLLMENTS TOGETHER ──
+    forkJoin({
+      catalogue: this.studentApi.getCoursesCatalogue({ title: undefined, topic: undefined }),
+      myCourses: this.studentApi.getMyCourses()
+    }).subscribe({
+      next: (data) => {
+        const matchingCourse = (data.catalogue?.content || []).find((c: any) => c.courseId === this.courseId);
         
         if (matchingCourse) {
           this.course = matchingCourse;
-          // If the backend says a syllabus exists, download it securely!
+          
           if (this.course.syllabusPath) {
             this.fetchSecureSyllabus();
+          }
+
+          // 🔍 CHECK IF ALREADY ENROLLED
+          const userEnrollments = data.myCourses || [];
+          const alreadyEnrolled = userEnrollments.some((e: any) => 
+            (e.courseId === this.courseId) || (e.course?.courseId === this.courseId)
+          );
+
+          if (alreadyEnrolled) {
+            // Set success state so template hides/disables the button instantly
+            this.successMessage = 'Enrollment done successfully';
+            this.submitting = true; 
           }
         } else {
           this.errorMessage = 'The requested course track properties could not be resolved.';
@@ -64,7 +79,6 @@ export class CourseDetailComponent implements OnInit {
     });
   }
 
-  // This downloads the PDF using your JWT Token, bypassing the 401 error
   fetchSecureSyllabus(): void {
     this.pdfLoading = true;
     this.studentApi.getCourseSyllabus(this.courseId).subscribe({
@@ -82,18 +96,27 @@ export class CourseDetailComponent implements OnInit {
   }
 
   registerAndEnroll(): void {
+    if (this.submitting) return;
+    
     this.submitting = true;
     this.errorMessage = '';
+    this.successMessage = '';
     
     this.studentApi.enrollInCourse(this.courseId).subscribe({
-      next: () => {
-        this.successMessage = 'Successfully registered! Loading student layout command center...';
+      next: (response) => {
+        this.successMessage = 'Enrollment done successfully';
+        this.errorMessage = '';
+        this.submitting = true;
+
         setTimeout(() => {
-          this.router.navigate(['/student/courses']);
-        }, 1500);
+          this.router.navigate(['/student/courses'], { 
+            state: { activeTab: 'enrolled' } 
+          });
+        }, 2000);
       },
       error: (err) => {
-        this.errorMessage = err?.error?.message || 'Enrollment transaction processing failed.';
+        console.error('Database transaction registration failure details:', err);
+        this.errorMessage = err?.error?.message || err?.message || 'Enrollment transaction processing failed.';
         this.submitting = false;
       }
     });

@@ -12,14 +12,10 @@ public interface StudentService {
 
     StudentOutputDTO updateStudentProfile(StudentInputDTO inputDTO);
     StudentOutputDTO getStudentProfile();
-    List<RegistrarCourseResponseDTO> getAllCourses();
-
     Page<RegistrarCourseResponseDTO> filterCourses(String title, String topic, org.springframework.data.domain.Pageable pageable);
     EnrollmentOutputDTO enrollInCourse(Long courseId);
     List<EnrollmentOutputDTO> getMyEnrolledCourses();
-
     CourseContentResponseDTO getCourseContent(Long courseId);
-
     byte[] downloadCourseMaterialFile(Long fileId);
     String getCourseMaterialFileName(Long fileId);
     byte[] downloadAssignmentFile(Long fileId);
@@ -27,7 +23,6 @@ public interface StudentService {
     SubmissionOutputDTO submitAssignment(Long assignmentId, MultipartFile file);
     List<SubmissionOutputDTO> getMySubmissions();
     List<ExamOutputDTO> getMyExams();
-
     Resource getSyllabusResource(Long courseId);
 
 }

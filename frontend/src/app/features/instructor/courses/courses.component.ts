@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { RouterModule } from '@angular/router';
 import { InstructorApiService } from '../services/instructor-api.service';
 import { InstructorCourse } from '../models/instructor.model';
 import { Enrollment } from '../../student/models/student.model';
@@ -9,7 +9,7 @@ import { LoaderComponent } from '../../../shared/components/loader/loader.compon
 @Component({
   selector: 'app-instructor-courses',
   standalone: true,
-  imports: [CommonModule, LoaderComponent],
+  imports: [CommonModule, LoaderComponent, RouterModule],
   templateUrl: './courses.component.html',
   styleUrl: './courses.component.css'
 })
@@ -44,10 +44,10 @@ export class CoursesComponent implements OnInit {
       error: (err) => {
         const errorMsg = err?.error?.message || err?.message || '';
 
-        // ── SUPPRESS EMPTY COURSE ERROR BANNER ──
+        // Suppress empty course notification arrays
         if (errorMsg.includes('No courses assigned') || err?.status === 404) {
           this.courses = [];
-          this.errorMessage = ''; // Keeps the banner invisible, letting your template's empty state handle it
+          this.errorMessage = '';
         } else {
           this.errorMessage = errorMsg || 'Failed to load assigned courses.';
         }
@@ -69,7 +69,17 @@ export class CoursesComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.errorMessage = err?.error?.message || err?.message || 'Failed to load enrolled students list.';
+        const subErrorMsg = err?.error?.message || err?.message || '';
+        
+        // ── FIX: INTERCEPT 404 ROSTER RUNTIME RESTRICTIONS ──
+        // If the backend responds with a 404 error or states that no details/enrollments exist,
+        // it simply means the student roster is empty. Treat it as a successful empty array!
+        if (err?.status === 404 || subErrorMsg.includes('No details available') || subErrorMsg.includes('not found')) {
+          this.enrolledStudents = [];
+          this.errorMessage = ''; // Suppress the banner error entirely
+        } else {
+          this.errorMessage = subErrorMsg || 'Failed to load enrolled students list.';
+        }
         this.studentsLoading = false;
         this.loading = false;
       }

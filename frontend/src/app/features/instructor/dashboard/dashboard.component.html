@@ -12,10 +12,10 @@
 </div>
 
 <ng-container *ngIf="!loading && profile">
-  <!-- ── REMOVED: Top row containing the 3 summary cards (Account Status, Assigned Courses, Upcoming Exams) ── -->
+  
 
   <div class="row g-3">
-    <!-- Card 1: Assigned Courses with count -->
+   
     <div class="col-md-6 col-lg-4">
       <a routerLink="/instructor/courses" class="text-decoration-none">
         <div class="card border-0 shadow-sm h-100 quick-link bg-white">
@@ -29,7 +29,6 @@
       </a>
     </div>
 
-    <!-- Card 2: Publish Handouts -->
     <div class="col-md-6 col-lg-4">
       <a routerLink="/instructor/assignments" class="text-decoration-none">
         <div class="card border-0 shadow-sm h-100 quick-link bg-white">
@@ -43,7 +42,6 @@
       </a>
     </div>
 
-    <!-- Card 3: Submissions & Grading -->
     <div class="col-md-6 col-lg-4">
       <a routerLink="/instructor/grading" class="text-decoration-none">
         <div class="card border-0 shadow-sm h-100 quick-link bg-white">
@@ -57,7 +55,6 @@
       </a>
     </div>
 
-    <!-- Card 4: My Exams with count -->
     <div class="col-md-6 col-lg-4">
       <a routerLink="/instructor/exams" class="text-decoration-none">
         <div class="card border-0 shadow-sm h-100 quick-link bg-white">
@@ -71,7 +68,6 @@
       </a>
     </div>
 
-    <!-- Card 5: Edit Profile -->
     <div class="col-md-6 col-lg-4">
       <a routerLink="/instructor/profile" class="text-decoration-none">
         <div class="card border-0 shadow-sm h-100 quick-link bg-white">

@@ -11,8 +11,8 @@
   {{ errorMessage }}
 </div>
 
-<div class="alert alert-success" role="alert" *ngIf="successMessage">
-  {{ successMessage }}
+<div class="alert alert-success fw-bold text-center border-0 shadow-sm" role="alert" *ngIf="successMessage">
+  <i class="bi bi-check-circle-fill me-2"></i>{{ successMessage }}
 </div>
 
 <div class="row g-4" *ngIf="!loading && course">
@@ -35,11 +35,11 @@
         <button 
           class="btn btn-purple w-100 py-2.5 text-white fw-bold shadow-sm" 
           style="background-color: #6b21a8;"
-          [disabled]="submitting"
+          [disabled]="submitting || successMessage"
           (click)="registerAndEnroll()"
         >
-          <span class="spinner-border spinner-border-sm me-2" *ngIf="submitting"></span>
-          Confirm & Register Enrollment
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="submitting && !successMessage"></span>
+          {{ successMessage ? 'Enrollment Completed' : 'Confirm & Register Enrollment' }}
         </button>
       </div>
     </div>

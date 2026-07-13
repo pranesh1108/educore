@@ -41,7 +41,6 @@ export class ResultsComponent implements OnInit {
 
     this.coordinatorApi.searchExams().subscribe({
       next: (exams) => {
-        // Changed: Removed status filter check because status property does not exist on type Exam
         this.exams = exams || [];
         this.loading = false;
       },

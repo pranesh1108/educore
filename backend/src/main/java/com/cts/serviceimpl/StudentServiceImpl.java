@@ -1,24 +1,22 @@
 package com.cts.serviceimpl;
 
-import java.nio.file.Files;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.Resource;    // ── CORRECT SPRING IMPORT ──
-import org.springframework.core.io.UrlResource; // ── CORRECT SPRING IMPORT ──
+import jakarta.transaction.Transactional;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.cts.annotation.AuditEvent;
 import com.cts.dto.*;
 import com.cts.entity.*;
@@ -54,7 +52,6 @@ public class StudentServiceImpl implements StudentService {
     private final FileStorageService fileStorageService;
     private final ExamResultRepository examResultRepository;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private Student getLoggedInStudent() {
         String loggedInEmail = SecurityUtils.getLoggedInEmail();
@@ -72,9 +69,13 @@ public class StudentServiceImpl implements StudentService {
         if (inputDTO.getDateOfBirth() != null) {
             int age = Period.between(inputDTO.getDateOfBirth(), LocalDate.now()).getYears();
             if (age < 18) {
-                throw new BusinessException("Student must be at least 18 years old. Age: " + age);
+                throw new BusinessException("Student must be at least 18 years old.");
+            }
+            if (!inputDTO.getFieldOfInterest().matches("^[a-zA-Z_, ]*$")) {
+                throw new BusinessException("Field of interest contains invalid characters");
             }
         }
+
         student.setDateOfBirth(inputDTO.getDateOfBirth());
         student.setFieldOfInterest(inputDTO.getFieldOfInterest());
         return studentMapper.tostudentOutputDTO(studentRepository.save(student));
@@ -84,20 +85,6 @@ public class StudentServiceImpl implements StudentService {
     @AuditEvent(eventName = "STUDENT_FETCHED", eventType = "READ", eventMessage = "Student details were fetched by context session")
     public StudentOutputDTO getStudentProfile() {
         return studentMapper.tostudentOutputDTO(getLoggedInStudent());
-    }
-
-    @Override
-    @AuditEvent(eventName = "ALL_COURSES_VIEWED_BY_STUDENT", eventType = "READ", eventMessage = "Student viewed all available courses")
-    public List<RegistrarCourseResponseDTO> getAllCourses() {
-        LocalDate today = LocalDate.now();
-
-        List<Course> courses = courseRepository.findAll().stream()
-                .filter(c -> c.getEnrollmentDeadlineDate() == null || !today.isAfter(c.getEnrollmentDeadlineDate()))
-                .collect(Collectors.toList());
-
-        return courses.stream()
-                .map(studentMapper::toRegistrarCourseResponseDTO)
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -119,37 +106,34 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    @AuditEvent(eventName = "STUDENT_ENROLLED", eventType = "CREATE", eventMessage = "Student self-enrolled in a course")
+    @Transactional
     public EnrollmentOutputDTO enrollInCourse(Long courseId) {
         Student student = getLoggedInStudent();
-        Long studentId = student.getStudentId();
+
+        boolean alreadyEnrolled = enrollmentRepository.existsByStudent_StudentIdAndCourse_CourseId(
+                student.getStudentId(), courseId
+        );
+        if (alreadyEnrolled) {
+            throw new EnrollmentException("Database constraint violation: This entry or relationship already exists.");
+        }
 
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + courseId));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
 
-        LocalDate today = LocalDate.now();
-        if (course.getEnrollmentDeadlineDate() != null && today.isAfter(course.getEnrollmentDeadlineDate())) {
-            throw new BusinessException("Enrollment Closed: The deadline date for this course has passed.");
+        if (course.getEnrollmentDeadlineDate() != null && LocalDate.now().isAfter(course.getEnrollmentDeadlineDate())) {
+            throw new EnrollmentException("The registration deadline for this track has passed.");
         }
 
-        List<ExamResultEntity> studentResults = examResultRepository.findByStudent_StudentId(studentId);
-        for (ExamResultEntity result : studentResults) {
-            if (result.getCourse().getCourseId().equals(courseId)) {
-                throw new BusinessException("Enrollment Closed: An exam score has already been published for this course.");
-            }
-        }
+        CourseEnrollment enrollment = new CourseEnrollment();
+        enrollment.setStudent(student);
+        enrollment.setCourse(course);
 
-        if (enrollmentRepository.existsByStudent_StudentIdAndCourse_CourseId(studentId, courseId)) {
-            throw new EnrollmentException("You are already enrolled in course: " + course.getTitle());
-        }
+        enrollment.setEnrolledAt(LocalDate.now());
 
-        String enrollmentNumber = generateEnrollmentNumber(course.getTitle(), studentId);
+        enrollment.setEnrollmentNumber("ENR-" + System.currentTimeMillis());
 
-        CourseEnrollment enrollment = CourseEnrollment.builder()
-                .student(student).course(course)
-                .enrollmentNumber(enrollmentNumber)
-                .enrolledAt(LocalDate.now()).status("ACTIVE").build();
-        return studentMapper.toEnrollmentOutputDTO(enrollmentRepository.save(enrollment));
+        CourseEnrollment saved = enrollmentRepository.save(enrollment);
+        return studentMapper.toEnrollmentOutputDTO(saved);
     }
 
     @Override

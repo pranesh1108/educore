@@ -25,10 +25,6 @@ public class Exam {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "term", nullable = false)
-    private AcademicTerm term;
-
     @Column(name = "exam_date")
     private LocalDateTime examDate;
 

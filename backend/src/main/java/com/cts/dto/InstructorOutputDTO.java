@@ -15,9 +15,7 @@ public class InstructorOutputDTO {
     private List<InstructorSkill> skills;
     private Integer experience;
     private LocalDate dateOfBirth;
-    private String status;
 
-    // From linked User
     private Long userId;
     private String name;
     private String email;

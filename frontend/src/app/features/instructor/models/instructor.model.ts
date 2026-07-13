@@ -41,7 +41,6 @@ export interface InstructorProfile {
   skills: InstructorSkill[];
   experience?: number;
   dateOfBirth?: string;
-  status: string;
   userId: number;
   name: string;
   email: string;
@@ -62,10 +61,10 @@ export interface InstructorCourse {
   duration: string;
   prerequisite: Prerequisite;
   courseContent: CourseContent[];
-  status: string;
   isPublished: boolean;
   instructorId: number;
   instructorName: string;
+  syllabusPath?: string;
 }
 
 export interface InstructorResourceResponse {

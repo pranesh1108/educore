@@ -24,9 +24,6 @@ public class Student {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "field_of_interest", length = 150)
+    @Column(name = "field_of_interest", length = 1000)
     private String fieldOfInterest;
-
-    @Column(name = "status", nullable = false)
-    private String status;
 }

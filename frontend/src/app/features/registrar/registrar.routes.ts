@@ -24,6 +24,14 @@ export const REGISTRAR_ROUTES: Routes = [
         path: 'users',
         loadComponent: () =>
           import('./users/users.component').then(m => m.UsersComponent)
+<<<<<<< HEAD
+=======
+      },
+      {
+        path: 'audit-logs',
+        loadComponent: () =>
+            import('../shared-features/audit-log/audit-log.component').then(m => m.AuditLogComponent)
+>>>>>>> 37751a7 (update the main code)
       }
     ]
   }

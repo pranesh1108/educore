@@ -1,1 +1,16 @@
 
+<<<<<<< HEAD
+=======
+.notification-hub-wrapper {
+    display: inline-block;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+.transition-all {
+    transition: all 0.2s ease-in-out;
+}
+.list-group-item-action:hover {
+    background-color: #f8fafc !important;
+}
+>>>>>>> 37751a7 (update the main code)

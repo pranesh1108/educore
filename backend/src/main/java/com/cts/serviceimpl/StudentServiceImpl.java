@@ -141,7 +141,13 @@ public class StudentServiceImpl implements StudentService {
     public List<EnrollmentOutputDTO> getMyEnrolledCourses() {
         Student student = getLoggedInStudent();
         List<CourseEnrollment> enrollments = enrollmentRepository.findByStudent_StudentId(student.getStudentId());
+<<<<<<< HEAD
         if (enrollments.isEmpty()) throw new EnrollmentException("You are not enrolled in any courses yet.");
+=======
+        if (enrollments.isEmpty()) {
+            return new java.util.ArrayList<>();
+        }
+>>>>>>> 37751a7 (update the main code)
         return enrollments.stream().map(studentMapper::toEnrollmentOutputDTO).collect(Collectors.toList());
     }
 

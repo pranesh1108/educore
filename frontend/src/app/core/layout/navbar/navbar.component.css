@@ -1,1 +1,12 @@
 
+<<<<<<< HEAD
+=======
+.style-pointer {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.list-group-item-action:hover {
+    background-color: #f1f5f9 !important;
+}
+>>>>>>> 37751a7 (update the main code)

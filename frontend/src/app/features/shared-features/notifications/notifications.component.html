@@ -1,0 +1,36 @@
+<div class="position-relative notification-hub-wrapper">
+
+    <button class="btn btn-link nav-link position-relative border-0 shadow-none p-2" (click)="toggleDropdown()">
+        <i class="bi bi-bell text-dark fs-4"></i>
+        <span *ngIf="unreadCount > 0" class="position-absolute top-1 start-75 translate-middle badge rounded-pill bg-danger font-monospace text-center small" style="font-size: 0.65rem;">
+      {{ unreadCount }}
+    </span>
+    </button>
+
+    <div *ngIf="isOpen" class="card shadow border dropdown-menu-end d-block position-absolute mt-2 p-0 rounded-3 overflow-hidden" style="width: 340px; right: 0; z-index: 1050; max-height: 420px; font-size: 0.85rem;">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+            <span class="fw-bold text-dark"><i class="bi bi-bell-fill me-1 text-purple" style="color:#6b21a8;"></i>Notifications Center</span>
+            <span class="badge bg-purple text-white small" style="background-color: #6b21a8;">{{ unreadCount }} New</span>
+        </div>
+
+        <div class="list-group list-group-flush overflow-auto" style="max-height: 320px;">
+            <div *ngFor="let alert of notifications"
+                 (click)="markAsRead(alert)"
+                 [class.bg-light]="!alert.isRead"
+                 class="list-group-item list-group-item-action py-2.5 px-3 transition-all cursor-pointer border-bottom position-relative">
+
+                <div class="d-flex justify-content-between align-items-start">
+                    <h6 class="fw-bold mb-0.5 small" [class.text-dark]="!alert.isRead" [class.text-muted]="alert.isRead">{{ alert.title }}</h6>
+                    <small class="text-muted font-monospace" style="font-size: 0.7rem;">{{ alert.createdAt | date:'shortTime' }}</small>
+                </div>
+                <p class="text-secondary small mb-1 lh-sm text-wrap">{{ alert.message }}</p>
+                <span *ngIf="!alert.isRead" class="position-absolute end-2 top-50 translate-middle-y p-1 bg-primary rounded-circle" style="width: 6px; height: 6px;"></span>
+            </div>
+
+            <div *ngIf="notifications.length === 0" class="text-center py-4 text-muted style-italic">
+                <i class="bi bi-bell-slash text-muted display-6 d-block mb-1"></i>
+                No dynamic operational alerts logged yet.
+            </div>
+        </div>
+    </div>
+</div>

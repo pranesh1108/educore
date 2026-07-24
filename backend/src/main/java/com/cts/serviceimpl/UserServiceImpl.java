@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
                             "REGISTRAR, EXAM_COORDINATOR");
         }
 
-        // ── STRICT BUSINESS CONSTRAINT: ONLY ONE REGISTRAR/ADMIN ALLOWED ──
         if (verifiedRole == Role.REGISTRAR) {
             boolean registrarExists = userRepository.existsByRole(Role.REGISTRAR);
             if (registrarExists) {
@@ -124,7 +123,6 @@ public class UserServiceImpl implements UserService {
         if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid credentials provided.");
         }
-
 
         user.setLastLoginAt(LocalDateTime.now());
         userRepository.save(user);

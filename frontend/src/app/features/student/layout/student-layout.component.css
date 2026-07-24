@@ -1,27 +1,58 @@
 .student-shell {
   min-height: calc(100vh - 56px);
+  background-color: var(--color-bg-primary);
+  display: flex;
 }
 
 .student-sidebar {
   width: 240px;
   min-width: 240px;
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  transition: all var(--transition-base);
 }
 
 .student-nav-link {
-  color: #495057;
+  color: var(--color-text-secondary);
   font-weight: 500;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: all var(--transition-base);
+  border-left: 3px solid transparent;
+  padding: 0.75rem 1rem;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
 }
+
 .student-nav-link:hover {
-  background-color: #f1f3f9;
-  color: #6f42c1;
+  background-color: var(--color-accent-light);
+  color: var(--color-accent-dark);
+  border-left-color: var(--color-accent);
+  padding-left: 1.25rem;
 }
+
 .student-nav-link.active {
-  background-color: #f3ebff;
-  color: #6f42c1;
+  background-color: var(--color-accent-light);
+  color: var(--color-accent-dark);
+  border-left-color: var(--color-accent);
+  font-weight: 600;
 }
 
 .student-content {
   min-width: 0;
-  background-color: #fcfbfe;
+  flex: 1;
+  background-color: var(--color-bg-primary);
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .student-sidebar {
+    width: 200px;
+    min-width: 200px;
+  }
+
+  .student-content {
+    padding: 1rem;
+  }
 }

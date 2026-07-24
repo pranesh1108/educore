@@ -27,7 +27,6 @@ public class CourseMaterialFile {
     @Column(name = "file_name")
     private String fileName;
 
-    // "PDF" or "TEXT"
     @Column(name = "type", length = 10)
     private String type;
 

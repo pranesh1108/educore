@@ -20,14 +20,12 @@ import org.springframework.http.ResponseEntity;
 import com.cts.dto.ExamRoomAllocationStudentDTO;
 import com.cts.dto.ExamRoomInputDTO;
 import com.cts.dto.ExamRoomOutputDTO;
-import com.cts.enumerate.AcademicTerm;
 import com.cts.exception.BusinessException;
 import com.cts.exception.ExamNotFoundException;
 import com.cts.service.ExamRoomService;
 import com.cts.service.ExamService;
 import com.cts.service.ExamResultService;
 import com.cts.service.PhysicalRoomService;
-
 public class ExamRoomControllerTest {
 
     @Mock
@@ -75,7 +73,6 @@ public class ExamRoomControllerTest {
                 .roomNumber(1)
                 .examId(1L)
                 .examTitle("Java FSE Final Exam")
-                .term(AcademicTerm.FALL_2026)
                 .examDate(LocalDateTime.now().plusDays(2))
                 .studentsAllocated(studentCount)
                 .students(students)

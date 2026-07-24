@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { InstructorApiService } from '../services/instructor-api.service';
 import { InstructorCourse } from '../models/instructor.model';
@@ -9,7 +10,7 @@ import { LoaderComponent } from '../../../shared/components/loader/loader.compon
 @Component({
   selector: 'app-instructor-courses',
   standalone: true,
-  imports: [CommonModule, LoaderComponent, RouterModule],
+  imports: [CommonModule, FormsModule, LoaderComponent, RouterModule],
   templateUrl: './courses.component.html',
   styleUrl: './courses.component.css'
 })
@@ -43,8 +44,6 @@ export class CoursesComponent implements OnInit {
       },
       error: (err) => {
         const errorMsg = err?.error?.message || err?.message || '';
-
-        // Suppress empty course notification arrays
         if (errorMsg.includes('No courses assigned') || err?.status === 404) {
           this.courses = [];
           this.errorMessage = '';
@@ -70,13 +69,9 @@ export class CoursesComponent implements OnInit {
       },
       error: (err) => {
         const subErrorMsg = err?.error?.message || err?.message || '';
-        
-        // ── FIX: INTERCEPT 404 ROSTER RUNTIME RESTRICTIONS ──
-        // If the backend responds with a 404 error or states that no details/enrollments exist,
-        // it simply means the student roster is empty. Treat it as a successful empty array!
         if (err?.status === 404 || subErrorMsg.includes('No details available') || subErrorMsg.includes('not found')) {
           this.enrolledStudents = [];
-          this.errorMessage = ''; // Suppress the banner error entirely
+          this.errorMessage = '';
         } else {
           this.errorMessage = subErrorMsg || 'Failed to load enrolled students list.';
         }
@@ -84,5 +79,14 @@ export class CoursesComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  onCourseChange(event: Event): void {
+    const selectElem = event.target as HTMLSelectElement;
+    const courseId = Number(selectElem.value);
+    const found = this.courses.find(c => c.courseId === courseId);
+    if (found) {
+      this.selectCourse(found);
+    }
   }
 }

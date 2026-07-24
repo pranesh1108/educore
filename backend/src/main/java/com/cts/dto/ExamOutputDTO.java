@@ -1,6 +1,5 @@
 package com.cts.dto;
 
-import com.cts.enumerate.AcademicTerm;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import java.time.LocalDateTime;

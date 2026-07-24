@@ -3,7 +3,6 @@ package com.cts.serviceimpl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.cts.exception.AccessDeniedException;
 import com.cts.repository.*;
 import com.cts.util.SecurityUtils;
@@ -32,19 +31,16 @@ public class ExamRoomServiceImpl implements ExamRoomService {
     private final ExamRoomRepository examRoomRepository;
     private final ExamRoomAllocationRepository allocationRepository;
     private final CourseEnrollmentRepository enrollmentRepository;
-    private final StudentRepository studentRepository;
     private final PhysicalRoomRepository physicalRoomRepository;
     private final ExamRoomMapper examRoomMapper;
     private final ExamCoordinatorRepository examCoordinatorRepository;
 
     private void verifyCoordinatorContext() {
         String loggedInEmail = SecurityUtils.getLoggedInEmail();
-        examCoordinatorRepository.findByUser_Email(loggedInEmail) // Assumes findByUser_Email matches your schema mapping
+        examCoordinatorRepository.findByUser_Email(loggedInEmail)
                 .orElseThrow(() -> new AccessDeniedException(
                         "Access Denied: Logged-in credentials do not belong to a valid Exam Coordinator profile."));
     }
-
-    //ASSIGN PHYSICAL ROOM TO EXAM + AUTO-ALLOCATE STUDENTS
 
     @Override
     @Transactional
@@ -56,12 +52,10 @@ public class ExamRoomServiceImpl implements ExamRoomService {
     public ExamRoomOutputDTO createAndAllocate(ExamRoomInputDTO inputDTO) {
         verifyCoordinatorContext();
 
-        // 1. Exam must exist
         Exam exam = examRepository.findById(inputDTO.getExamId())
                 .orElseThrow(() -> new ExamNotFoundException(
                         "Exam not found with id: " + inputDTO.getExamId()));
 
-        // 2. Exam must have a date and duration set
         if (exam.getExamDate() == null) {
             throw new BusinessException(
                     "Exam id " + exam.getExamId() + " has no exam date set. "
@@ -73,17 +67,14 @@ public class ExamRoomServiceImpl implements ExamRoomService {
                     + "Please update the exam with a duration before assigning a room.");
         }
 
-        // 3. Derive the exam's time window
         LocalDateTime examStart = exam.getExamDate();
         LocalDateTime examEnd   = examStart.plusMinutes(exam.getDurationMinutes());
 
-        // 4. Physical room must exist
         PhysicalRoom physicalRoom = physicalRoomRepository.findById(inputDTO.getPhysicalRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Physical room not found with id: " + inputDTO.getPhysicalRoomId()
                         + ". Create it first using POST /api/v1/exam-coordinator/rooms."));
 
-        // 5. Check time-based availability: is this room already booked for an overlapping slot?
         boolean timeConflict = physicalRoomRepository.hasTimeOverlap(
                 physicalRoom.getRoomId(), examStart, examEnd, inputDTO.getExamId());
 
@@ -97,7 +88,6 @@ public class ExamRoomServiceImpl implements ExamRoomService {
                     + ". Please choose a different room or reschedule the exam.");
         }
 
-        // 6. Dynamic room number auto-assignment logic
         Integer roomNumberVal = inputDTO.getRoomNumber();
         if (roomNumberVal == null || roomNumberVal <= 0) {
             roomNumberVal = 1;
@@ -106,7 +96,6 @@ public class ExamRoomServiceImpl implements ExamRoomService {
             roomNumberVal++;
         }
 
-        // 7. Fetch enrolled students for this exam's course
         Long courseId = exam.getCourse().getCourseId();
         List<Student> enrolledStudents = enrollmentRepository
                 .findByCourse_CourseId(courseId)
@@ -119,11 +108,9 @@ public class ExamRoomServiceImpl implements ExamRoomService {
                     "No students are enrolled in the course for this exam.");
         }
 
-        // 8. Find students already allocated to any room for this exam
         List<Long> alreadyAllocatedIds = allocationRepository
                 .findAllocatedStudentIdsByExamId(inputDTO.getExamId());
 
-        // 9. Filter to only unallocated students
         List<Student> unallocatedStudents = enrolledStudents.stream()
                 .filter(s -> !alreadyAllocatedIds.contains(s.getStudentId()))
                 .collect(Collectors.toList());
@@ -136,13 +123,11 @@ public class ExamRoomServiceImpl implements ExamRoomService {
                     + ". No students left to allocate.");
         }
 
-        // 10. Batch up to the physical room's capacity
         int capacity = physicalRoom.getCapacity();
         List<Student> batch = unallocatedStudents.stream()
                 .limit(capacity)
                 .collect(Collectors.toList());
 
-        // 11. Create the exam room record (linked to the exam, mirrors physical room details)
         ExamRoom room = ExamRoom.builder()
                 .roomName(physicalRoom.getRoomName())
                 .location(physicalRoom.getLocation())
@@ -154,7 +139,6 @@ public class ExamRoomServiceImpl implements ExamRoomService {
 
         ExamRoom savedRoom = examRoomRepository.save(room);
 
-        // 12. Create allocation rows for each student in the batch
         List<ExamRoomAllocation> allocations = batch.stream()
                 .map(student -> ExamRoomAllocation.builder()
                         .examRoom(savedRoom)
@@ -166,7 +150,6 @@ public class ExamRoomServiceImpl implements ExamRoomService {
 
         allocationRepository.saveAll(allocations);
 
-        // 13. Mark the physical room as OCCUPIED with the exam's time window
         physicalRoom.setStatus("OCCUPIED");
         physicalRoom.setAssignedExamId(exam.getExamId());
         physicalRoom.setAssignedFrom(examStart);
@@ -176,7 +159,6 @@ public class ExamRoomServiceImpl implements ExamRoomService {
         return examRoomMapper.toOutputDTO(savedRoom, allocations);
     }
 
-    //GET ALL ROOMS FOR AN EXAM
 
     @Override
     @AuditEvent(

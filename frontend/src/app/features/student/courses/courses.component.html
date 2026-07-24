@@ -8,7 +8,6 @@
 <div class="alert alert-danger" role="alert" *ngIf="errorMessage">
   {{ errorMessage }}
 </div>
-
 <div class="alert alert-success" role="alert" *ngIf="successMessage">
   {{ successMessage }}
 </div>
@@ -29,9 +28,8 @@
             >
           </div>
         </div>
-      
         <div class="col-sm-2">
-          <button class="btn btn-purple w-100" (click)="searchCourses()">Filter</button>
+          <button class="btn btn-accent w-100" (click)="searchCourses()">Filter</button>
         </div>
       </div>
     </div>
@@ -41,7 +39,6 @@
 <ul class="nav nav-pills gap-2 mb-4" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
     <button 
-      #catalogueTab 
       class="nav-link btn-tab" 
       [class.active]="activeTabId === 'catalogue'" 
       (click)="switchTab('catalogue')" 
@@ -67,13 +64,13 @@
 <app-loader *ngIf="loading" message="Loading course catalogue..."></app-loader>
 
 <div class="tab-content" id="pills-tabContent" *ngIf="!loading">
-  
+  <!-- CATALOGUE TAB -->
   <div class="tab-pane fade show active" *ngIf="activeTabId === 'catalogue'" role="tabpanel">
-    <div class="row g-3" *ngIf="courses.length > 0; else noCourses">
-      <div class="col-md-6 col-lg-4" *ngFor="let course of courses">
+    <div class="row g-3" *ngIf="availableCatalogueCourses.length > 0; else noCourses">
+      <div class="col-md-6 col-lg-4" *ngFor="let course of availableCatalogueCourses">
         <div class="card border-0 shadow-sm h-100 course-card">
           <div class="card-body d-flex flex-column">
-            <span class="badge bg-light text-purple align-self-start mb-2">{{ (course.prerequisite || 'NONE').replace('_', ' ') }}</span>
+            <span class="badge bg-accent-light text-accent align-self-start mb-2">{{ (course.prerequisite || 'NONE').replace('_', ' ') }}</span>
             <h5 class="fw-bold mb-2 text-dark">{{ course.title }}</h5>
             <p class="text-muted small mb-3 flex-grow-1">{{ course.description }}</p>
             
@@ -89,34 +86,28 @@
               </small>
               <small class="text-muted d-block"><i class="bi bi-person me-1"></i>Instructor: {{ course.instructorName }}</small>
             </div>
-
-            <button
-              class="btn w-100 mt-auto text-decoration-none"
-              [class.btn-outline-purple]="!isEnrolled(course.courseId)"
-              [class.btn-success]="isEnrolled(course.courseId)"
-              [disabled]="enrollingId === course.courseId"
-              [routerLink]="['/student/courses', course.courseId]"
-            >
-              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" *ngIf="enrollingId === course.courseId"></span>
-              {{ isEnrolled(course.courseId) ? 'Enrolled (View Syllabus)' : 'View Syllabus & Register' }}
-            </button>
+            
+            <a [routerLink]="['/student/courses', course.courseId]" class="btn btn-outline-purple w-100 mt-auto">
+              View Syllabus & Register
+            </a>
           </div>
         </div>
       </div>
     </div>
     <ng-template #noCourses>
-      <div class="text-center py-5">
-        <p class="text-muted mb-0">No courses match your search criteria.</p>
+      <div class="text-center py-5 bg-white rounded shadow-sm border">
+        <i class="bi bi-journal-check display-4 text-purple mb-2 d-block"></i>
+        <p class="text-muted mb-0 fw-medium">All available courses have been registered or no courses match your search criteria.</p>
       </div>
     </ng-template>
   </div>
 
+  <!-- ENROLLED TAB -->
   <div class="tab-pane fade show active" *ngIf="activeTabId === 'enrolled'" role="tabpanel">
     <div class="row g-3" *ngIf="myEnrollments.length > 0; else noEnrollments">
       <div class="col-md-6 col-lg-4" *ngFor="let enrol of myEnrollments">
-        <div class="card border-0 shadow-sm h-100 course-card border-start border-purple border-4">
+        <div class="card border-0 shadow-sm h-100 course-card border-start border-accent border-4">
           <div class="card-body d-flex flex-column">
-            
             <h5 class="fw-bold mb-2 text-dark">{{ enrol.courseTitle }}</h5>
             <p class="text-muted small mb-3 flex-grow-1">{{ enrol.courseDescription }}</p>
             
@@ -129,7 +120,7 @@
               <small class="text-muted d-block"><i class="bi bi-person me-1"></i>Instructor: {{ enrol.instructorName }}</small>
             </div>
             
-            <a [routerLink]="['/student/courses', enrol.courseId]" class="btn btn-purple w-100 mt-auto">
+            <a [routerLink]="['/student/courses', enrol.courseId]" class="btn btn-accent w-100 mt-auto">
               View Syllabus
             </a>
           </div>
@@ -140,7 +131,7 @@
       <div class="text-center py-5">
         <i class="bi bi-journal-x display-4 text-muted mb-2 d-block"></i>
         <p class="text-muted mb-3">You are not enrolled in any courses yet.</p>
-        <button class="btn btn-purple" (click)="switchTab('catalogue')">Browse Catalogue</button>
+        <button class="btn btn-accent" (click)="switchTab('catalogue')">Browse Catalogue</button>
       </div>
     </ng-template>
   </div>

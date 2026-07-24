@@ -16,8 +16,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-
-
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/student")
@@ -26,8 +24,6 @@ import org.springframework.web.bind.annotation.*;
 public class StudentController {
 
     private final StudentService studentService;
-
-    // ── PROFILE MANAGEMENT ───────────────────────────────────────────────────
 
     @Operation(summary = "Update student profile")
     @PutMapping("/profile/update")
@@ -41,8 +37,6 @@ public class StudentController {
         return new ResponseEntity<>(studentService.getStudentProfile(), HttpStatus.OK);
     }
 
-    // ── ENROLLMENT MANAGEMENT ────────────────────────────────────────────────
-
     @Operation(summary = "Enroll in a course")
     @PostMapping("/course/{courseId}/enroll")
     public ResponseEntity<EnrollmentOutputDTO> enrollInCourse(@PathVariable Long courseId) {
@@ -55,7 +49,6 @@ public class StudentController {
         return new ResponseEntity<>(studentService.getMyEnrolledCourses(), HttpStatus.OK);
     }
 
-    // ── UNIFIED CONTENT DELIVERY ─────────────────────────────────────────────
 
     @Operation(
             summary = "View course content (Materials & Assignments)",
@@ -65,8 +58,6 @@ public class StudentController {
     public ResponseEntity<CourseContentResponseDTO> getCourseContent(@PathVariable Long courseId) {
         return new ResponseEntity<>(studentService.getCourseContent(courseId), HttpStatus.OK);
     }
-
-    // ── RESOURCE DOWNLOADS ───────────────────────────────────────────────────
 
     @Operation(summary = "Download a course material file")
     @GetMapping("/material/{fileId}/download")
@@ -90,8 +81,6 @@ public class StudentController {
                 .body(bytes);
     }
 
-    // ── SUBMISSIONS SYSTEM ───────────────────────────────────────────────────
-
     @Operation(summary = "Submit an assignment solution")
     @PostMapping(value = "/assignment/{assignmentId}/submit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SubmissionOutputDTO> submitAssignment(@PathVariable Long assignmentId, @RequestParam("file") MultipartFile file) {
@@ -104,13 +93,11 @@ public class StudentController {
         return new ResponseEntity<>(studentService.getMySubmissions(), HttpStatus.OK);
     }
 
-    // ── ASSIGNED ASSESSMENT TRACKING ─────────────────────────────────────────
 
     @Operation(summary = "Get my upcoming exams")
     @GetMapping("/my-exams")
     public ResponseEntity<List<ExamOutputDTO>> getMyExams() {
         return new ResponseEntity<>(studentService.getMyExams(), HttpStatus.OK);
     }
-
 
 }

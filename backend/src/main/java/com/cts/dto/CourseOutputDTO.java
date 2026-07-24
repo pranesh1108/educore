@@ -2,7 +2,6 @@ package com.cts.dto;
 
 import com.cts.enumerate.Prerequisite;
 import lombok.*;
-import java.util.List;
 
 @Data
 @NoArgsConstructor

@@ -1,12 +1,35 @@
 .nav-pills .nav-link {
-  color: #495057;
+  color: var(--color-text-secondary);
   cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
 }
+
+.nav-pills .nav-link:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
 .nav-pills .nav-link.active {
-  background-color: #0d6efd;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(107, 33, 168, 0.18);
 }
 
 .table thead th {
   border-top: none;
+  background-color: var(--color-bg-secondary);
+  border-bottom: 2px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.table tbody tr:hover {
+  background-color: var(--color-primary-light);
 }

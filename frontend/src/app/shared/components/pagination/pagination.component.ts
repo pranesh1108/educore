@@ -18,8 +18,25 @@ export class PaginationComponent {
     return Math.max(1, Math.ceil(this.totalItems / this.pageSize));
   }
 
+  // Windowed calculation: shows max 5 page numbers centered on the active page
   get pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = start + maxVisible - 1;
+
+    if (end > total) {
+      end = total;
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    const pagesArray: number[] = [];
+    for (let i = start; i <= end; i++) {
+      pagesArray.push(i);
+    }
+    return pagesArray;
   }
 
   goTo(page: number): void {

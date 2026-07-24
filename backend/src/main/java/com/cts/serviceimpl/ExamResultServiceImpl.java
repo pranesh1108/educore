@@ -37,18 +37,11 @@ public class ExamResultServiceImpl implements ExamResultService {
                         "Student profile not found for logged-in credentials."));
     }
 
-    private void verifyCoordinatorContext() {
-        String loggedInEmail = SecurityUtils.getLoggedInEmail();
-        examResultRepository.findByStudent_StudentId(null); // Keeps reference trace if required
-        // Implementation context check logic matching schema
-    }
 
     @Override
     @Transactional
     @AuditEvent(eventName = "EXAM_RESULT_PUBLISHED", eventType = "CREATE", eventMessage = "Exam result was published for a student")
     public ExamResultOutputDTO publishResult(ExamResultInputDTO inputDTO) {
-        // Safe context checking hook
-        String loggedInEmail = SecurityUtils.getLoggedInEmail();
 
         if (examResultRepository.existsByExam_ExamIdAndStudent_StudentId(
                 inputDTO.getExamId(), inputDTO.getStudentId())) {
@@ -79,15 +72,12 @@ public class ExamResultServiceImpl implements ExamResultService {
 
         ExamResultEntity saved = examResultRepository.save(entity);
 
-        // Only mark exam COMPLETED when ALL enrolled students have results
         long totalEnrolled = enrollmentRepository.findByCourse_CourseId(course.getCourseId()).size();
         long totalGraded = examResultRepository.findByExam_ExamId(exam.getExamId()).size();
         if (totalGraded >= totalEnrolled && totalEnrolled > 0) {
             exam.setStatus(ExamStatus.COMPLETED);
             examRepository.save(exam);
         }
-
-        // REMOVED: Student DROPPED and User INACTIVE state drops to protect multi-course active users.
 
         return toOutputDTO(saved);
     }
@@ -116,12 +106,11 @@ public class ExamResultServiceImpl implements ExamResultService {
     @Override
     @AuditEvent(eventName = "EXAM_RESULT_FETCHED", eventType = "READ", eventMessage = "Student fetched their exam result")
     public List<ExamResultOutputDTO> getResultsByStudent() {
-        Student student = getLoggedInStudent(); //
+        Student student = getLoggedInStudent();
 
-        List<ExamResultEntity> results = examResultRepository.findByStudent_StudentId(student.getStudentId()); //
+        List<ExamResultEntity> results = examResultRepository.findByStudent_StudentId(student.getStudentId());
 
         if (results.isEmpty()) {
-            // Get the user's name safely from the mapped User relationship context
             String studentName = (student.getUser() != null) ? student.getUser().getName() : "Student";
 
             throw new NoDetailsAvailableException(
@@ -129,7 +118,7 @@ public class ExamResultServiceImpl implements ExamResultService {
                             + ". Results will be available after the exam coordinator publishes them.");
         }
 
-        return results.stream().map(this::toOutputDTO).collect(Collectors.toList()); //
+        return results.stream().map(this::toOutputDTO).collect(Collectors.toList());
     }
 
     private ExamResultOutputDTO toOutputDTO(ExamResultEntity e) {

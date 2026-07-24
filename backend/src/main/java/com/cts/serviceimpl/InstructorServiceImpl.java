@@ -4,9 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
-
 import com.cts.annotation.AuditEvent;
 import com.cts.dto.EnrollmentOutputDTO;
 import com.cts.dto.ExamOutputDTO;
@@ -61,7 +59,7 @@ public class InstructorServiceImpl implements InstructorService {
             }
         }
 
-        instructor.setSkills(inputDTO.getSkills()); // Saved as collection array list
+        instructor.setSkills(inputDTO.getSkills());
         instructor.setExperience(inputDTO.getExperience());
         instructor.setDateOfBirth(inputDTO.getDateOfBirth());
 

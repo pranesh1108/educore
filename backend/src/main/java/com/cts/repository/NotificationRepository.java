@@ -8,9 +8,8 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     
-    // Fetch notifications for a specific user ordered from newest to oldest
+
     List<Notification> findByUserEmailOrderByCreatedAtDesc(String userEmail);
-    
-    // Count unread notifications for the status badge indicators
+
     long countByUserEmailAndIsReadFalse(String userEmail);
 }

@@ -1,6 +1,5 @@
 package com.cts.mapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import com.cts.dto.CourseMaterialFileOutputDTO;
 import com.cts.dto.CourseOutputDTO;

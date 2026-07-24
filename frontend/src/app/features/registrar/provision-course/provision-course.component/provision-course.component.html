@@ -1,0 +1,136 @@
+<div class="mb-4">
+  <h3 class="fw-bold mb-1">Provision Course</h3>
+  <p class="text-muted mb-0">Create new academic courses and assign instructors.</p>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-4">
+    <div class="alert alert-danger py-2" role="alert" *ngIf="formError">{{ formError }}</div>
+    <div class="alert alert-success py-2" role="alert" *ngIf="formSuccess">{{ formSuccess }}</div>
+    
+    <form [formGroup]="courseForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="title" class="form-label">Course Title <span class="text-danger">*</span></label>
+            <input
+              id="title"
+              type="text"
+              class="form-control"
+              formControlName="title"
+              placeholder="Introduction to Spring Boot"
+              [class.is-invalid]="f['title'].invalid && f['title'].touched"
+            />
+            <div class="invalid-feedback" *ngIf="f['title'].invalid && f['title'].touched">
+              <span *ngIf="f['title'].errors?.['required']">Course title is required.</span>
+              <span *ngIf="f['title'].errors?.['minlength']">Title must be at least 3 characters.</span>
+              <span *ngIf="f['title'].errors?.['maxlength']">Title cannot exceed 100 characters.</span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea
+              id="description"
+              class="form-control"
+              rows="4"
+              formControlName="description"
+              placeholder="What will students learn in this course?"
+              [class.is-invalid]="f['description'].invalid && f['description'].touched"
+            ></textarea>
+            <div class="invalid-feedback" *ngIf="f['description'].invalid && f['description'].touched">
+              Description cannot exceed 2000 characters.
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-sm-6 mb-3">
+              <label for="prerequisite" class="form-label">Prerequisite</label>
+              <select id="prerequisite" class="form-select" formControlName="prerequisite">
+                <option value="">None specified</option>
+                <option *ngFor="let p of prerequisiteOptions" [value]="p">{{ p.replace('_', ' ') }}</option>
+              </select>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <label for="enrollmentDeadlineDate" class="form-label">Enrollment Deadline <span class="text-danger">*</span></label>
+              <input
+                id="enrollmentDeadlineDate"
+                type="date"
+                class="form-control"
+                formControlName="enrollmentDeadlineDate"
+                [class.is-invalid]="f['enrollmentDeadlineDate'].invalid && f['enrollmentDeadlineDate'].touched"
+              />
+              <div class="invalid-feedback" *ngIf="f['enrollmentDeadlineDate'].invalid && f['enrollmentDeadlineDate'].touched">
+                Enrollment deadline date is required.
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6 mb-3">
+              <label for="startDate" class="form-label">Course Start Date <span class="text-danger">*</span></label>
+              <input
+                id="startDate"
+                type="date"
+                class="form-control"
+                formControlName="startDate"
+                [class.is-invalid]="f['startDate'].invalid && f['startDate'].touched"
+              />
+              <div class="invalid-feedback" *ngIf="f['startDate'].invalid && f['startDate'].touched">
+                Course start date is required.
+              </div>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <label for="endDate" class="form-label">Course End Date <span class="text-danger">*</span></label>
+              <input
+                id="endDate"
+                type="date"
+                class="form-control"
+                formControlName="endDate"
+                [class.is-invalid]="f['endDate'].invalid && f['endDate'].touched"
+              />
+              <div class="invalid-feedback" *ngIf="f['endDate'].invalid && f['endDate'].touched">
+                Course end date is required.
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label for="syllabusFile" class="form-label small fw-bold text-primary">Syllabus Document (PDF Only)</label>
+              <input
+                id="syllabusFile"
+                type="file"
+                class="form-control"
+                accept="application/pdf"
+                (change)="onFileSelected($event)"
+              />
+              <div class="form-text">The selected document will be embedded directly into the course properties.</div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="instructorId" class="form-label">Assign Instructor <span class="text-danger">*</span></label>
+            <select
+              id="instructorId"
+              class="form-select"
+              formControlName="instructorId"
+              [class.is-invalid]="f['instructorId'].invalid && f['instructorId'].touched"
+            >
+              <option value="" disabled selected>{{ loadingInstructors ? 'Loading instructors...' : 'Select an instructor' }}</option>
+              <option *ngFor="let ins of instructors" [value]="ins.instructorId">
+                {{ ins.name }} — {{ ins.skill || 'No skill set' }} ({{ ins.experience || 0 }} yrs)
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="f['instructorId'].invalid && f['instructorId'].touched">
+              Please select an instructor.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2">
+        <button type="submit" class="btn btn-primary px-4" [disabled]="submitting">
+          <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+          {{ submitting ? 'Provisioning...' : 'Provision Course' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

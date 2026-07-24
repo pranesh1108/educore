@@ -11,7 +11,7 @@ import com.cts.exception.InvalidFileException;
 public class FileStorageService {
 
     private static final String BASE_DIR = "uploads/";
-    private static final long MAX_FILE_SIZE = 250 * 1024 * 1024; // 10 MB
+    private static final long MAX_FILE_SIZE = 250 * 1024 * 1024; // 250 MB
 
 
     public String storeFile(MultipartFile file, String subFolder, String desiredFileName) {
@@ -71,7 +71,7 @@ public class FileStorageService {
             throw new InvalidFileException("Only PDF files are allowed.");
         }
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new InvalidFileException("File size cannot exceed 10 MB.");
+            throw new InvalidFileException("File size cannot exceed 250 MB.");
         }
     }
 }

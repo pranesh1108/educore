@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -65,17 +64,15 @@ public class StudentServiceImpl implements StudentService {
     @AuditEvent(eventName = "STUDENT_PROFILE_UPDATED", eventType = "UPDATE", eventMessage = "Student profile was updated")
     public StudentOutputDTO updateStudentProfile(StudentInputDTO inputDTO) {
         Student student = getLoggedInStudent();
-
         if (inputDTO.getDateOfBirth() != null) {
             int age = Period.between(inputDTO.getDateOfBirth(), LocalDate.now()).getYears();
-            if (age < 18) {
-                throw new BusinessException("Student must be at least 18 years old.");
+            if (age < 18 || age > 100) {
+                throw new BusinessException("Student age must be between 18 and 100 years old.");
             }
-            if (!inputDTO.getFieldOfInterest().matches("^[a-zA-Z_, ]*$")) {
+            if (inputDTO.getFieldOfInterest() != null && !inputDTO.getFieldOfInterest().matches("^[a-zA-Z_, ]*$")) {
                 throw new BusinessException("Field of interest contains invalid characters");
             }
         }
-
         student.setDateOfBirth(inputDTO.getDateOfBirth());
         student.setFieldOfInterest(inputDTO.getFieldOfInterest());
         return studentMapper.tostudentOutputDTO(studentRepository.save(student));
@@ -97,10 +94,6 @@ public class StudentServiceImpl implements StudentService {
                 .filter(c -> c.getEnrollmentDeadlineDate() == null || !today.isAfter(c.getEnrollmentDeadlineDate()))
                 .map(studentMapper::toRegistrarCourseResponseDTO)
                 .collect(Collectors.toList());
-
-        if (filteredList.isEmpty()) {
-            throw new NoDetailsAvailableException("No courses match the given filters on this page.");
-        }
 
         return new PageImpl<>(filteredList, pageable, coursesPage.getTotalElements());
     }
@@ -141,13 +134,11 @@ public class StudentServiceImpl implements StudentService {
     public List<EnrollmentOutputDTO> getMyEnrolledCourses() {
         Student student = getLoggedInStudent();
         List<CourseEnrollment> enrollments = enrollmentRepository.findByStudent_StudentId(student.getStudentId());
-<<<<<<< HEAD
-        if (enrollments.isEmpty()) throw new EnrollmentException("You are not enrolled in any courses yet.");
-=======
+
         if (enrollments.isEmpty()) {
             return new java.util.ArrayList<>();
         }
->>>>>>> 37751a7 (update the main code)
+
         return enrollments.stream().map(studentMapper::toEnrollmentOutputDTO).collect(Collectors.toList());
     }
 
@@ -275,7 +266,6 @@ public class StudentServiceImpl implements StudentService {
         return exams;
     }
 
-    // ── FIXED BUSINESS LOGIC: Complete file streaming layer migration logic ──
     @Override
     @AuditEvent(eventName = "COURSE_SYLLABUS_STREAMED", eventType = "READ", eventMessage = "Syllabus resource generated from disk by course ID")
     public Resource getSyllabusResource(Long courseId) {
@@ -306,26 +296,20 @@ public class StudentServiceImpl implements StudentService {
     private void verifyEnrollment(Long studentId, Long courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + courseId));
-
-        LocalDate today = LocalDate.now();
-        if (course.getEnrollmentDeadlineDate() != null && today.isAfter(course.getEnrollmentDeadlineDate())) {
-            throw new AccessDeniedException("Access Closed: The enrollment deadline for this course has passed.");
-        }
-        if (course.getStartDate() != null && today.isBefore(course.getStartDate())) {
-            throw new AccessDeniedException("Access Deferred: This course content can only be accessed after its start date: " + course.getStartDate());
-        }
-
+        // 1. Verify student is actually enrolled
         if (!enrollmentRepository.existsByStudent_StudentIdAndCourse_CourseId(studentId, courseId)) {
             throw new NotEnrolledException("You are not enrolled in course id: " + courseId + ". Please enroll first.");
         }
+        // 2. Check if course hasn't started yet
+        LocalDate today = LocalDate.now();
+        if (course.getStartDate() != null && today.isBefore(course.getStartDate())) {
+            throw new AccessDeniedException("Access Deferred: This course content can only be accessed after its start date: " + course.getStartDate());
+        }
+        // 3. Check if exam results have been published (course completed)
         if (examResultRepository.existsByStudent_StudentIdAndCourse_CourseId(studentId, courseId)) {
             throw new BusinessException("Course access closed: Exam results have already been published for this course.");
         }
+
     }
 
-    private String generateEnrollmentNumber(String courseTitle, Long studentId) {
-        String code = courseTitle.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
-        if (code.length() > 6) code = code.substring(0, 6);
-        return code + String.format("%04d", studentId);
-    }
 }

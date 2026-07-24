@@ -1,11 +1,11 @@
-thead th {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  color: #6c757d;
-  font-weight: 700;
-  border-bottom: 2px solid #f1f3f9;
+.text-purple {
+  color: #6b21a8 !important;
 }
 
-tbody tr {
-  border-bottom: 1px solid #f1f3f9;
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(107, 33, 168, 0.04);
 }

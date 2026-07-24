@@ -23,19 +23,15 @@ public class PhysicalRoom {
     @Column(name = "location", nullable = false)
     private String location;
 
-    // Capacity defined at room creation (min 20, max 100)
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
 
-    // AVAILABLE or OCCUPIED
     @Column(name = "status", nullable = false)
     private String status;
 
-    // Exam that currently occupies this room (null when AVAILABLE)
     @Column(name = "assigned_exam_id")
     private Long assignedExamId;
 
-    // Time window during which the room is occupied (exam start → exam end)
     @Column(name = "assigned_from")
     private LocalDateTime assignedFrom;
 

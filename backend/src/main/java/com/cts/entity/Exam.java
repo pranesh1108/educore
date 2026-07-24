@@ -1,6 +1,5 @@
 package com.cts.entity;
 
-import com.cts.enumerate.AcademicTerm;
 import com.cts.enumerate.ExamStatus;
 import jakarta.persistence.*;
 import lombok.*;

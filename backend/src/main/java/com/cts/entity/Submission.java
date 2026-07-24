@@ -41,7 +41,6 @@ public class Submission {
     @Column(name = "submitted_at")
     private LocalDateTime submittedAt;
 
-    // Filled by instructor after grading
     @Column(name = "grade")
     private Double grade;
 
@@ -51,7 +50,6 @@ public class Submission {
     @Column(name = "graded_at")
     private LocalDateTime gradedAt;
 
-    // SUBMITTED / GRADED / LATE_SUBMISSION
     @Column(name = "status", nullable = false)
     private String status;
 }

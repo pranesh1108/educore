@@ -20,6 +20,5 @@ public class InstructorFilterOutputDTO {
     private Integer experience;
     private String status;
 
-    // Courses assigned to this instructor
     private List<String> assignedCourses;
 }

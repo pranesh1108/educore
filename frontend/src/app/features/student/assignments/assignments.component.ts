@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 import { StudentApiService } from '../services/student-api.service';
 import { CourseContent, Enrollment, Submission } from '../models/student.model';
@@ -9,7 +10,7 @@ import { LoaderComponent } from '../../../shared/components/loader/loader.compon
 @Component({
   selector: 'app-student-assignments',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoaderComponent],
+  imports: [CommonModule, FormsModule, LoaderComponent, RouterModule],
   templateUrl: './assignments.component.html',
   styleUrl: './assignments.component.css'
 })
@@ -24,6 +25,9 @@ export class AssignmentsComponent implements OnInit {
   submittingId: number | null = null;
   errorMessage = '';
   successMessage = '';
+
+  // Track closed course state
+  isCourseClosed = false;
 
   constructor(private studentApi: StudentApiService) {}
 
@@ -62,6 +66,7 @@ export class AssignmentsComponent implements OnInit {
     this.selectedEnrollment = enrol;
     this.contentLoading = true;
     this.courseContent = null;
+    this.isCourseClosed = false;
     this.errorMessage = '';
     this.successMessage = '';
 
@@ -71,11 +76,30 @@ export class AssignmentsComponent implements OnInit {
         this.loadSubmissions();
       },
       error: (err) => {
-        this.errorMessage = err?.error?.message || err?.message || 'Failed to load course content.';
+        const errorMsg = err?.error?.message || err?.message || '';
+
+        // Intercept published/closed exam scores exception
+        if (errorMsg.includes('Exam results have already been published') || errorMsg.includes('Course access closed')) {
+          this.isCourseClosed = true;
+          this.errorMessage = '';
+        } else {
+          this.errorMessage = errorMsg || 'Failed to load course content.';
+        }
+
         this.contentLoading = false;
         this.loading = false;
       }
     });
+  }
+
+  // Event handler for HTML <select> dropdown change
+  onCourseChange(event: Event): void {
+    const selectElem = event.target as HTMLSelectElement;
+    const courseId = Number(selectElem.value);
+    const found = this.myEnrollments.find(e => e.courseId === courseId);
+    if (found) {
+      this.selectCourse(found);
+    }
   }
 
   loadSubmissions(): void {
@@ -88,10 +112,9 @@ export class AssignmentsComponent implements OnInit {
       error: (err) => {
         const errorMsg = err?.error?.message || err?.message || '';
 
-        // ── FIX: Intercept empty student submission exceptions and clear the banner ──
         if (errorMsg.includes('No submissions found') || err?.status === 404) {
-          this.mySubmissions = []; // Clear local list safely
-          this.errorMessage = '';  // Force the red error banner to disappear!
+          this.mySubmissions = [];
+          this.errorMessage = '';
         } else {
           this.errorMessage = errorMsg || 'Failed to load submissions.';
         }
@@ -111,7 +134,7 @@ export class AssignmentsComponent implements OnInit {
         link.click();
         window.URL.revokeObjectURL(url);
       },
-      error: (err) => {
+      error: () => {
         this.errorMessage = 'Failed to download material file.';
       }
     });
@@ -127,7 +150,7 @@ export class AssignmentsComponent implements OnInit {
         link.click();
         window.URL.revokeObjectURL(url);
       },
-      error: (err) => {
+      error: () => {
         this.errorMessage = 'Failed to download assignment file.';
       }
     });

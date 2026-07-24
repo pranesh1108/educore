@@ -21,8 +21,7 @@ public class ExamStatusConverter implements AttributeConverter<ExamStatus, Strin
         }
         
         String statusStr = dbData.trim().toUpperCase();
-        
-        // Dynamically maps any legacy database status values to ACTIVE in-memory
+
         if (statusStr.equals("DRAFT") || 
             statusStr.equals("SCHEDULED") || 
             statusStr.equals("PUBLISHED") || 
@@ -33,7 +32,6 @@ public class ExamStatusConverter implements AttributeConverter<ExamStatus, Strin
         try {
             return ExamStatus.valueOf(statusStr);
         } catch (IllegalArgumentException e) {
-            // Safe fallback default to ACTIVE
             return ExamStatus.ACTIVE;
         }
     }

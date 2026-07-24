@@ -1,6 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { InstructorApiService } from '../services/instructor-api.service';
 import { InstructorCourse, InstructorResourceResponse } from '../models/instructor.model';
@@ -47,10 +49,52 @@ export class AssignmentsComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
-    this.instructorApi.getAssignedCourses().subscribe({
-      next: (courses) => {
-        this.courses = courses || [];
-        this.loading = false;
+    // Fetch both assigned courses AND published exams in parallel
+    forkJoin({
+      courses: this.instructorApi.getAssignedCourses().pipe(catchError(() => of([]))),
+      exams: this.instructorApi.getMyExams().pipe(catchError(() => of([])))
+    }).subscribe({
+      next: ({ courses, exams }) => {
+        const rawCourses = courses || [];
+        const examCourseIds = new Set((exams || []).map(e => e.courseId));
+
+        if (rawCourses.length === 0) {
+          this.courses = [];
+          this.selectedCourse = null;
+          this.loading = false;
+          return;
+        }
+
+        // Validate each course against Exam publication AND Resource Lock
+        const resourceChecks = rawCourses.map(course => {
+          // Check 1: If an exam has been published for this course, exclude it immediately
+          if (examCourseIds.has(course.courseId)) {
+            return of(null);
+          }
+          // Check 2: Verify resources are not locked/finalized
+          return this.instructorApi.getCourseResources(course.courseId).pipe(
+            catchError(() => of(null)) // Returns null if course is ended or scores published
+          );
+        });
+
+        forkJoin(resourceChecks).subscribe({
+          next: (results) => {
+            // Filter and keep ONLY courses that passed both checks
+            this.courses = rawCourses.filter((_, index) => results[index] !== null);
+
+            if (this.courses.length > 0) {
+              this.selectCourse(this.courses[0]);
+            } else {
+              this.selectedCourse = null;
+            }
+            this.loading = false;
+          },
+          error: () => {
+            this.courses = [];
+            this.selectedCourse = null;
+            this.loading = false;
+          }
+        });
       },
       error: (err) => {
         const errorMsg = err?.error?.message || err?.message || '';
@@ -66,6 +110,7 @@ export class AssignmentsComponent implements OnInit {
   }
 
   selectCourse(course: InstructorCourse): void {
+    if (!course) return;
     this.selectedCourse = course;
     this.resourcesLoading = true;
     this.resources = null;
@@ -108,12 +153,7 @@ export class AssignmentsComponent implements OnInit {
       this.materialTextContent
     ).subscribe({
       next: () => {
-        // 1. Trigger System UI Alert Window Fallback
-        alert('Success: material is published!');
-
-        // 2. Set Signal state values
-        this.materialSuccessMessage.set('material is published');
-        
+        this.materialSuccessMessage.set('Handout document uploaded successfully!');
         this.materialFile = null;
         this.materialTextContent = '';
         const fileInput = document.getElementById('materialFile') as HTMLInputElement;
@@ -124,7 +164,7 @@ export class AssignmentsComponent implements OnInit {
 
         setTimeout(() => {
           this.materialSuccessMessage.set('');
-        }, 3000);
+        }, 4000);
       },
       error: (err) => {
         this.errorMessage = err?.error?.message || err?.message || 'Failed to publish material.';
@@ -151,12 +191,7 @@ export class AssignmentsComponent implements OnInit {
       this.assignmentFile
     ).subscribe({
       next: () => {
-        // 1. Trigger System UI Alert Window Fallback
-        alert('Success: assignment is published!');
-
-        // 2. Set Signal state values
-        this.assignmentSuccessMessage.set('assignment is published');
-        
+        this.assignmentSuccessMessage.set('Evaluation task published successfully!');
         this.assignmentFile = null;
         this.assignmentTitle = '';
         this.assignmentInstructions = '';
@@ -170,7 +205,7 @@ export class AssignmentsComponent implements OnInit {
 
         setTimeout(() => {
           this.assignmentSuccessMessage.set('');
-        }, 3000);
+        }, 4000);
       },
       error: (err) => {
         this.errorMessage = err?.error?.message || err?.message || 'Failed to publish assignment.';

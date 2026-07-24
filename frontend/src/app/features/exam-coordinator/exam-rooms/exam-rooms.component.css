@@ -1,28 +1,37 @@
 .text-cyan {
-  color: #00838f !important;
+  color: var(--color-warning) !important;
 }
 
 .bg-purple {
-  background-color: #6f42c1 !important;
+  background-color: var(--color-accent-light) !important;
 }
 
 .btn-cyan {
-  background-color: #00838f;
+  background-color: var(--color-warning);
   color: white;
   border: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all var(--transition-base);
 }
+
 .btn-cyan:hover {
-  background-color: #006064;
+  background-color: var(--color-warning-dark);
   color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
 .bg-light-cyan {
-  background-color: #f2fcfc !important;
-  border-color: rgba(0, 131, 143, 0.1) !important;
+  background-color: var(--color-warning-light) !important;
+  border-color: rgba(245, 158, 11, 0.2) !important;
 }
 
 .active-course {
-  background-color: #e0f7fa !important;
-  color: #00838f !important;
-  border-left: 4px solid #00838f !important;
+  background-color: var(--color-warning-light) !important;
+  color: var(--color-warning-dark) !important;
+  border-left: 4px solid var(--color-warning) !important;
+  padding-left: 1rem !important;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
 }

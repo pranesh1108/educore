@@ -1,68 +1,81 @@
 <div class="mb-4">
-  <h3 class="fw-bold mb-1">Assigned Exams</h3>
+  <h3 class="fw-bold mb-1 text-dark">Assigned Exams</h3>
   <p class="text-muted mb-0">Track formal examination schedules and room alignments.</p>
 </div>
 
-<app-loader *ngIf="loading" message="Loading exam schedule..."></app-loader>
-
-<div class="alert alert-danger" role="alert" *ngIf="!loading && errorMessage">
-  {{ errorMessage }}
+<!-- Global Alert Message -->
+<div class="alert alert-danger border-0 shadow-sm mb-4" role="alert" *ngIf="errorMessage">
+  <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
 </div>
 
-<div class="card border-0 shadow-sm p-4" *ngIf="!loading">
-  <div class="table-responsive" *ngIf="exams.length > 0; else noExams">
-    <table class="table align-middle">
-      <thead>
+<app-loader *ngIf="loading" message="Loading examination schedule..."></app-loader>
+
+<div class="card border-0 shadow-sm bg-white overflow-hidden" *ngIf="!loading">
+  <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+      <i class="bi bi-calendar-check text-purple"></i>
+      Scheduled Examinations
+    </h5>
+    <span class="badge bg-light text-dark border px-3 py-1.5 rounded-pill small fw-bold">
+      Total: {{ exams.length }}
+    </span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0" *ngIf="exams.length > 0; else noExams">
+      <thead class="table-light text-secondary small text-uppercase fw-bold" style="font-size: 0.78rem;">
         <tr>
-          <th>Course Title</th>
-          <th>Exam Title</th>
-<<<<<<< HEAD
-          <th>Term</th>
-=======
->>>>>>> 37751a7 (update the main code)
-          <th>Date & Time</th>
-          <th>Duration</th>
-          <th>Passing Marks</th>
-          <th>Assigned Venue</th>
+          <th class="ps-4" style="width: 22%;">Course Title</th>
+          <th style="width: 23%;">Exam Title</th>
+          <th style="width: 20%;">Date & Time</th>
+          <th style="width: 12%;">Duration</th>
+          <th style="width: 11%;">Passing Marks</th>
+          <th class="pe-4" style="width: 12%;">Assigned Venue</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="small text-dark" style="font-size: 0.88rem;">
         <tr *ngFor="let exam of exams">
-          <td>
-            <span class="fw-bold d-block text-dark">{{ exam.courseTitle }}</span>
+          <!-- Course Title -->
+          <td class="ps-4 py-3 fw-bold text-dark">
+            {{ exam.courseTitle }}
           </td>
+          <!-- Exam Title -->
           <td>
-            <span class="text-dark fw-medium">{{ exam.title }}</span>
-            <small class="text-muted d-block" *ngIf="exam.description">{{ exam.description }}</small>
+            <span class="fw-bold d-block text-dark">{{ exam.title }}</span>
+            <small class="text-muted d-block text-truncate" style="max-width: 200px;" *ngIf="exam.description">
+              {{ exam.description }}
+            </small>
           </td>
-          <td>
-<<<<<<< HEAD
-            <span class="badge bg-success">{{ exam.term.replace('_', ' ') }}</span>
+          <!-- Date & Time -->
+          <td class="font-monospace text-secondary">
+            <i class="bi bi-calendar-event me-1 text-purple"></i>
+            {{ exam.examDate }}
           </td>
-          <td>
-=======
->>>>>>> 37751a7 (update the main code)
-            <span class="fw-medium text-dark">{{ exam.examDate }}</span>
+          <!-- Duration -->
+          <td class="text-secondary fw-medium">
+            {{ exam.durationMinutes }} Mins
           </td>
-          <td>{{ exam.durationMinutes }} Mins</td>
-          <td>{{ exam.passingMarks }} / {{ exam.totalMarks }}</td>
+          <!-- Passing Marks -->
           <td>
-            <div *ngIf="exam.roomName; else noRoom">
-              <span class="fw-bold d-block text-success">{{ exam.roomName }} (Room #{{ exam.roomNumber }})</span>
-              <small class="text-muted d-block"><i class="bi bi-geo-alt me-1"></i>Location: {{ exam.roomLocation }}</small>
-            </div>
-            <ng-template #noRoom>
-              <span class="badge bg-secondary">Unallocated</span>
-            </ng-template>
+            <span class="fw-bold text-purple">{{ exam.passingMarks }}</span>
+            <span class="text-muted"> / {{ exam.totalMarks }}</span>
+          </td>
+          <!-- Assigned Venue -->
+          <td class="pe-4">
+            <span class="fw-bold text-purple d-block">{{ exam.roomName || 'TBD' }}</span>
+            <small class="text-muted d-block" *ngIf="$any(exam).venue || $any(exam).location">
+              <i class="bi bi-geo-alt me-0.5"></i>Location: {{ $any(exam).venue || $any(exam).location }}
+            </small>
           </td>
         </tr>
       </tbody>
     </table>
+
+    <ng-template #noExams>
+      <div class="text-center py-5">
+        <i class="bi bi-calendar-x display-4 text-muted mb-2 d-block"></i>
+        <p class="text-muted mb-0 fw-medium">No examinations scheduled or assigned yet.</p>
+      </div>
+    </ng-template>
   </div>
-  <ng-template #noExams>
-    <div class="text-center py-5">
-      <i class="bi bi-calendar-x display-4 text-muted mb-2 d-block"></i>
-      <p class="text-muted mb-0">No examinations assigned to your courses.</p>
-    </div>
-  </ng-template>
 </div>

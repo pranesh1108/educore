@@ -14,21 +14,20 @@ export const STUDENT_ROUTES: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./profile/profile.component').then(m => m.ProfileComponent)
+          import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
         path: 'courses',
         loadComponent: () =>
           import('./courses/courses.component').then(m => m.CoursesComponent)
       },
-      
-      // ── ADDED: Route parameter path mapping rule for the dynamic single view detail page ──
+
       {
         path: 'courses/:id',
         loadComponent: () =>
           import('./course-detail/course-detail').then(m => m.CourseDetailComponent)
       },
-      
+
       {
         path: 'assignments',
         loadComponent: () =>

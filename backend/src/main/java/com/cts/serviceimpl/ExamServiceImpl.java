@@ -4,14 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.cts.util.SecurityUtils;
 import org.springframework.stereotype.Service;
-
 import com.cts.annotation.AuditEvent;
 import com.cts.dto.*;
 import com.cts.entity.*;
-import com.cts.enumerate.AcademicTerm;
 import com.cts.enumerate.ExamStatus;
 import com.cts.exception.*;
 import com.cts.mapper.*;
@@ -24,7 +21,6 @@ import lombok.AllArgsConstructor;
 public class ExamServiceImpl implements ExamService {
 
     private final ExamMapper examMapper;
-    private final RegistrarMapper registrarMapper;
     private final InstructorMapper instructorMapper;
     private final ExamRepository examRepository;
     private final CourseRepository courseRepository;
@@ -49,7 +45,6 @@ public class ExamServiceImpl implements ExamService {
         Instructor instructor = instructorRepository.findById(inputDTO.getInstructorId())
                 .orElseThrow(() -> new InstructorNotFoundException("Instructor not found with id: " + inputDTO.getInstructorId()));
 
-        // VALIDATE EXAM DATE FALLS WITHIN COURSE TIMELINE WINDOW
         if (inputDTO.getExamDate() != null) {
             LocalDate targetExamDate = inputDTO.getExamDate().toLocalDate();
 
@@ -61,12 +56,10 @@ public class ExamServiceImpl implements ExamService {
             }
         }
 
-        //  ENFORCE EXACTLY ONE FINAL EXAM PER COURSE TRACK
-        if (examRepository.existsByCourse_CourseId(inputDTO.getCourseId())) { //
-            throw new BusinessException("An exam has already been scheduled for this course (" + course.getTitle() + "). Only one exam is permitted per course."); //
+        if (examRepository.existsByCourse_CourseId(inputDTO.getCourseId())) {
+            throw new BusinessException("An exam has already been scheduled for this course (" + course.getTitle() + "). Only one exam is permitted per course.");
         }
 
-        // INSTRUCTOR CONFLICT DETECTION
         if (inputDTO.getExamDate() != null) {
             LocalDate targetExamDate = inputDTO.getExamDate().toLocalDate();
             List<Exam> instructorExams = examRepository.findByInstructor_InstructorId(inputDTO.getInstructorId());
@@ -96,7 +89,6 @@ public class ExamServiceImpl implements ExamService {
     @AuditEvent(eventName = "EXAMS_SEARCHED", eventType = "READ", eventMessage = "Exams were searched")
     public List<ExamOutputDTO> searchExams(Long courseId, Long instructorId, String term, String status) {
         ExamStatus statusFilter = parseStatus(status);
-        String termFilter = (term == null || term.isBlank()) ? null : term.trim().toUpperCase();
         return examRepository.searchExams(courseId, instructorId, statusFilter)
                 .stream().map(examMapper::toExamOutputDTO).collect(Collectors.toList());
     }
@@ -114,7 +106,7 @@ public class ExamServiceImpl implements ExamService {
         Exam exam = findExamOrThrow(examId);
         long hoursUntilExam = java.time.temporal.ChronoUnit.HOURS.between(LocalDateTime.now(), exam.getExamDate());
         if (hoursUntilExam <= 24) {
-            throw new BusinessException("Exam cannot be deleted within 24 hours of the exam date. Hours remaining: " + hoursUntilExam);
+            throw new BusinessException("Exam cannot be deleted within 24 hours of the exam date.");
         }
         examRepository.delete(exam);
     }

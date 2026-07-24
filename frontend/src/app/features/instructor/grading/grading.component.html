@@ -3,158 +3,218 @@
   <p class="text-muted mb-0">Evaluate student assignment submissions and assign marks.</p>
 </div>
 
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-  {{ errorMessage }}
+<!-- Global Alerts -->
+<div class="alert alert-danger shadow-sm border-0" role="alert" *ngIf="errorMessage">
+  <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
 </div>
-
-<div class="alert alert-success" role="alert" *ngIf="successMessage">
-  {{ successMessage }}
+<div class="alert alert-success shadow-sm border-0" role="alert" *ngIf="successMessage">
+  <i class="bi bi-check-circle-fill me-2"></i>{{ successMessage }}
 </div>
 
 <app-loader *ngIf="loading" message="Loading assigned courses..."></app-loader>
 
-<div class="row g-3" *ngIf="!loading">
-  <!-- Course Selection Sidebar -->
-  <div class="col-md-3">
-    <div class="card border-0 shadow-sm p-3">
-      <h6 class="fw-bold mb-3 text-muted text-uppercase small">Assigned Courses ({{ courses?.length || 0 }})</h6>
-      <div class="list-group gap-1 border-0">
-        <button
-          *ngFor="let course of courses"
-          class="list-group-item list-group-item-action border-0 rounded text-start py-2"
-          [class.active-course]="selectedCourse?.courseId === course.courseId"
-          (click)="selectCourse(course)"
-        >
-          <span class="fw-bold d-block text-truncate">{{ course.title }}</span>
-          <small class="text-muted d-block text-truncate">{{ course.duration }}</small>
-        </button>
+<div *ngIf="!loading">
+
+  <!-- ── NEW DROPDOWN & SUMMARY STATS BAR ── -->
+  <div class="card border-0 shadow-sm p-3 mb-4 bg-white">
+    <div class="row align-items-center g-3">
+      <!-- Course Selector Dropdown -->
+      <div class="col-md-6 col-lg-5">
+        <label for="courseSelect" class="form-label small fw-bold text-muted text-uppercase mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+          <i class="bi bi-journal-bookmark me-1 text-purple"></i> Select Course Track
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0 text-purple">
+            <i class="bi bi-collection-fill"></i>
+          </span>
+          <select
+            id="courseSelect"
+            class="form-select border-start-0 bg-light fw-semibold text-dark py-2"
+            [ngModel]="selectedCourse"
+            (ngModelChange)="selectCourse($event)"
+          >
+            <option *ngFor="let course of courses" [ngValue]="course">
+              {{ course.title }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Course Context & Submissions Count -->
+      <div class="col-md-6 col-lg-7" *ngIf="selectedCourse">
+        <div class="d-flex align-items-center justify-content-md-end gap-3 pt-2 pt-md-0">
+          <div class="bg-light px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
+            <i class="bi bi-journal-text fs-5 text-purple"></i>
+            <div>
+              <span class="d-block text-muted" style="font-size: 0.7rem; text-transform: uppercase; font-weight: 600;">Prerequisite</span>
+              <span class="fw-bold small text-dark">{{ (selectedCourse.prerequisite || 'NONE').replace('_', ' ') }}</span>
+            </div>
+          </div>
+
+          <div class="bg-light px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-check-fill fs-5 text-purple"></i>
+            <div>
+              <span class="d-block text-muted" style="font-size: 0.7rem; text-transform: uppercase; font-weight: 600;">Total Submissions</span>
+              <span class="fw-bold small text-purple">{{ submissions.length }} Submissions</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Submissions Table and Grading Form -->
-  <div class="col-md-9" *ngIf="selectedCourse">
-    <div class="row g-3">
-      <!-- Submissions Table column -->
-      <div class="col-lg-7">
-        <div class="card border-0 shadow-sm p-4 h-100">
-          <h5 class="fw-bold mb-3">Submissions</h5>
-          <app-loader *ngIf="submissionsLoading" message="Loading student files..."></app-loader>
+  <!-- Full-Width Submissions Table -->
+  <div class="card border-0 shadow-sm bg-white overflow-hidden" *ngIf="selectedCourse">
+    <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <h5 class="fw-bold mb-0 text-dark">
+        Submissions for <span class="text-purple">{{ selectedCourse.title }}</span>
+      </h5>
+      <span class="badge bg-light text-dark border px-3 py-1.5 rounded-pill small fw-bold">
+        Total: {{ submissions.length }}
+      </span>
+    </div>
 
-          <div class="table-responsive" *ngIf="!submissionsLoading">
-            <table class="table align-middle" *ngIf="submissions.length > 0; else noSubmissions">
-              <thead>
-                <tr>
-                  <th>Student & Task</th>
-                  <th>Submitted At</th>
-                  <th>Status</th>
-                  <th>Grade</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let sub of submissions">
-                  <td>
-                    <span class="fw-bold d-block text-dark small">{{ sub.studentName }}</span>
-                    <small class="text-muted text-truncate d-block" style="max-width: 150px;">{{ sub.assignmentTitle }}</small>
-                  </td>
-                  <td>
-                    <span class="small text-muted">{{ sub.submittedAt | date:'short' }}</span>
-                  </td>
-                  <td>
-                    <span class="badge" [class.bg-warning]="sub.status === 'SUBMITTED'" [class.bg-success]="sub.status === 'GRADED'">
-                      {{ sub.status }}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="fw-bold text-success" *ngIf="sub.status === 'GRADED'">{{ sub.grade }}</span>
-                    <span class="text-muted small" *ngIf="sub.status !== 'GRADED'">-</span>
-                  </td>
-                  <td>
-                    <div class="d-flex gap-1">
-                      <button
-                        class="btn btn-sm btn-outline-secondary"
-                        title="Download Solution"
-                        (click)="downloadSubmission(sub.submissionId, sub.fileName)"
-                      >
-                        <i class="bi bi-download"></i>
-                      </button>
-                      <button
-                        class="btn btn-sm btn-success"
-                        (click)="openGradingForm(sub)"
-                      >
-                        {{ sub.status === 'GRADED' ? 'Regrade' : 'Grade' }}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <ng-template #noSubmissions>
-              <div class="text-center py-5">
-                <i class="bi bi-file-earmark-x display-4 text-muted mb-2 d-block"></i>
-                <p class="text-muted mb-0">No submissions uploaded for this course yet.</p>
+    <app-loader *ngIf="submissionsLoading" message="Loading student files..."></app-loader>
+
+    <div class="table-responsive" *ngIf="!submissionsLoading">
+      <table class="table table-hover align-middle mb-0" *ngIf="submissions.length > 0; else noSubmissions">
+        <thead class="table-light text-secondary small text-uppercase fw-bold" style="font-size: 0.78rem;">
+          <tr>
+            <th class="ps-4" style="width: 25%;">Student Name</th>
+            <th style="width: 25%;">Assignment Title</th>
+            <th style="width: 20%;">Submitted At</th>
+            <th style="width: 12%;">Status</th>
+            <th style="width: 8%;">Grade</th>
+            <th class="pe-4 text-end" style="width: 10%;">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="small text-dark" style="font-size: 0.88rem;">
+          <tr *ngFor="let sub of submissions">
+            <td class="ps-4 py-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-person-circle fs-5 text-purple"></i>
+                <span class="fw-bold text-dark">{{ sub.studentName }}</span>
               </div>
-            </ng-template>
-          </div>
+            </td>
+            <td class="fw-medium text-secondary">
+              {{ sub.assignmentTitle }}
+            </td>
+            <td class="text-muted font-monospace" style="font-size: 0.8rem;">
+              {{ sub.submittedAt | date:'medium' }}
+            </td>
+            <td>
+              <span 
+                class="badge rounded-pill px-2.5 py-1 text-uppercase font-monospace fw-bold"
+                [class.bg-warning-subtle]="sub.status === 'SUBMITTED'"
+                [class.text-warning-emphasis]="sub.status === 'SUBMITTED'"
+                [class.bg-success]="sub.status === 'GRADED'"
+                [class.text-white]="sub.status === 'GRADED'"
+              >
+                {{ sub.status }}
+              </span>
+            </td>
+            <td>
+              <span class="fw-bold fs-6 text-purple" *ngIf="sub.status === 'GRADED'">{{ sub.grade }}</span>
+              <span class="text-muted" *ngIf="sub.status !== 'GRADED'">—</span>
+            </td>
+            <td class="pe-4 text-end">
+              <div class="d-inline-flex gap-2">
+                <button
+                  class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+                  title="Download Solution PDF"
+                  (click)="downloadSubmission(sub.submissionId, sub.fileName)"
+                >
+                  <i class="bi bi-download"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-purple px-3 fw-medium"
+                  (click)="openGradingForm(sub)"
+                >
+                  {{ sub.status === 'GRADED' ? 'Regrade' : 'Grade' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #noSubmissions>
+        <div class="text-center py-5">
+          <i class="bi bi-file-earmark-x display-4 text-muted mb-2 d-block"></i>
+          <p class="text-muted mb-0 fw-medium">No student submissions uploaded for this course yet.</p>
         </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Evaluation Modal Backdrop -->
+<div class="modal-backdrop-custom d-flex align-items-center justify-content-center" *ngIf="gradingSubmission">
+  <div class="modal-card bg-white rounded-3 shadow-lg border-0 overflow-hidden animate-pop-in" style="width: 100%; max-width: 540px;">
+    <div class="modal-header-custom p-4 text-white d-flex justify-content-between align-items-center" style="background-color: #6b21a8;">
+      <div>
+        <h5 class="fw-bold mb-0 text-white"><i class="bi bi-check2-square me-2"></i>Evaluate Solution</h5>
+        <small class="text-light opacity-75">Assign numerical marks and provide review feedback.</small>
       </div>
+      <button class="btn-close btn-close-white shadow-none" (click)="closeGradingForm()"></button>
+    </div>
 
-      <!-- Grading Form column -->
-      <div class="col-lg-5" *ngIf="gradingSubmission">
-        <div class="card border-0 shadow-sm p-4 border-start border-success border-4 h-100">
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5 class="fw-bold mb-0">Evaluate Solution</h5>
-            <button class="btn-close" (click)="closeGradingForm()"></button>
+    <div class="p-4">
+      <div class="bg-light p-3 rounded-3 mb-4 border">
+        <div class="row g-2 small">
+          <div class="col-6">
+            <span class="text-muted d-block">Student Name</span>
+            <span class="fw-bold text-dark fs-6">{{ gradingSubmission.studentName }}</span>
           </div>
-
-          <div class="mb-4">
-            <small class="text-muted d-block">Student</small>
-            <span class="fw-bold text-dark">{{ gradingSubmission.studentName }}</span>
-            <small class="text-muted d-block mt-2">Assignment Title</small>
-            <span class="fw-medium text-dark">{{ gradingSubmission.assignmentTitle }}</span>
-            <small class="text-muted d-block mt-2">Submitted File</small>
-            <button class="btn btn-sm btn-link text-success p-0" (click)="downloadSubmission(gradingSubmission.submissionId, gradingSubmission.fileName)">
+          <div class="col-6">
+            <span class="text-muted d-block">Assignment Task</span>
+            <span class="fw-bold text-dark fs-6">{{ gradingSubmission.assignmentTitle }}</span>
+          </div>
+          <div class="col-12 mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted">Submitted Solution File:</span>
+            <button class="btn btn-sm btn-link text-purple p-0 fw-bold text-decoration-none" (click)="downloadSubmission(gradingSubmission.submissionId, gradingSubmission.fileName)">
               <i class="bi bi-file-earmark-pdf me-1"></i>{{ gradingSubmission.fileName }}
             </button>
           </div>
-
-          <form (ngSubmit)="submitGrade()">
-            <div class="mb-3">
-              <label for="gradeScore" class="form-label small fw-bold">Score (0 - 100)</label>
-              <input
-                type="number"
-                class="form-control"
-                id="gradeScore"
-                [(ngModel)]="scoreInput"
-                name="score"
-                min="0"
-                max="100"
-                step="0.5"
-                required
-              >
-            </div>
-            <div class="mb-3">
-              <label for="gradeFeedback" class="form-label small fw-bold">Feedback / Remarks</label>
-              <textarea
-                class="form-control"
-                id="gradeFeedback"
-                rows="3"
-                placeholder="Good effort. Double check your normalization logic..."
-                [(ngModel)]="feedbackInput"
-                name="feedback"
-              ></textarea>
-            </div>
-            <div class="d-flex justify-content-end gap-2">
-              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeGradingForm()">Cancel</button>
-              <button type="submit" class="btn btn-success btn-sm px-3" [disabled]="savingGrade">
-                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="savingGrade"></span>
-                Submit Evaluation
-              </button>
-            </div>
-          </form>
         </div>
       </div>
+
+      <form (ngSubmit)="submitGrade()">
+        <div class="mb-3">
+          <label for="gradeScore" class="form-label small fw-bold text-dark">Score (0 to 100%) <span class="text-danger">*</span></label>
+          <input
+            type="number"
+            class="form-control form-control-lg fs-5"
+            id="gradeScore"
+            [(ngModel)]="scoreInput"
+            name="score"
+            min="0"
+            max="100"
+            step="0.5"
+            required
+          >
+        </div>
+
+        <div class="mb-4">
+          <label for="gradeFeedback" class="form-label small fw-bold text-dark">Feedback / Remarks</label>
+          <textarea
+            class="form-control"
+            id="gradeFeedback"
+            rows="4"
+            placeholder="Write constructive evaluation notes or remarks here..."
+            [(ngModel)]="feedbackInput"
+            name="feedback"
+          ></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+          <button type="button" class="btn btn-outline-secondary px-4 fw-medium" (click)="closeGradingForm()">Cancel</button>
+          <button type="submit" class="btn btn-purple px-4 fw-bold shadow-sm" [disabled]="savingGrade">
+            <span class="spinner-border spinner-border-sm me-2" role="status" *ngIf="savingGrade"></span>
+            {{ savingGrade ? 'Saving Evaluation...' : 'Submit Evaluation' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

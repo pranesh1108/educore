@@ -1,12 +1,105 @@
 .auth-wrapper {
   min-height: 100vh;
-  background: linear-gradient(135deg, #eef2ff 0%, #f8f9fa 100%);
+  background: radial-gradient(circle at top left, rgba(107, 33, 168, 0.16), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.14), transparent 26%),
+    var(--color-bg-primary);
   padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn var(--transition-slow) ease-out;
 }
 
 .auth-card {
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
+  border: 1px solid rgba(124, 58, 237, 0.16);
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(16px);
+  transition: all var(--transition-slow);
+  animation: slideInUp var(--transition-slow) ease-out;
+}
+
+.auth-card:hover {
+  box-shadow: 0 36px 96px rgba(15, 23, 42, 0.16);
+}
+
+.form-control,
+.form-select {
+  border: 1px solid rgba(124, 58, 237, 0.16);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  transition: all var(--transition-base);
+  font-size: 0.95rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14);
+  outline: none;
+}
+
+.form-select {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
   border: none;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.5rem;
+  font-weight: 600;
+  transition: all var(--transition-base);
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(107, 33, 168, 0.18);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.form-text {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+a:hover {
+  color: var(--color-accent-dark);
+  }
+
+.card-title {
+  color: var(--color-text-primary);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 576px) {
+  .auth-wrapper {
+    padding: 1rem;
+  }
+
+  .auth-card {
+    max-width: 100%;
+    border-radius: var(--radius-lg);
+  }
 }

@@ -1,23 +1,40 @@
-.text-cyan {
-  color: #00838f !important;
+.stat-card {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(255, 255, 255, 0.95) 100%);
+  border: 1px solid rgba(124, 58, 237, 0.18);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-slow);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.stat-card {
-  transition: transform 0.2s ease;
-  border-radius: 12px;
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
 }
+
 .stat-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 34px rgba(107, 33, 168, 0.14);
+  border-color: var(--color-primary-dark);
 }
 
 .quick-link {
-  border: 1px solid rgba(0, 131, 143, 0.08);
-  border-radius: 12px;
-  transition: all 0.2s ease;
+  border: 1px solid rgba(124, 58, 237, 0.14);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-slow);
+  background-color: rgba(255, 255, 255, 0.94);
+  padding: 1.25rem;
 }
+
 .quick-link:hover {
-  background-color: #f2fbfb;
-  border-color: rgba(0, 131, 143, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 131, 143, 0.06);
-  transform: translateY(-2px);
+  background-color: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.28);
+  box-shadow: 0 10px 22px rgba(107, 33, 168, 0.12);
+  transform: translateY(-3px);
 }

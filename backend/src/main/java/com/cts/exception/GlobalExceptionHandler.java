@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -36,15 +35,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    //Authorization Exception
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDeniedException(
             com.cts.exception.AccessDeniedException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN); // 403
     }
-     
-    
-    // User
+
     @ExceptionHandler(InvalidEmailException.class)
     public ResponseEntity<String> handleInvalidEmailException(InvalidEmailException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -60,7 +56,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    //Instructor
     @ExceptionHandler(InstructorNotFoundException.class)
     public ResponseEntity<String> handleInstructorNotFoundException(InstructorNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -72,13 +67,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
-    //Student
     @ExceptionHandler(StudentNotFoundException.class)
     public ResponseEntity<String> handleStudentNotFoundException(StudentNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    //Course
     @ExceptionHandler(CourseNotFoundException.class)
     public ResponseEntity<String> handleCourseNotFoundException(CourseNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -89,13 +82,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
-    //Assignment
     @ExceptionHandler(AssignmentNotFoundException.class)
     public ResponseEntity<String> handleAssignmentNotFoundException(AssignmentNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    //Submission
     @ExceptionHandler(SubmissionNotFoundException.class)
     public ResponseEntity<String> handleSubmissionNotFoundException(SubmissionNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -111,7 +102,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    //File
     @ExceptionHandler(FileStorageException.class)
     public ResponseEntity<String> handleFileStorageException(FileStorageException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -122,7 +112,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    //Registrar
     @ExceptionHandler(AcademicException.class)
     public ResponseEntity<String> handleAcademicException(AcademicException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -133,19 +122,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
-    //Exam
     @ExceptionHandler(ExamNotFoundException.class)
     public ResponseEntity<String> handleExamNotFoundException(ExamNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    //Business
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<String> handleBusinessException(BusinessException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    // Database constraint violations
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDatabaseConstraints(DataIntegrityViolationException ex) {
         return new ResponseEntity<>(
@@ -153,26 +139,18 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT);
     }
 
-//    //Enrollment
-//    @ExceptionHandler(EnrollmentException.class)
-//    public ResponseEntity<String> handleEnrollmentException(EnrollmentException ex) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
-//    }
-
     @ExceptionHandler(NotEnrolledException.class)
     public ResponseEntity<String> handleNotEnrolledException(NotEnrolledException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
 
-    //ConstraintViolation
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<String> handleConstraintViolationException(
             ConstraintViolationException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    //Missing required @RequestParam
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<String> handleMissingParams(
             MissingServletRequestParameterException ex) {
@@ -181,7 +159,6 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST);
     }
 
-    //Wrong type for path variable or request param
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> handleTypeMismatch(
             MethodArgumentTypeMismatchException ex) {
@@ -191,7 +168,6 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST);
     }
 
-    // Malformed JSON / bad date format
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex) {
@@ -202,19 +178,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 
-    //Resource not found (generic)
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    //Generic fallback
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGenericException(Exception ex) {
         ex.printStackTrace();
         return new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Object> handleMaxUploadSizeExceededException(

@@ -37,15 +37,14 @@ export class DashboardComponent implements OnInit {
         this.instructorApi.getAssignedCourses().subscribe({
           next: (courses) => {
             this.coursesCount = courses ? courses.length : 0;
-            this.fetchExams(); // Proceed to check exams
+            this.fetchExams();
           },
           error: (err) => {
             const errorMsg = err?.error?.message || err?.message || '';
-            
-            // ── FIX: Intercept the empty course exception and handle it silently ──
+
             if (errorMsg.includes('No courses assigned') || err?.status === 404) {
               this.coursesCount = 0;
-              this.fetchExams(); // Safe to proceed with exams loading now!
+              this.fetchExams();
             } else {
               this.errorMessage = errorMsg || 'Unable to load assigned courses.';
               this.loading = false;

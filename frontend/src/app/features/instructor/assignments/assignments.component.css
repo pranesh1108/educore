@@ -1,40 +1,32 @@
-.active-course {
-  background-color: #e8f5e9 !important;
-  color: #198754 !important;
-  border-left: 4px solid #198754 !important;
+.text-purple {
+  color: #6b21a8 !important;
 }
 
-.text-success {
-  color: #198754 !important;
-}
-
-.btn-success {
-  background-color: #198754;
+.btn-purple {
+  background-color: #6b21a8 !important;
+  color: #ffffff !important;
   border: none;
-  color: white;
-}
-.btn-success:hover {
-  background-color: #157347;
+  transition: all 0.2s ease-in-out;
 }
 
-.btn-link.text-success {
-  color: #198754 !important;
-  text-decoration: none;
-}
-.btn-link.text-success:hover {
-  color: #157347 !important;
-}
-.animate-slide {
-  animation: slideIn 0.15s ease-out forwards;
+.btn-purple:hover:not(:disabled) {
+  background-color: #581c87 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 33, 168, 0.25);
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+.btn-purple:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.alert-purple {
+  background-color: #f3e8ff;
+  border-left: 4px solid #6b21a8 !important;
+  color: #581c87;
+}
+
+.form-select:focus, .form-control:focus {
+  border-color: #6b21a8;
+  box-shadow: 0 0 0 3px rgba(107, 33, 168, 0.15);
 }

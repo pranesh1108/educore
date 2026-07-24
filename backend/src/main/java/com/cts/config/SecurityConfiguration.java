@@ -13,12 +13,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.List;
 
 
- // Spring Security configuration for EduCore360.
- //
 @Configuration
 @AllArgsConstructor
 @EnableMethodSecurity
@@ -42,21 +39,20 @@ public class SecurityConfiguration {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // ── Public — no token required ────────────────────────────
+                        //  Public  no token required
                         .requestMatchers(
                                 "/api/v1/user/register",
                                 "/api/v1/user/login"
                         ).permitAll()
 
-                        // Swagger UI — public for dev/testing
+                        // Swagger UI
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // ── Shared — any valid JWT (all roles) ────────────────────
-                        // Course catalogue accessible by registrar, instructor, student, exam-coordinator
+                        // Shared for all roles
                         .requestMatchers("/api/v1/courses/all", "/api/v1/courses/filter").authenticated()
 
                         // Role identity lookup — any authenticated user
@@ -65,7 +61,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/instructor/{email}").authenticated()
                         .requestMatchers("/api/v1/exam-coordinator/{email}").authenticated()
 
-                        // ── Role-specific paths ───────────────────────────────────
+                        // Role-specific paths
                         .requestMatchers("/api/v1/registrar/**").hasRole("REGISTRAR")
                         .requestMatchers("/api/v1/instructor/**").hasRole("INSTRUCTOR")
                         .requestMatchers("/api/v1/student/**").hasRole("STUDENT")

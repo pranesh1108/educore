@@ -1,59 +1,73 @@
 <div class="auth-wrapper d-flex align-items-center justify-content-center">
   <div class="card auth-card shadow-sm">
-    <div class="card-body p-4 p-md-5">
-
-      <div class="text-center mb-4">
-        <h3 class="fw-bold mb-1">Educore</h3>
-        <p class="text-muted mb-0">Sign in to your account</p>
-      </div>
-
-      <div class="alert alert-danger py-2" role="alert" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
-
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-
-        <div class="mb-3">
-          <label for="email" class="form-label">Email address</label>
-          <input
-            id="email"
-            type="email"
-            class="form-control"
-            formControlName="email"
-            placeholder="name@example.com"
-            [class.is-invalid]="f.email.invalid && f.email.touched"
-          />
-          <div class="invalid-feedback" *ngIf="f.email.invalid && f.email.touched">
-            <span *ngIf="f.email.errors?.['required']">Email is required.</span>
-            <span *ngIf="f.email.errors?.['email']">Enter a valid email address.</span>
+    <div class="card-body p-0">
+      <div class="login-layout">
+        <div class="login-hero">
+          <div class="login-hero__visual">
+              <img
+                      src="logo.webp"
+                      alt="Educore Logo"
+                      class="img-fluid rounded-4 shadow-sm"
+                      style="max-width: 100%; height: auto; object-fit: contain;"
+              />
           </div>
         </div>
 
-        <div class="mb-4">
-          <label for="password" class="form-label">Password</label>
-          <input
-            id="password"
-            type="password"
-            class="form-control"
-            formControlName="password"
-            placeholder="Enter your password"
-            [class.is-invalid]="f.password.invalid && f.password.touched"
-          />
-          <div class="invalid-feedback" *ngIf="f.password.invalid && f.password.touched">
-            <span *ngIf="f.password.errors?.['required']">Password is required.</span>
+        <div class="login-form-panel">
+          <div class="form-header px-4 pt-4 pb-3">
+            <h2 class="fw-bold mb-1">Sign in</h2>
+            <p class="text-muted mb-0">Enter your credentials to continue with Educore.</p>
+          </div>
+
+          <div class="px-4 pb-4">
+            <div class="alert alert-danger py-2" role="alert" *ngIf="errorMessage">
+              {{ errorMessage }}
+            </div>
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input
+                  id="email"
+                  type="email"
+                  class="form-control"
+                  formControlName="email"
+                  placeholder="name@example.com"
+                  [class.is-invalid]="f.email.invalid && f.email.touched"
+                />
+                <div class="invalid-feedback" *ngIf="f.email.invalid && f.email.touched">
+                  <span *ngIf="f.email.errors?.['required']">Email is required.</span>
+                  <span *ngIf="f.email.errors?.['email']">Enter a valid email address.</span>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="password" class="form-label">Password</label>
+                <input
+                  id="password"
+                  type="password"
+                  class="form-control"
+                  formControlName="password"
+                  placeholder="Enter your password"
+                  [class.is-invalid]="f.password.invalid && f.password.touched"
+                />
+                <div class="invalid-feedback" *ngIf="f.password.invalid && f.password.touched">
+                  <span *ngIf="f.password.errors?.['required']">Password is required.</span>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2" [disabled]="loading">
+                <span class="spinner-border spinner-border-sm" *ngIf="loading"></span>
+                <span>{{ loading ? 'Signing in...' : 'Sign In' }}</span>
+              </button>
+            </form>
+
+            <p class="text-center text-muted mt-4 mb-0">
+              Don't have an account? <a routerLink="/auth/register">Create one</a>
+            </p>
           </div>
         </div>
-
-        <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2" [disabled]="loading">
-          <span class="spinner-border spinner-border-sm" *ngIf="loading"></span>
-          <span>{{ loading ? 'Signing in...' : 'Sign In' }}</span>
-        </button>
-      </form>
-
-      <p class="text-center text-muted mt-4 mb-0">
-        Don't have an account? <a routerLink="/auth/register">Create one</a>
-      </p>
-
+      </div>
     </div>
   </div>
 </div>

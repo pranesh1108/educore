@@ -5,13 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import com.cts.dto.*;
 import com.cts.service.ExamResultService;
 import com.cts.service.ExamRoomService;
 import com.cts.service.ExamService;
 import com.cts.service.PhysicalRoomService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,7 +27,6 @@ public class ExamCoordinatorController {
     private final ExamResultService examResultService;
     private final PhysicalRoomService physicalRoomService;
 
-    // ── EXAM LIFECYCLE MANAGEMENT ───────────────────────────────────────────
 
     @Operation(
             summary = "Create a new exam lifecycle track",
@@ -72,7 +69,6 @@ public class ExamCoordinatorController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // ── VENUE VENUE ALLOCATIONS AND ROOM BATCHING ────────────────────────────
 
     @Operation(
             summary = "Assign a physical venue slot and auto-allocate unassigned student batches",
@@ -92,7 +88,6 @@ public class ExamCoordinatorController {
         return new ResponseEntity<>(examRoomService.getRoomsForExam(examId), HttpStatus.OK);
     }
 
-    // ── UTILITY SYSTEM REFERENCE INTEGRATION ─────────────────────────────────
 
     @Operation(
             summary = "Get all registered instructors",
@@ -103,7 +98,6 @@ public class ExamCoordinatorController {
         return new ResponseEntity<>(examService.getAllInstructors(), HttpStatus.OK);
     }
 
-    // ── PHYSICAL ROOM UTILITIES ──────────────────────────────────────────────
 
     @Operation(
             summary = "Create a standalone physical room slot",
@@ -123,7 +117,6 @@ public class ExamCoordinatorController {
         return new ResponseEntity<>(physicalRoomService.getAllRooms(status), HttpStatus.OK);
     }
 
-    // ── FINAL MARKS GRADING PUBLICATION ──────────────────────────────────────
 
     @Operation(
             summary = "Publish final examination results for a student tracking record",

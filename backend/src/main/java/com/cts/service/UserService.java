@@ -4,7 +4,6 @@ import com.cts.dto.LoginDTO;
 import com.cts.dto.LoginResponseDTO;
 import com.cts.dto.RegistrationInputDTO;
 import com.cts.dto.RegistrationOutputDTO;
-import com.cts.enumerate.Role;
 
 public interface UserService {
 

@@ -12,24 +12,24 @@
 </div>
 
 <div class="text-center py-5" *ngIf="loading">
-  <div class="spinner-border text-primary" role="status"></div>
+  <div class="spinner-border text-accent" role="status"></div>
   <p class="text-muted small mt-2">Loading your profile details...</p>
 </div>
 
 <div class="row g-4" *ngIf="!loading && profile">
   <div class="col-lg-4">
     <div class="card border-0 shadow-sm text-center p-4 h-100 bg-white">
-      <div class="mx-auto text-primary rounded-circle d-flex align-items-center justify-content-center mb-3" 
-           style="width: 80px; height: 80px; font-size: 2rem; font-weight: bold; background-color: #f3e8ff !important; color: #6b21a8 !important;">
+      <div class="mx-auto text-accent rounded-circle d-flex align-items-center justify-content-center mb-3" 
+           style="width: 80px; height: 80px; font-size: 2rem; font-weight: bold; background-color: var(--color-accent-light) !important; color: var(--color-accent) !important;">
         {{ initials }}
       </div>
       <h5 class="fw-bold mb-1 text-dark">{{ profile.name }}</h5>
       <p class="text-muted small mb-3">{{ profile.email }}</p>
 
       <div class="border-top pt-3 text-start">
-        <span class="small fw-bold text-muted d-block mb-2"><i class="bi bi-tags me-1 text-purple"></i> My Active Interests</span>
+        <span class="small fw-bold text-muted d-block mb-2"><i class="bi bi-tags me-1 text-accent"></i> My Active Interests</span>
         <div class="d-flex flex-wrap gap-1" *ngIf="selectedInterests.size > 0; else noInterests">
-          <span *ngFor="let interest of selectedInterests" class="badge bg-purple-light text-purple border rounded-pill py-1.5 px-2.5 small">
+          <span *ngFor="let interest of selectedInterests" class="badge bg-accent-light text-accent border-accent rounded-pill py-1.5 px-2.5 small">
             {{ interest.replace('_', ' ') }}
           </span>
         </div>
@@ -50,11 +50,20 @@
           <input
             type="date"
             class="form-control"
+            [class.is-invalid]="isDateOutOfRange"
             id="dob"
             name="dateOfBirth"
             [(ngModel)]="dateOfBirth"
+            [min]="minDate"
+            [max]="maxDate"
             required
           >
+          <div class="invalid-feedback" *ngIf="isDateOutOfRange">
+            Birth year must be from 1980 onwards and student must be at least 18 years old.
+          </div>
+          <div class="form-text small text-muted" *ngIf="!isDateOutOfRange">
+            Birth year must be from 1980 onwards and student must be at least 18 years old.
+          </div>
         </div>
 
         <div class="mb-3">
@@ -64,7 +73,7 @@
               type="button"
               *ngFor="let option of interestOptions"
               class="btn btn-sm rounded-pill py-1.5 px-3 border transition-all text-capitalize d-flex align-items-center gap-1.5"
-              [class.btn-purple]="selectedInterests.has(option)"
+              [class.btn-accent]="selectedInterests.has(option)"
               [class.bg-white]="!selectedInterests.has(option)"
               [class.text-dark]="!selectedInterests.has(option)"
               (click)="toggleInterest(option)"
@@ -79,9 +88,8 @@
         <div class="d-flex justify-content-end mt-4">
           <button 
             type="submit" 
-            class="btn btn-purple px-4 shadow-sm" 
-            style="background-color: #7c3aed; color: white; border: none;"
-            [disabled]="saving || !dateOfBirth || selectedInterests.size === 0"
+            class="btn btn-accent px-4 shadow-sm" 
+            [disabled]="saving || !dateOfBirth || isDateOutOfRange || selectedInterests.size === 0"
           >
             <span class="spinner-border spinner-border-sm me-2" *ngIf="saving"></span>
             {{ saving ? 'Saving Changes...' : 'Save Changes' }}

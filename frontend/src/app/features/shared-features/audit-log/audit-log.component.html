@@ -3,7 +3,7 @@
     <p class="text-muted mb-0">Monitor live background security checkpoints, operation histories, and record updates.</p>
 </div>
 
-<div class="alert alert-danger shadow-sm border-0 animate-fade-in" role="alert" *ngIf="errorMessage">
+<div class="alert alert-danger shadow-sm border-0" role="alert" *ngIf="errorMessage">
     <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
 </div>
 
@@ -15,7 +15,7 @@
                 <input
                         type="text"
                         class="form-control border-start-0"
-                        placeholder="Search by actor email, action keyword, description summary..."
+                        placeholder="Search by email, event name, context summary message"
                         [(ngModel)]="searchTerm"
                         (input)="applyFilters()"
                 >
@@ -57,7 +57,8 @@
             </tr>
             </thead>
             <tbody class="small text-dark" style="font-size: 0.85rem;">
-            <tr *ngFor="let log of filteredLogs">
+            <!-- Looping through the specialized paged slice instead of the whole array -->
+            <tr *ngFor="let log of pagedLogs">
                 <td class="ps-4 text-muted fw-medium">{{ log.createdAt | date:'medium' }}</td>
                 <td>
                     <div class="d-flex align-items-center gap-2">
@@ -69,9 +70,9 @@
                     <span class="badge bg-light text-dark border font-monospace px-2 py-1">{{ log.eventName }}</span>
                 </td>
                 <td>
-            <span class="badge rounded-pill px-2.5 py-1 text-uppercase font-monospace fw-bold" [ngClass]="getBadgeClass(log.eventType)">
-              {{ log.eventType }}
-            </span>
+                    <span class="badge rounded-pill px-2.5 py-1 text-uppercase font-monospace fw-bold" [ngClass]="getBadgeClass(log.eventType)">
+                      {{ log.eventType }}
+                    </span>
                 </td>
                 <td class="pe-4 text-muted text-wrap lh-sm">{{ log.eventMessage }}</td>
             </tr>
@@ -83,5 +84,15 @@
             </tr>
             </tbody>
         </table>
+    </div>
+
+    <!-- Custom Pagination component rendering perfectly at the footer boundary -->
+    <div class="p-3 border-top d-flex justify-content-center" *ngIf="!loading && filteredLogs.length > pageSize">
+        <app-pagination
+                [totalItems]="filteredLogs.length"
+                [pageSize]="pageSize"
+                [currentPage]="currentPage"
+                (pageChange)="setPage($event)"
+        ></app-pagination>
     </div>
 </div>

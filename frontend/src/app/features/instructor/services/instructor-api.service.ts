@@ -35,8 +35,8 @@ export class InstructorApiService {
   }
 
   publishCourseMaterial(courseId: number, file: File, textContent?: string): Observable<CourseMaterial> {
-    const formData = new FormData();
-    formData.append('file', file);
+    const formData = new FormData();    
+    formData.append('file', file);    // Pass the binary File object directly (multipart/form-data)
     if (textContent) {
       formData.append('textContent', textContent);
     }

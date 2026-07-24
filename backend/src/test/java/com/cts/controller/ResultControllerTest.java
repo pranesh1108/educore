@@ -3,7 +3,6 @@ package com.cts.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -31,12 +30,13 @@ public class ResultControllerTest {
 
     @Test
     void getResultsByStudent_success() {
-        ExamResultOutputDTO resultDto = ExamResultOutputDTO.builder().resultId(1L).score(85.0).build();
-        when(examResultService.getResultsByStudent(1L)).thenReturn(Arrays.asList(resultDto));
+        ExamResultOutputDTO dto = ExamResultOutputDTO.builder().resultId(1L).score(88.0).build();
+        when(examResultService.getResultsByStudent()).thenReturn(List.of(dto));
 
-        ResponseEntity<List<ExamResultOutputDTO>> response = resultController.getResultsByStudent(1L);
+        ResponseEntity<List<ExamResultOutputDTO>> response = resultController.getResultsByStudent();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
+        assertEquals(88.0, response.getBody().get(0).getScore());
     }
 }

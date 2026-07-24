@@ -19,7 +19,7 @@ public class JpaAuditConfiguration {
 class AuditorAwareImpl implements AuditorAware<String> {
     @Override
     public Optional<String> getCurrentAuditor() {
-        return Optional.of("system_user"); // Replace with actual user logic
+        return Optional.of("system_user");
     }
 }
 

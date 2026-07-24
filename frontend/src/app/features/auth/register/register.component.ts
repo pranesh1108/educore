@@ -45,7 +45,6 @@ export class RegisterComponent {
   roles = [
     { label: 'Student', value: Role.STUDENT },
     { label: 'Instructor', value: Role.INSTRUCTOR },
-    { label: 'Registrar', value: Role.REGISTRAR },
     { label: 'Exam Coordinator', value: Role.EXAM_COORDINATOR }
   ];
 

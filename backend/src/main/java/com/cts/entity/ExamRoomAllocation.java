@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "exam_room_allocation",
        uniqueConstraints = {
-           // One student can only be in one room per exam
            @UniqueConstraint(name = "uk_student_exam",
                    columnNames = {"student_id", "exam_id"})
        })

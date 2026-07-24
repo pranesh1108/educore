@@ -1,3 +1,5 @@
+// src/app/features/instructor/models/instructor.model.ts
+
 import { CourseContent, Prerequisite } from '../../registrar/models/registrar.model';
 import { AssignmentFile, CourseMaterial, Enrollment, Exam, Submission } from '../../student/models/student.model';
 
@@ -58,13 +60,15 @@ export interface InstructorCourse {
   courseId: number;
   title: string;
   description: string;
-  duration: string;
+  duration?: string;
   prerequisite: Prerequisite;
-  courseContent: CourseContent[];
-  isPublished: boolean;
+  courseContent?: CourseContent[];
+  isPublished?: boolean;
   instructorId: number;
   instructorName: string;
   syllabusPath?: string;
+  startDate?: string; // <-- ADDED
+  endDate?: string;   // <-- ADDED
 }
 
 export interface InstructorResourceResponse {

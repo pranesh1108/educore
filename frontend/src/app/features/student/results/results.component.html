@@ -34,7 +34,7 @@
             <span class="fw-bold text-dark fs-5">{{ res.score }}%</span>
           </td>
           <td>
-            <span class="badge px-3 py-2 rounded-pill" [class.bg-success]="res.result === 'PASS'" [class.bg-danger]="res.result === 'FAIL'">
+            <span class="badge px-3 py-2 rounded-pill" [class.badge-accent-filled]="res.result === 'PASS'" [class.bg-danger]="res.result === 'FAIL'">
               {{ res.result }}
             </span>
           </td>

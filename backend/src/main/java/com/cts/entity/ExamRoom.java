@@ -23,7 +23,6 @@ public class ExamRoom {
     @Column(name = "location", nullable = false)
     private String location;
 
-    // Fixed at 30 — never changes
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
 

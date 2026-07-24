@@ -21,11 +21,24 @@ export class ProfileComponent implements OnInit {
   successMessage = '';
 
   dateOfBirth = '';
+
+  readonly minDate = '1980-01-01';
+  readonly maxDate = this.getMaxDateFor18YearsOld();
+
+  private getMaxDateFor18YearsOld(): string {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 18);
+    return today.toISOString().split('T')[0];
+  }
+
+  // Helper check: returns true if the typed/selected date is out of bounds
+  get isDateOutOfRange(): boolean {
+    if (!this.dateOfBirth) return false;
+    return this.dateOfBirth < this.minDate || this.dateOfBirth > this.maxDate;
+  }
   
-  // Track selected academic topics using a Set collection structure
   selectedInterests: Set<string> = new Set<string>();
 
-  // Mirroring the exact Enum options layout structure matching your operational needs
   readonly interestOptions: string[] = [
     'JAVA', 'PYTHON', 'SPRING_BOOT', 'MACHINE_LEARNING', 'DATA_SCIENCE', 
     'WEB_DEVELOPMENT', 'DATABASE', 'DEVOPS', 'CLOUD_COMPUTING', 
@@ -50,7 +63,6 @@ export class ProfileComponent implements OnInit {
         this.dateOfBirth = profile.dateOfBirth || '';
         this.selectedInterests.clear();
         
-        // Handle incoming comma-separated strings or pre-parsed collections safely
         if (profile.fieldOfInterest) {
           const items = typeof profile.fieldOfInterest === 'string'
             ? profile.fieldOfInterest.split(',')
@@ -81,13 +93,18 @@ export class ProfileComponent implements OnInit {
   }
 
   saveProfile(): void {
-    if (!this.dateOfBirth || this.selectedInterests.size === 0) return;
+    // 1. Guard against empty values or out-of-range dates
+    if (!this.dateOfBirth || this.isDateOutOfRange || this.selectedInterests.size === 0) {
+      if (this.isDateOutOfRange) {
+        this.errorMessage = 'Date of birth must be between Jan 1, 1980 and 18 years prior to today.';
+      }
+      return;
+    }
     
     this.saving = true;
     this.errorMessage = '';
     this.successMessage = '';
 
-    // Convert the tracking collection back to a standard payload delivery format string
     const interestsPayload = Array.from(this.selectedInterests).join(',');
 
     this.studentApi.updateProfile({

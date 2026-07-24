@@ -7,24 +7,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
-//  Handles 401 UNAUTHORIZED — fired when a request arrives with NO valid JWT
-//  (missing token, expired token, or malformed token) and tries to access
-//  any secured endpoint.
-//
-//  This is the companion to CustomAccessDeniedHandler:
-//    401 = not authenticated at all  (no/bad token)
-//    403 = authenticated but wrong role
-//
-//  Also wired directly into the security filter chain for the same reason —
-//  Spring Security throws AuthenticationException before the request reaches
-//  any controller or @ExceptionHandler.
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {

@@ -19,7 +19,7 @@
   
   <div class="col-lg-4">
     <div class="card border-0 shadow-sm p-4 h-100 bg-white d-flex flex-column">
-      <span class="badge bg-light text-purple align-self-start mb-2">
+      <span class="badge bg-accent-light text-accent align-self-start mb-2">
         {{ (course.prerequisite || 'NONE').replace('_', ' ') }}
       </span>
       <h3 class="fw-bold text-dark mb-2">{{ course.title }}</h3>
@@ -33,7 +33,7 @@
 
       <div class="mt-auto pt-4">
         <button 
-          class="btn btn-purple w-100 py-2.5 text-white fw-bold shadow-sm" 
+          class="btn btn-accent w-100 py-2.5 text-white fw-bold shadow-sm" 
           style="background-color: #6b21a8;"
           [disabled]="submitting || successMessage"
           (click)="registerAndEnroll()"
@@ -52,7 +52,7 @@
       <div class="w-100 h-100 d-flex flex-column border rounded position-relative" style="min-height: 550px;">
         
         <div *ngIf="pdfLoading" class="position-absolute top-50 start-50 translate-middle text-center w-100 pt-5 mt-5">
-          <div class="spinner-border text-purple mb-2" role="status"></div>
+          <div class="spinner-border text-accent mb-2" role="status"></div>
           <p class="text-muted small">Downloading secure document...</p>
         </div>
 

@@ -1,17 +1,38 @@
-.bg-green-light {
-  background-color: #e8f5e9 !important;
+.bg-accent-light {
+  background-color: var(--color-accent-light) !important;
 }
 
+.text-accent,
 .text-success {
-  color: #198754 !important;
+  color: var(--color-accent) !important;
 }
 
+.btn-accent,
 .btn-success {
-  background-color: #198754;
+  background-color: var(--color-accent);
   color: white;
   border: none;
+  border-radius: var(--radius-md);
   font-weight: 500;
+  transition: all var(--transition-base);
 }
+
+.btn-accent:hover:not(:disabled),
 .btn-success:hover:not(:disabled) {
-  background-color: #157347;
+  background-color: var(--color-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.profile-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-slow);
+  padding: 1.5rem;
+}
+
+.profile-card:hover {
+  box-shadow: 0 8px 20px rgba(107, 33, 168, 0.1);
+  border-color: var(--color-accent);
 }

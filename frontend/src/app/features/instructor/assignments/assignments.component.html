@@ -1,71 +1,104 @@
-<div style="position: fixed; top: 20px; right: 20px; z-index: 99999; min-width: 300px; pointer-events: none;">
-  <div *ngIf="materialSuccessMessage()" 
-       style="background: #198754; color: white; padding: 16px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-bottom: 10px; font-weight: 600; pointer-events: auto;">
-    <i class="bi bi-check-circle-fill me-2"></i> {{ materialSuccessMessage() }}
-  </div>
-
-  <div *ngIf="assignmentSuccessMessage()" 
-       style="background: #198754; color: white; padding: 16px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 600; pointer-events: auto;">
-    <i class="bi bi-check-circle-fill me-2"></i> {{ assignmentSuccessMessage() }}
-  </div>
-</div>
-
 <div class="mb-4">
   <h3 class="fw-bold mb-1">Publish Resources</h3>
   <p class="text-muted mb-0">Upload course materials and publish student assignment evaluations.</p>
 </div>
 
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
+<!-- Global Alert Messages -->
+<div class="alert alert-danger shadow-sm border-0" role="alert" *ngIf="errorMessage">
   <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
 </div>
 
 <app-loader *ngIf="loading" message="Loading assigned courses..."></app-loader>
 
-<div class="row g-3" *ngIf="!loading">
-  <div class="col-lg-3">
-    <div class="card border-0 shadow-sm p-3">
-      <h6 class="fw-bold mb-3 text-muted text-uppercase small">Assigned Courses ({{ courses?.length || 0 }})</h6>
-      <div class="list-group gap-1 border-0">
-        <button
-          *ngFor="let course of courses"
-          class="list-group-item list-group-item-action border-0 rounded text-start py-2"
-          [class.active-course]="selectedCourse?.courseId === course.courseId"
-          (click)="selectCourse(course)"
-        >
-          <span class="fw-bold d-block text-truncate">{{ course.title }}</span>
-          <small class="text-muted d-block text-truncate">{{ course.duration }}</small>
-        </button>
+<div *ngIf="!loading">
+
+  <!-- TOP DROPDOWN & COURSE CONTEXT BAR -->
+  <div class="card border-0 shadow-sm p-3 mb-4 bg-white">
+    <div class="row align-items-center g-3">
+      <!-- Course Selector Dropdown -->
+      <div class="col-md-6 col-lg-5">
+        <label for="courseSelect" class="form-label small fw-bold text-muted text-uppercase mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+          <i class="bi bi-journal-bookmark me-1 text-purple"></i> Select Course Track
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0 text-purple">
+            <i class="bi bi-collection-fill"></i>
+          </span>
+          <select
+            id="courseSelect"
+            class="form-select border-start-0 bg-light fw-semibold text-dark py-2"
+            [ngModel]="selectedCourse"
+            (ngModelChange)="selectCourse($event)"
+          >
+            <option *ngFor="let course of courses" [ngValue]="course">
+              {{ course.title }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Context Stat Cards -->
+      <div class="col-md-6 col-lg-7" *ngIf="selectedCourse">
+        <div class="d-flex align-items-center justify-content-md-end gap-3 pt-2 pt-md-0">
+          <div class="bg-light px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
+            <i class="bi bi-shield-check fs-5 text-purple"></i>
+            <div>
+              <span class="d-block text-muted" style="font-size: 0.7rem; text-transform: uppercase; font-weight: 600;">Prerequisite</span>
+              <span class="fw-bold small text-dark">{{ (selectedCourse.prerequisite || 'NONE').replace('_', ' ') }}</span>
+            </div>
+          </div>
+
+          <div class="bg-light px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
+            <i class="bi bi-folder-check fs-5 text-purple"></i>
+            <div>
+              <span class="d-block text-muted" style="font-size: 0.7rem; text-transform: uppercase; font-weight: 600;">Handouts & Tasks</span>
+              <span class="fw-bold small text-purple">
+                {{ (resources?.materials?.length || 0) + (resources?.assignmentFiles?.length || 0) }} Published
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="col-lg-9" *ngIf="selectedCourse">
+  <!-- Resource Publishing Panels -->
+  <div *ngIf="selectedCourse">
     
-    <div class="alert alert-success border-0 shadow-sm p-3 mb-3 fw-bold small" *ngIf="materialSuccessMessage() || assignmentSuccessMessage()">
-      <i class="bi bi-bell-fill text-success me-2 animate-bounce"></i> Status Update: {{ materialSuccessMessage() || assignmentSuccessMessage() }}
+    <!-- Status Toast Alert -->
+    <div class="alert alert-purple border-0 shadow-sm mb-4 fw-bold small d-flex align-items-center" *ngIf="materialSuccessMessage() || assignmentSuccessMessage()">
+      <i class="bi bi-check-circle-fill me-2 fs-5 text-purple"></i> 
+      <span>Status Update: {{ materialSuccessMessage() || assignmentSuccessMessage() }}</span>
     </div>
 
-    <div class="row g-3">
-      <div class="col-md-6">
-        <div class="card border-0 shadow-sm p-3 mb-3">
-          <h5 class="fw-bold mb-3 text-success"><i class="bi bi-file-earmark-pdf me-2"></i>Publish Handout</h5>
+    <div class="row g-4">
+      
+      <!-- LEFT COLUMN: Publish Handout + Published Handouts List -->
+      <div class="col-lg-6 d-flex flex-column gap-4">
+        
+        <!-- Publish Handout Form Card -->
+        <div class="card border-0 shadow-sm p-4 bg-white">
+          <h5 class="fw-bold mb-3 text-purple d-flex align-items-center">
+            <i class="bi bi-file-earmark-pdf me-2"></i>Publish Handout
+          </h5>
           
           <form (ngSubmit)="publishMaterial()">
-            <div class="mb-2">
-              <label for="materialFile" class="form-label small fw-bold">PDF Handout File<span class="text-danger">*</span></label>
+            <div class="mb-3">
+              <label for="materialFile" class="form-label small fw-bold">PDF Handout File <span class="text-danger">*</span></label>
               <input
                 type="file"
-                class="form-control form-control-sm"
+                class="form-control"
                 id="materialFile"
                 accept="application/pdf"
                 (change)="onMaterialFileSelected($event)"
                 required
               >
             </div>
+
             <div class="mb-3">
               <label for="matText" class="form-label small fw-bold">Description Notes</label>
               <textarea
-                class="form-control form-control-sm"
+                class="form-control"
                 id="matText"
                 rows="2"
                 placeholder="e.g. Read Chapters 3 and 4 before next lecture"
@@ -73,67 +106,59 @@
                 name="textContent"
               ></textarea>
             </div>
+            
             <button
               type="submit"
-              class="btn btn-sm btn-success w-100"
+              class="btn btn-purple w-100 py-2 fw-bold"
               [disabled]="submitting || !materialFile"
             >
               <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="submitting"></span>
               Upload Handout
             </button>
-          </form>
+          </form> 
         </div>
 
-        <div class="card border-0 shadow-sm p-3">
-          <h5 class="fw-bold mb-3">Course Library</h5>
-          <app-loader *ngIf="resourcesLoading" message="Loading resources..."></app-loader>
+        <!-- Published Handouts Card (Left Side) -->
+        <div class="card border-0 shadow-sm p-4 bg-white flex-grow-1">
+          <h5 class="fw-bold mb-3 text-dark d-flex align-items-center">
+            <i class="bi bi-file-earmark-pdf text-danger me-2"></i>Published Handouts
+          </h5>
+
+          <app-loader *ngIf="resourcesLoading" message="Loading handouts..."></app-loader>
 
           <ng-container *ngIf="!resourcesLoading && resources">
-            <div class="mb-4">
-              <h6 class="fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-file-earmark-pdf me-2"></i>Handouts</h6>
-              <div class="list-group gap-2 border-0" *ngIf="resources.materials.length > 0; else noMaterials">
-                <div class="list-group-item rounded border p-2 d-flex justify-content-between align-items-center" *ngFor="let mat of resources.materials">
-                  <div class="text-truncate me-2">
-                    <span class="fw-bold d-block text-truncate small">{{ mat.fileName }}</span>
-                    <small class="text-muted" style="font-size: 0.7rem;" *ngIf="mat.textContent">{{ mat.textContent }}</small>
-                  </div>
-                  <small class="text-muted flex-shrink-0" style="font-size: 0.75rem;">{{ mat.uploadedAt | date:'shortDate' }}</small>
+            <div class="list-group gap-2 border-0" *ngIf="resources.materials.length > 0; else noMaterials">
+              <div class="list-group-item rounded-3 border p-3 d-flex justify-content-between align-items-center bg-light" *ngFor="let mat of resources.materials">
+                <div class="text-truncate me-2">
+                  <span class="fw-bold d-block text-truncate small text-dark">{{ mat.fileName }}</span>
+                  <small class="text-muted" style="font-size: 0.75rem;" *ngIf="mat.textContent">{{ mat.textContent }}</small>
                 </div>
+                <small class="text-muted font-monospace flex-shrink-0" style="font-size: 0.75rem;">{{ mat.uploadedAt | date:'shortDate' }}</small>
               </div>
-              <ng-template #noMaterials>
-                <p class="text-muted small">No handouts published.</p>
-              </ng-template>
             </div>
-
-            <div>
-              <h6 class="fw-bold text-muted small text-uppercase mb-2"><i class="bi bi-journal-check me-2"></i>Assignments</h6>
-              <div class="d-flex flex-column gap-2" *ngIf="resources.assignmentFiles.length > 0; else noAssignments">
-                <div class="card border p-2" *ngFor="let assign of resources.assignmentFiles">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <span class="fw-bold d-block text-truncate small">{{ assign.assignmentTitle }}</span>
-                  </div>
-                  <small class="text-muted text-truncate" style="font-size: 0.7rem;"><i class="bi bi-paperclip me-1"></i>{{ assign.fileName }}</small>
-                  <small class="text-muted text-end" style="font-size: 0.7rem;">Published: {{ assign.uploadedAt | date:'shortDate' }}</small>
-                </div>
-              </div>
-              <ng-template #noAssignments>
-                <p class="text-muted small">No evaluation tasks published.</p>
-              </ng-template>
-            </div>
+            <ng-template #noMaterials>
+              <p class="text-muted small italic mb-0 py-2">No handouts published for this course track yet.</p>
+            </ng-template>
           </ng-container>
         </div>
+
       </div>
 
-      <div class="col-md-6">
-        <div class="card border-0 shadow-sm p-3 h-100">
-          <h5 class="fw-bold mb-3 text-success"><i class="bi bi-journal-plus me-2"></i>Publish Assignment</h5>
+      <!-- RIGHT COLUMN: Publish Assignment + Published Assignments List -->
+      <div class="col-lg-6 d-flex flex-column gap-4">
+        
+        <!-- Publish Assignment Form Card -->
+        <div class="card border-0 shadow-sm p-4 bg-white">
+          <h5 class="fw-bold mb-3 text-purple d-flex align-items-center">
+            <i class="bi bi-journal-plus me-2"></i>Publish Assignment
+          </h5>
 
           <form (ngSubmit)="publishAssignment()">
-            <div class="mb-2">
-              <label for="assignTitle" class="form-label small fw-bold">Title<span class="text-danger">*</span></label>
+            <div class="mb-3">
+              <label for="assignTitle" class="form-label small fw-bold">Title <span class="text-danger">*</span></label>
               <input
                 type="text"
-                class="form-control form-control-sm"
+                class="form-control"
                 id="assignTitle"
                 placeholder="e.g. Homework 1: Relational Algebra"
                 [(ngModel)]="assignmentTitle"
@@ -141,12 +166,13 @@
                 required
               >
             </div>
-            <div class="row g-2 mb-2">
+            
+            <div class="row g-2 mb-3">
               <div class="col-sm-6">
-                <label for="assignMarks" class="form-label small fw-bold">Total Marks<span class="text-danger">*</span></label>
+                <label for="assignMarks" class="form-label small fw-bold">Total Marks <span class="text-danger">*</span></label>
                 <input
                   type="number"
-                  class="form-control form-control-sm"
+                  class="form-control"
                   id="assignMarks"
                   [(ngModel)]="assignmentTotalMarks"
                   name="totalMarks"
@@ -155,10 +181,10 @@
                 >
               </div>
               <div class="col-sm-6">
-                <label for="assignFile" class="form-label small fw-bold">Assignment File<span class="text-danger">*</span></label>
+                <label for="assignFile" class="form-label small fw-bold">Assignment File <span class="text-danger">*</span></label>
                 <input
                   type="file"
-                  class="form-control form-control-sm"
+                  class="form-control"
                   id="assignmentFile"
                   accept="application/pdf"
                   (change)="onAssignmentFileSelected($event)"
@@ -166,31 +192,34 @@
                 >
               </div>
             </div>
-            <div class="mb-2">
-              <label for="assignDueDate" class="form-label small fw-bold">Due Date & Time<span class="text-danger">*</span></label>
+            
+            <div class="mb-3">
+              <label for="assignDueDate" class="form-label small fw-bold">Due Date & Time <span class="text-danger">*</span></label>
               <input
                 type="datetime-local"
-                class="form-control form-control-sm"
+                class="form-control"
                 id="assignDueDate"
                 [(ngModel)]="assignmentDueDateInput"
                 name="dueDate"
                 required
               >
             </div>
-            <div class="mb-3">
+            
+            <div class="mb-4">
               <label for="assignInst" class="form-label small fw-bold">Instructions</label>
               <textarea
-                class="form-control form-control-sm"
+                class="form-control"
                 id="assignInst"
-                rows="4"
+                rows="3"
                 placeholder="Add supplementary grading guidelines..."
                 [(ngModel)]="assignmentInstructions"
                 name="instructions"
               ></textarea>
             </div>
+            
             <button
               type="submit"
-              class="btn btn-sm btn-success w-100 mt-2"
+              class="btn btn-purple w-100 py-2 fw-bold"
               [disabled]="submitting || !assignmentTitle || !assignmentFile || !assignmentDueDateInput"
             >
               <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="submitting"></span>
@@ -198,6 +227,33 @@
             </button>
           </form>
         </div>
+
+        <!-- Published Assignments Card (Right Side) -->
+        <div class="card border-0 shadow-sm p-4 bg-white flex-grow-1">
+          <h5 class="fw-bold mb-3 text-dark d-flex align-items-center">
+            <i class="bi bi-journal-check text-purple me-2"></i>Published Assignments
+          </h5>
+
+          <app-loader *ngIf="resourcesLoading" message="Loading assignments..."></app-loader>
+
+          <ng-container *ngIf="!resourcesLoading && resources">
+            <div class="d-flex flex-column gap-2" *ngIf="resources.assignmentFiles.length > 0; else noAssignments">
+              <div class="card border p-3 bg-light" *ngFor="let assign of resources.assignmentFiles">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <span class="fw-bold d-block text-truncate small text-dark">{{ assign.assignmentTitle }}</span>
+                  <small class="text-muted font-monospace flex-shrink-0" style="font-size: 0.7rem;">Published: {{ assign.uploadedAt | date:'shortDate' }}</small>
+                </div>
+                <small class="text-muted text-truncate" style="font-size: 0.75rem;">
+                  <i class="bi bi-paperclip me-1"></i>{{ assign.fileName }}
+                </small>
+              </div>
+            </div>
+            <ng-template #noAssignments>
+              <p class="text-muted small italic mb-0 py-2">No evaluation task criteria published yet.</p>
+            </ng-template>
+          </ng-container>
+        </div>
+
       </div>
 
     </div>

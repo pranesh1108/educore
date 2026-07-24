@@ -1,11 +1,6 @@
 <div class="mb-4">
-<<<<<<< HEAD
-  <h3 class="fw-bold mb-1">Registrar Dashboard</h3>
-  <p class="text-muted mb-0">Welcome back Registrar.</p>
-=======
   <h3 class="fw-bold mb-1 text-dark">Registrar Dashboard</h3>
   <p class="text-muted mb-0">Welcome back, Registrar.</p>
->>>>>>> 37751a7 (update the main code)
 </div>
 
 <app-loader *ngIf="loading" message="Loading your dashboard..."></app-loader>
@@ -14,44 +9,34 @@
   {{ errorMessage }}
 </div>
 
-<<<<<<< HEAD
-<div class="row g-3" *ngIf="!loading">
-  <div class="col-md-6">
-    <a routerLink="/registrar/courses" class="text-decoration-none">
-      <div class="card border-0 shadow-sm h-100 quick-link py-2">
-        <div class="card-body">
-          <h5 class="fw-bold mb-2 text-primary">
-            <i class="bi bi-journal-bookmark me-2"></i>Manage Courses
-          </h5>
-          <p class="text-muted small mb-0">Provision new courses and browse the full catalogue layout updates.</p>
-=======
 <div class="row g-4" *ngIf="!loading">
-
-  <div class="col-md-4">
-    <a routerLink="/registrar/courses" class="text-decoration-none">
+  <div class="col-md-3">
+    <a routerLink="/registrar/provision-course" class="text-decoration-none">
       <div class="card border-0 shadow-sm h-100 quick-link py-2 bg-white transition-all">
         <div class="card-body">
           <h5 class="fw-bold mb-2 text-purple" style="color: #6b21a8;">
-            <i class="bi bi-journal-bookmark me-2"></i>Manage Courses
+            <i class="bi bi-journal-plus me-2"></i>Provision Course
           </h5>
-          <p class="text-muted small mb-0">Provision new academic course tracks and browse the full global catalogue.</p>
->>>>>>> 37751a7 (update the main code)
+          <p class="text-muted small mb-0">Create new course tracks, upload syllabus documents, and assign instructors.</p>
         </div>
       </div>
     </a>
   </div>
 
-<<<<<<< HEAD
-  <div class="col-md-6">
-    <a routerLink="/registrar/users" class="text-decoration-none">
-      <div class="card border-0 shadow-sm h-100 quick-link py-2">
+  <div class="col-md-3">
+    <a routerLink="/registrar/course-catalog" class="text-decoration-none">
+      <div class="card border-0 shadow-sm h-100 quick-link py-2 bg-white transition-all">
         <div class="card-body">
-          <h5 class="fw-bold mb-2 text-primary">
-            <i class="bi bi-people me-2"></i>Students & Instructors
+          <h5 class="fw-bold mb-2 text-purple" style="color: #6b21a8;">
+            <i class="bi bi-journal-bookmark me-2"></i>Course Catalog
           </h5>
-          <p class="text-muted small mb-0">Search student and instructor database records.</p>
-=======
-  <div class="col-md-4">
+          <p class="text-muted small mb-0">Browse and search the full global catalogue of provisioned courses.</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-md-3">
     <a routerLink="/registrar/users" class="text-decoration-none">
       <div class="card border-0 shadow-sm h-100 quick-link py-2 bg-white transition-all">
         <div class="card-body">
@@ -59,15 +44,12 @@
             <i class="bi bi-people me-2"></i>Students & Instructors
           </h5>
           <p class="text-muted small mb-0">Search, filter, and review active student and faculty member profile records.</p>
->>>>>>> 37751a7 (update the main code)
         </div>
       </div>
     </a>
   </div>
-<<<<<<< HEAD
-=======
 
-  <div class="col-md-4">
+  <div class="col-md-3">
     <a routerLink="/registrar/audit-logs" class="text-decoration-none">
       <div class="card border-0 shadow-sm h-100 quick-link py-2 bg-white transition-all">
         <div class="card-body">
@@ -79,6 +61,4 @@
       </div>
     </a>
   </div>
-
->>>>>>> 37751a7 (update the main code)
 </div>

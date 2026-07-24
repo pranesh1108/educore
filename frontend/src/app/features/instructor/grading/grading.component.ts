@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { InstructorApiService } from '../services/instructor-api.service';
 import { InstructorCourse } from '../models/instructor.model';
@@ -40,22 +42,56 @@ export class GradingComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
-    this.instructorApi.getAssignedCourses().subscribe({
-      next: (courses) => {
-        this.courses = courses || [];
-        if (this.courses.length > 0) {
-          this.selectCourse(this.courses[0]);
-        } else {
+    // Fetch both assigned courses AND published exams in parallel
+    forkJoin({
+      courses: this.instructorApi.getAssignedCourses().pipe(catchError(() => of([]))),
+      exams: this.instructorApi.getMyExams().pipe(catchError(() => of([])))
+    }).subscribe({
+      next: ({ courses, exams }) => {
+        const rawCourses = courses || [];
+        const examCourseIds = new Set((exams || []).map(e => e.courseId));
+
+        if (rawCourses.length === 0) {
+          this.courses = [];
+          this.selectedCourse = null;
           this.loading = false;
+          return;
         }
+
+        // Validate each course against Exam publication AND Resource Lock
+        const resourceChecks = rawCourses.map(course => {
+          // If an exam has been published for this course, exclude it immediately
+          if (examCourseIds.has(course.courseId)) {
+            return of(null);
+          }
+
+          return this.instructorApi.getCourseResources(course.courseId).pipe(
+            catchError(() => of(null)) // Returns null if course is ended or scores published
+          );
+        });
+
+        forkJoin(resourceChecks).subscribe({
+          next: (results) => {
+            this.courses = rawCourses.filter((_, index) => results[index] !== null);
+            if (this.courses.length > 0) {
+              this.selectCourse(this.courses[0]);
+            } else {
+              this.selectedCourse = null;
+            }
+            this.loading = false;
+          },
+          error: () => {
+            this.courses = [];
+            this.selectedCourse = null;
+            this.loading = false;
+          }
+        });
       },
       error: (err) => {
         const errorMsg = err?.error?.message || err?.message || '';
-
-        // ── FIX: Suppress empty assigned course error banner on page init ──
         if (errorMsg.includes('No courses assigned') || err?.status === 404) {
           this.courses = [];
-          this.errorMessage = ''; // Force banner to stay invisible
+          this.errorMessage = '';
         } else {
           this.errorMessage = errorMsg || 'Failed to load assigned courses.';
         }
@@ -65,6 +101,7 @@ export class GradingComponent implements OnInit {
   }
 
   selectCourse(course: InstructorCourse): void {
+    if (!course) return;
     this.selectedCourse = course;
     this.submissionsLoading = true;
     this.submissions = [];
@@ -80,14 +117,12 @@ export class GradingComponent implements OnInit {
       },
       error: (err) => {
         const errorMsg = err?.error?.message || err?.message || '';
-        
         if (errorMsg.includes('No submissions found') || err?.status === 404) {
           this.submissions = []; 
           this.errorMessage = ''; 
         } else {
           this.errorMessage = errorMsg || 'Failed to load student submissions.';
         }
-        
         this.submissionsLoading = false;
         this.loading = false;
       }
@@ -105,7 +140,7 @@ export class GradingComponent implements OnInit {
         link.click();
         window.URL.revokeObjectURL(url);
       },
-      error: (err) => {
+      error: () => {
         this.errorMessage = 'Failed to download student solution file.';
       }
     });

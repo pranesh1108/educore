@@ -6,7 +6,6 @@ import com.cts.dto.SubmissionOutputDTO;
 
 public interface SubmissionService {
 
-    // FIXED: Removed explicit Long instructorId from all signatures below
     List<SubmissionOutputDTO> getSubmissionsForCourse(Long courseId);
 
     SubmissionOutputDTO gradeSubmission(Long submissionId, GradeInputDTO gradeInputDTO);

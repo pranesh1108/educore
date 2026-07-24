@@ -5,65 +5,76 @@
 
 <app-loader *ngIf="loading" message="Loading exam schedule..."></app-loader>
 
-<div class="alert alert-danger" role="alert" *ngIf="!loading && errorMessage">
-  {{ errorMessage }}
+<!-- System Infrastructure Error Banner -->
+<div class="alert alert-danger shadow-sm border-0 mb-4" role="alert" *ngIf="!loading && errorMessage">
+  <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
 </div>
 
-<div class="card border-0 shadow-sm p-4" *ngIf="!loading">
+<div class="card border-0 shadow-sm p-4 bg-white" *ngIf="!loading">
   <div class="table-responsive" *ngIf="exams.length > 0; else noExams">
-    <table class="table align-middle">
+    <table class="table align-middle mb-0">
       <thead>
         <tr>
-          <th>Course & Exam</th>
-<<<<<<< HEAD
-          <th>Term</th>
-=======
->>>>>>> 37751a7 (update the main code)
-          <th>Date & Time</th>
-          <th>Duration</th>
-          <th>Passing Marks</th>
-          <th>Venue / Room</th>
+          <th scope="col" class="ps-3">Course & Exam</th>
+          <th scope="col">Date & Time</th>
+          <th scope="col">Duration</th>
+          <th scope="col">Passing Marks</th>
+          <th scope="col" class="pe-3">Venue / Room</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let exam of exams">
-          <td>
+          <!-- Course & Exam Info -->
+          <td class="ps-3 py-3">
             <span class="fw-bold d-block text-dark">{{ exam.courseTitle }}</span>
-            <small class="text-muted d-block">{{ exam.title }}</small>
-            <small class="text-muted d-block font-italic" *ngIf="exam.description">{{ exam.description }}</small>
+            <small class="text-muted d-block fw-medium">{{ exam.title }}</small>
+            <small class="text-muted d-block fst-italic" *ngIf="exam.description">{{ exam.description }}</small>
           </td>
+
+          <!-- Date & Time -->
           <td>
-<<<<<<< HEAD
-            <span class="badge bg-purple">{{ exam.term.replace('_', ' ') }}</span>
+            <span class="fw-medium text-dark">
+              <i class="bi bi-calendar-event text-accent me-1.5"></i>
+              {{ exam.examDate }}
+            </span>
           </td>
+
+          <!-- Duration -->
           <td>
-=======
->>>>>>> 37751a7 (update the main code)
-            <span class="fw-medium text-dark">{{ exam.examDate }}</span>
+            <span class="text-dark fw-medium">{{ exam.durationMinutes }} Mins</span>
           </td>
+
+          <!-- Passing Marks -->
           <td>
-            <span class="text-dark">{{ exam.durationMinutes }} Mins</span>
+            <span class="fw-bold text-accent">{{ exam.passingMarks }}</span>
+            <span class="text-muted"> / {{ exam.totalMarks }}</span>
           </td>
-          <td>
-            <span class="text-dark">{{ exam.passingMarks }} / {{ exam.totalMarks }}</span>
-          </td>
-          <td>
-            <div *ngIf="exam.roomName; else noRoom">
-              <span class="fw-bold d-block text-purple">{{ exam.roomName }} (Room #{{ exam.roomNumber }})</span>
-              <small class="text-muted d-block"><i class="bi bi-geo-alt me-1"></i>Location: {{ exam.roomLocation }}</small>
+
+          <!-- Venue / Room Allocation -->
+          <td class="pe-3">
+            <div *ngIf="exam.roomName || $any(exam).roomNumber; else noRoom">
+              <span class="fw-bold d-block text-accent">
+                {{ exam.roomName || 'Exam Hall' }} 
+                <ng-container *ngIf="$any(exam).roomNumber">(Room #{{ $any(exam).roomNumber }})</ng-container>
+              </span>
+              <small class="text-muted d-block" *ngIf="$any(exam).roomLocation || $any(exam).venue || $any(exam).location">
+                <i class="bi bi-geo-alt me-1"></i>Location: {{ $any(exam).roomLocation || $any(exam).venue || $any(exam).location }}
+              </small>
             </div>
             <ng-template #noRoom>
-              <span class="badge bg-secondary">Unallocated</span>
+              <span class="badge bg-secondary-subtle text-secondary border px-2.5 py-1">Unallocated</span>
             </ng-template>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
+
+  <!-- Empty State View -->
   <ng-template #noExams>
     <div class="text-center py-5">
       <i class="bi bi-calendar-x display-4 text-muted mb-2 d-block"></i>
-      <p class="text-muted mb-0">No upcoming examinations scheduled for your enrolled tracks.</p>
+      <p class="text-muted mb-0 fw-medium">No upcoming examinations scheduled for your enrolled tracks.</p>
     </div>
   </ng-template>
 </div>

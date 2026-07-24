@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-
 import com.cts.annotation.AuditEvent;
 import com.cts.dto.GradeInputDTO;
 import com.cts.dto.SubmissionOutputDTO;
@@ -24,7 +23,6 @@ import com.cts.repository.SubmissionRepository;
 import com.cts.service.FileStorageService;
 import com.cts.service.SubmissionService;
 import com.cts.util.SecurityUtils;
-
 import lombok.AllArgsConstructor;
 
 @Service
@@ -102,7 +100,6 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     private void verifyOwnership(Long instructorId, Long courseId) {
-        // FIXED: Removed redundant instructor existence db check here since getLoggedInInstructor handles it beforehand
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new CourseNotFoundException("Course not found with id: " + courseId));
         if (course.getInstructor() == null || !course.getInstructor().getInstructorId().equals(instructorId)) {

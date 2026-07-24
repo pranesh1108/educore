@@ -10,16 +10,11 @@ import java.time.LocalDate;
 @Builder
 public class StudentInputDTO {
 
-
-
     @Past(message = "Date of birth must be a past date")
     private LocalDate dateOfBirth;
 
-
-
     @Pattern(regexp = "^[a-zA-Z_, ]*$", message = "Field of interest contains invalid characters")
     private String fieldOfInterest;
-
 
     private String name;
     private String email;

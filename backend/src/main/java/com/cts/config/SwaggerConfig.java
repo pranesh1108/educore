@@ -12,28 +12,20 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 
-//
-//  Configures the OpenAPI / Swagger UI for EduCore360.
-//
-//  What this sets up:
-//   - Bearer JWT authentication scheme (paste token from POST /api/v1/user/login)
-//   - API metadata (title, version, contact, license)
-//   - Local dev server URL
-//
-//  Access Swagger UI at: http://localhost:9098/swagger-ui/index.html
-//
+
+// Swagger at: http://localhost:9098/swagger-ui/index.html
+
 @Configuration
 public class SwaggerConfig {
 
     @Bean
     public OpenAPI eduCore360OpenAPI() {
         return new OpenAPI()
-            // Server
+
             .addServersItem(new Server()
                 .url("http://localhost:9098")
                 .description("Local Development Server"))
 
-            //Security: apply Bearer JWT globally to all secured endpoints
             .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
             .components(new Components()
                 .addSecuritySchemes("Bearer Authentication", new SecurityScheme()
@@ -45,7 +37,7 @@ public class SwaggerConfig {
                         + "then paste it here (without the 'Bearer ' prefix)."
                     )))
 
-            // API Metadata
+
             .info(new Info()
                 .title("EduCore360 API")
                 .version("1.0.0")

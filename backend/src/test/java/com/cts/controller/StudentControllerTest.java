@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,20 +25,29 @@ public class StudentControllerTest {
     private StudentController studentController;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void updateStudentProfile_success_returns200() {
-        StudentInputDTO input = StudentInputDTO.builder().userId(1L).educationLevel("BACHELOR").build();
-        StudentOutputDTO output = StudentOutputDTO.builder().studentId(1L).educationLevel("BACHELOR").build();
+    void getStudentProfile_success() {
+        StudentOutputDTO output = StudentOutputDTO.builder().studentId(1L).fieldOfInterest("JAVA").build();
+        when(studentService.getStudentProfile()).thenReturn(output);
 
-        when(studentService.updateStudentProfile(any(StudentInputDTO.class))).thenReturn(output);
-
-        ResponseEntity<StudentOutputDTO> response = studentController.updateStudentProfile(input);
+        ResponseEntity<StudentOutputDTO> response = studentController.getStudentProfile();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("BACHELOR", response.getBody().getEducationLevel());
+        assertEquals("JAVA", response.getBody().getFieldOfInterest());
+    }
+
+    @Test
+    void enrollInCourse_success() {
+        EnrollmentOutputDTO dto = EnrollmentOutputDTO.builder().enrollmentId(1L).courseTitle("Java").build();
+        when(studentService.enrollInCourse(10L)).thenReturn(dto);
+
+        ResponseEntity<EnrollmentOutputDTO> response = studentController.enrollInCourse(10L);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals("Java", response.getBody().getCourseTitle());
     }
 }

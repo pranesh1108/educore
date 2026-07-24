@@ -27,7 +27,7 @@ export class ProfileComponent implements OnInit {
 
   profileForm!: FormGroup;
 
-  // ── Injecting the service API helper class cleanly inside the constructor context ──
+
   constructor(private fb: FormBuilder, private instructorApi: InstructorApiService) {
     this.buildForm();
   }
@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    // ── LIVE FETCH API CALL ──
+  
     this.instructorApi.getProfile().subscribe({
       next: (data) => {
         this.profile = data;
@@ -56,7 +56,7 @@ export class ProfileComponent implements OnInit {
           this.initials = data.name.charAt(0).toUpperCase();
         }
         
-        // Populate the active tracking selection storage indices out of database values
+       
         this.savedSkills = data.skills ? [...data.skills] : [];
         this.selectedSkills = data.skills ? [...data.skills] : [];
         
@@ -73,12 +73,12 @@ export class ProfileComponent implements OnInit {
     });
   }
 
- // ── CHANGED: Parameter updated from 'string' to 'InstructorSkill' ──
+ 
   isSelected(skill: InstructorSkill): boolean {
     return this.selectedSkills.includes(skill);
   }
 
-  // ── CHANGED: Parameter updated from 'string' to 'InstructorSkill' ──
+  
   toggleSkill(skill: InstructorSkill): void {
     if (this.isSelected(skill)) {
       this.selectedSkills = this.selectedSkills.filter(s => s !== skill);
@@ -87,7 +87,7 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  // ── LIVE UPDATE API CALL ──
+
   onSave(): void {
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
@@ -115,7 +115,7 @@ export class ProfileComponent implements OnInit {
           this.savedSkills = [...updatedProfile.skills];
           this.selectedSkills = [...updatedProfile.skills];
         }
-        // Auto-fade success alert window wrapper box elements after 4 seconds
+        
         setTimeout(() => this.successMessage = '', 4000);
       },
       error: (err) => {

@@ -74,26 +74,21 @@ public class RegistrarAcademicServiceImpl implements RegistrarAcademicService {
                 .instructor(instructor)
                 .build();
 
-        // 2. ── CHANGED: Read and process the Base64 string payload ──
-        // (Assuming you added `private String syllabusPath;` inside RegistrarCourseCreateDTO to hold the base64 text)
+
         if (createDTO.getSyllabusPath() != null && !createDTO.getSyllabusPath().isBlank()) {
             try {
-                // Ensure the folder location structures exist safely
+
                 if (!Files.exists(rootLocation)) {
                     Files.createDirectories(rootLocation);
                 }
 
-                // Decode the base64 string data payload directly back into a binary byte array
                 byte[] pdfBytes = java.util.Base64.getDecoder().decode(createDTO.getSyllabusPath());
 
-                // Generate a clean filename for disk persistence
                 String uniqueFileName = System.currentTimeMillis() + "_syllabus.pdf";
                 Path destinationPath = this.rootLocation.resolve(Paths.get(uniqueFileName)).normalize().toAbsolutePath();
 
-                // Save the byte array onto your storage folder location path
                 Files.write(destinationPath, pdfBytes);
 
-                // Set the local path key directly to your Course entity column model
                 course.setSyllabusPath(uniqueFileName);
 
             } catch (IllegalArgumentException e) {

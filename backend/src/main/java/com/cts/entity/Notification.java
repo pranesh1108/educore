@@ -18,7 +18,7 @@ public class Notification {
     private Long notificationId;
 
     @Column(name = "user_email", nullable = false)
-    private String userEmail; // Binds notification to a specific target user
+    private String userEmail;
 
     @Column(name = "title", nullable = false)
     private String title;

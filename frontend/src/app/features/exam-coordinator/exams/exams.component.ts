@@ -66,7 +66,7 @@ export class ExamsComponent implements OnInit {
           error: (err) => {
             const courseErrorMsg = err?.error?.message || err?.message || '';
             
-            // ── INTERCEPT THE NO COURSES MATCH ERROR BANNER ──
+            // INTERCEPT THE NO COURSES MATCH ERROR BANNER 
             if (courseErrorMsg.includes('No courses match') || err?.status === 404) {
               this.courses = [];
               this.errorMessage = ''; // Suppress the error banner completely
@@ -140,7 +140,7 @@ export class ExamsComponent implements OnInit {
   }
 
   deleteExam(examId: number): void {
-    if (!confirm('Are you sure you want to delete this exam track?')) return;
+    
 
     this.errorMessage = '';
     this.successMessage = '';

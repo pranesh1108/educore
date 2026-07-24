@@ -3,7 +3,6 @@ package com.cts.controller;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,13 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.cts.dto.*;
 import com.cts.service.AssignmentService;
 import com.cts.service.CourseService;
 import com.cts.service.InstructorService;
 import com.cts.service.SubmissionService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ConstraintViolation;
@@ -39,11 +36,9 @@ public class InstructorController {
     private final SubmissionService submissionService;
     private final Validator validator;
 
-    // ── PROFILE MANAGEMENT ───────────────────────────────────────────────────
-
     @Operation(
             summary = "Update instructor profile",
-            description = "Updates skills alignment, professional experience metrics, and date of birth details using the active token identity session context."
+            description = "Updates skills , professional experience metrics, and date of birth details."
     )
     @PutMapping("/profile/update")
     public ResponseEntity<InstructorOutputDTO> updateInstructorProfile(
@@ -60,8 +55,6 @@ public class InstructorController {
     public ResponseEntity<InstructorOutputDTO> getInstructorProfile() {
         return new ResponseEntity<>(instructorService.getInstructorProfile(), HttpStatus.OK);
     }
-
-    // ── COURSE MANAGEMENT ────────────────────────────────────────────────────
 
     @Operation(
             summary = "Get my assigned courses",
@@ -82,8 +75,6 @@ public class InstructorController {
         return new ResponseEntity<>(instructorService.getEnrolledStudents(courseId), HttpStatus.OK);
     }
 
-    // ── COURSE MATERIALS RESOURCES ───────────────────────────────────────────
-
     @Operation(
             summary = "Publish course material handout",
             description = "Publishes mandatory PDF content handouts accompanied by optional description text guidelines."
@@ -97,8 +88,6 @@ public class InstructorController {
                 courseService.publishCourseMaterial(courseId, file, textContent), HttpStatus.OK);
     }
 
-    // Replace the old file retrieval endpoints inside InstructorController.java with this method:
-
     @Operation(
             summary = "View course resources (Materials & Assignment Files)",
             description = "Retrieves both published lecture handouts and evaluation template files for a course in a single combined call. Access is restricted strictly to the instructor assigned to the course."
@@ -108,7 +97,6 @@ public class InstructorController {
         return new ResponseEntity<>(courseService.getCourseResources(courseId), HttpStatus.OK);
     }
 
-    // ── ASSIGNMENTS MANAGEMENT ───────────────────────────────────────────────
 
     @Operation(
             summary = "Publish a course assignment",
@@ -145,10 +133,6 @@ public class InstructorController {
         return new ResponseEntity<>(
                 assignmentService.publishAssignment(assignmentInputDTO, file), HttpStatus.CREATED);
     }
-
-
-
-    // ── SUBMISSIONS AND EVALUATION ───────────────────────────────────────────
 
     @Operation(
             summary = "View student submissions for a course",
@@ -196,6 +180,5 @@ public class InstructorController {
     public ResponseEntity<List<ExamOutputDTO>> getMyExams() {
         return new ResponseEntity<>(instructorService.getMyExams(), HttpStatus.OK);
     }
-
 
 }

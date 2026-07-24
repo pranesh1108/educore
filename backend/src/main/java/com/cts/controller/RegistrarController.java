@@ -1,11 +1,8 @@
 package com.cts.controller;
 
-<<<<<<< HEAD
-=======
 import com.cts.entity.AuditLog;
 import com.cts.repository.AuditLogRepository;
 import org.springframework.data.domain.Sort;
->>>>>>> 37751a7 (update the main code)
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,10 +23,8 @@ import java.util.Set;
 @PreAuthorize("hasRole('REGISTRAR')")
 @Tag(name = "Registrar", description = "Course creation and filter endpoints")
 public class RegistrarController {
-<<<<<<< HEAD
-=======
+
     private final AuditLogRepository auditLogRepository;
->>>>>>> 37751a7 (update the main code)
 
     private final RegistrarAcademicService academicService;
 
@@ -102,8 +97,7 @@ public class RegistrarController {
                         skill, experience, sortBy, sortDir),
                 HttpStatus.OK);
     }
-<<<<<<< HEAD
-=======
+
     @Operation(
             summary = "Fetch complete system audit log trail",
             description = "Retrieves all captured system events sorted dynamically from the newest entries down to the oldest."
@@ -113,5 +107,4 @@ public class RegistrarController {
         List<AuditLog> logs = auditLogRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
         return new ResponseEntity<>(logs, HttpStatus.OK);
     }
->>>>>>> 37751a7 (update the main code)
 }

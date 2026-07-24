@@ -15,10 +15,8 @@ public class PhysicalRoomOutputDTO {
     private String location;
     private Integer capacity;
 
-    // AVAILABLE or OCCUPIED
     private String status;
 
-    // Populated when OCCUPIED
     private Long assignedExamId;
 
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm a")

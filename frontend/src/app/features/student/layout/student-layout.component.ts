@@ -13,6 +13,7 @@ import { NavbarComponent } from '../../../core/layout/navbar/navbar.component';
 })
 export class StudentLayoutComponent {
   readonly navLinks = [
+    { path: '/student/dashboard', label: 'Dashboard', icon: 'bi-speedometer2' },
     { path: '/student/profile', label: 'My Profile', icon: 'bi-person-circle' },
     { path: '/student/courses', label: 'Browse Courses', icon: 'bi-journal-bookmark' },
     { path: '/student/assignments', label: 'My Studies', icon: 'bi-book' },
@@ -21,3 +22,4 @@ export class StudentLayoutComponent {
     
   ];
 }
+ 

@@ -20,6 +20,10 @@ export class ExamsComponent implements OnInit {
   constructor(private studentApi: StudentApiService) {}
 
   ngOnInit(): void {
+    this.loadExams();
+  }
+
+  loadExams(): void {
     this.loading = true;
     this.errorMessage = '';
 
@@ -31,7 +35,7 @@ export class ExamsComponent implements OnInit {
       error: (err) => {
         const errorMsg = err?.error?.message || err?.message || '';
 
-        // ── FIX: Catch empty exam exceptions and suppress the red alert banner ──
+        // Catch empty exam exceptions and suppress the red alert banner
         if (errorMsg.includes('No exams found') || err?.status === 404) {
           this.exams = [];
           this.errorMessage = ''; // Force the banner to hide
@@ -43,4 +47,4 @@ export class ExamsComponent implements OnInit {
       }
     });
   }
-} 
+}

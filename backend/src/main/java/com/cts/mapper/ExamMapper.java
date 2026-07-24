@@ -38,7 +38,6 @@ public class ExamMapper {
             }
         }
 
-        // Populate room info from the first room assigned to this exam (if any)
         if (exam.getExamId() != null) {
             List<ExamRoom> rooms = examRoomRepository.findByExam_ExamId(exam.getExamId());
             if (!rooms.isEmpty()) {

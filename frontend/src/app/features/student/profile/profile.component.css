@@ -1,22 +1,41 @@
-.text-purple {
-  color: #6f42c1 !important;
+.text-accent {
+  color: var(--color-accent) !important;
 }
 
-.bg-purple-light {
-  background-color: #f3ebff !important;
+.bg-accent-light {
+  background-color: var(--color-accent-light) !important;
 }
 
-.btn-purple {
-  background-color: #6f42c1;
+.btn-accent {
+  background-color: var(--color-accent);
   color: white;
   border: none;
   font-weight: 500;
-  transition: background-color 0.15s ease;
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
 }
-.btn-purple:hover:not(:disabled) {
-  background-color: #59339e;
+
+.btn-accent:hover:not(:disabled) {
+  background-color: var(--color-accent-dark);
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
-.btn-purple:disabled {
+
+.btn-accent:disabled {
   opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.profile-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-slow);
+  padding: 1.5rem;
+}
+
+.profile-card:hover {
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.1);
+  border-color: var(--color-accent);
 }

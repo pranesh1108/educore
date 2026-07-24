@@ -16,22 +16,29 @@ export const REGISTRAR_ROUTES: Routes = [
           import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
-        path: 'courses',
+        path: 'provision-course',
+        loadComponent: () =>
+          import('./provision-course/provision-course.component/provision-course.component').then(m => m.ProvisionCourseComponent)
+      },
+      {
+        path: 'course-catalog',
         loadComponent: () =>
           import('./courses/courses.component').then(m => m.CoursesComponent)
+      },
+      {
+        path: 'courses',
+        redirectTo: 'course-catalog',
+        pathMatch: 'full'
       },
       {
         path: 'users',
         loadComponent: () =>
           import('./users/users.component').then(m => m.UsersComponent)
-<<<<<<< HEAD
-=======
       },
       {
         path: 'audit-logs',
         loadComponent: () =>
-            import('../shared-features/audit-log/audit-log.component').then(m => m.AuditLogComponent)
->>>>>>> 37751a7 (update the main code)
+          import('../shared-features/audit-log/audit-log.component').then(m => m.AuditLogComponent)
       }
     ]
   }

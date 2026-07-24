@@ -2,17 +2,13 @@ package com.cts.serviceimpl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import com.cts.entity.*;
 import com.cts.exception.*;
 import com.cts.repository.*;
 import com.cts.util.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.cts.annotation.AuditEvent;
-import com.cts.dto.AssignmentFileOutputDTO;
 import com.cts.dto.AssignmentInputDTO;
 import com.cts.dto.AssignmentOutputDTO;
 import com.cts.mapper.AssignmentMapper;
@@ -33,7 +29,6 @@ public class AssignmentServiceImpl implements AssignmentService {
     private final ExamResultRepository examResultRepository;
     private final CourseEnrollmentRepository enrollmentRepository;
 
-    // Direct Secure Context Identity Extractor
     private Instructor getLoggedInInstructor() {
         String loggedInEmail = SecurityUtils.getLoggedInEmail();
         return instructorRepository
@@ -45,7 +40,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     @Override
     @AuditEvent(eventName = "ASSIGNMENT_PUBLISHED", eventType = "CREATE", eventMessage = "Instructor published a new assignment")
     public AssignmentOutputDTO publishAssignment(AssignmentInputDTO inputDTO, MultipartFile file) {
-        // Gather the authenticated instructor profile automatically
+
         Instructor instructor = getLoggedInInstructor();
         Long instructorId = instructor.getInstructorId();
 
@@ -59,7 +54,6 @@ public class AssignmentServiceImpl implements AssignmentService {
             }
         }
 
-        // Validate course assignment ownership against context instructor
         Course course = verifyOwnership(instructorId, inputDTO.getCourseId());
 
         Assignment assignment = Assignment.builder()

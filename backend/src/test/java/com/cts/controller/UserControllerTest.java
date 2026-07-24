@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -30,32 +29,28 @@ public class UserControllerTest {
     }
 
     @Test
-    void addUser_student_success_returns201() {
-        RegistrationInputDTO input = RegistrationInputDTO.builder()
-                .email("ravi@test.com").name("Ravi Kumar").password("pass123").role("STUDENT").phone(9876543210L).build();
-
-        RegistrationOutputDTO output = RegistrationOutputDTO.builder()
-                .userId(1L).email("ravi@test.com").role(Role.STUDENT).phone(9876543210L).status("ACTIVE").createdAt(LocalDate.now()).build();
+    void addUser_success() {
+        RegistrationInputDTO input = RegistrationInputDTO.builder().email("test@educore.com").role("STUDENT").build();
+        RegistrationOutputDTO output = RegistrationOutputDTO.builder().userId(1L).email("test@educore.com").role(Role.STUDENT).build();
 
         when(userService.addUser(any(RegistrationInputDTO.class))).thenReturn(output);
 
         ResponseEntity<RegistrationOutputDTO> response = userController.addUser(input);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("ravi@test.com", response.getBody().getEmail());
+        assertEquals("test@educore.com", response.getBody().getEmail());
     }
 
     @Test
-    void userLogin_success_returns200WithToken() {
-        LoginDTO input = LoginDTO.builder().email("ravi@test.com").password("pass123").build();
-        LoginResponseDTO output = LoginResponseDTO.builder()
-                .email("ravi@test.com").role("STUDENT").phone(9876543210L).token("mockToken").build();
+    void userLogin_success() {
+        LoginDTO input = LoginDTO.builder().email("test@educore.com").password("pass").build();
+        LoginResponseDTO output = LoginResponseDTO.builder().email("test@educore.com").token("jwt.token.here").build();
 
         when(userService.userLogin(any(LoginDTO.class))).thenReturn(output);
 
         ResponseEntity<LoginResponseDTO> response = userController.userLogin(input);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("mockToken", response.getBody().getToken());
+        assertEquals("jwt.token.here", response.getBody().getToken());
     }
 }

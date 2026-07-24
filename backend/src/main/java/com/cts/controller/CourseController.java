@@ -10,9 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;  // <-- Ensure this is imported
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;      // <-- Ensure this is imported
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,10 +57,7 @@ public class CourseController {
     @GetMapping("/{courseId}/syllabus")
     public ResponseEntity<Resource> getSyllabusInline(@PathVariable Long courseId) {
 
-        // Fetch the resource from your service
         Resource resource = studentService.getSyllabusResource(courseId);
-
-        // Return it with explicit PDF and Inline headers so the browser renders it!
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")

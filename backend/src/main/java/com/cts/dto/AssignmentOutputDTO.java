@@ -25,6 +25,5 @@ public class AssignmentOutputDTO {
     private Long courseId;
     private String courseTitle;
 
-    // Files attached to this assignment (PDF attachments uploaded by instructor)
     private List<AssignmentFileOutputDTO> files;
 }

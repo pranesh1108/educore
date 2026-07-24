@@ -3,141 +3,195 @@
   <p class="text-muted mb-0">Access course lecture notes and submit assignments.</p>
 </div>
 
-<div class="alert alert-danger" role="alert" *ngIf="errorMessage">
-  {{ errorMessage }}
+<!-- Global System/Network Error Banner -->
+<div class="alert alert-danger shadow-sm border-0 mb-4" role="alert" *ngIf="errorMessage && !isCourseClosed">
+  <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
 </div>
 
-<div class="alert alert-success" role="alert" *ngIf="successMessage">
-  {{ successMessage }}
+<!-- Success Message Banner -->
+<div class="alert alert-success shadow-sm border-0 mb-4" role="alert" *ngIf="successMessage">
+  <i class="bi bi-check-circle-fill me-2"></i>{{ successMessage }}
 </div>
 
 <app-loader *ngIf="loading" message="Loading enrolled courses..."></app-loader>
 
-<div class="row g-3" *ngIf="!loading">
-  <!-- Course Selection Sidebar -->
-  <div class="col-md-3">
-    <div class="card border-0 shadow-sm p-3">
-      <h6 class="fw-bold mb-3 text-muted text-uppercase small">My Courses</h6>
-      <div class="list-group gap-1 border-0">
-        <button
-          *ngFor="let enrol of myEnrollments"
-          class="list-group-item list-group-item-action border-0 rounded text-start py-2"
-          [class.active-course]="selectedEnrollment?.courseId === enrol.courseId"
-          (click)="selectCourse(enrol)"
-        >
-          <span class="fw-bold d-block text-truncate">{{ enrol.courseTitle }}</span>
-          <small class="text-muted text-truncate d-block">{{ enrol.instructorName }}</small>
-        </button>
+<div *ngIf="!loading">
+
+  <!-- ── TOP DROPDOWN & COURSE CONTEXT BAR ── -->
+  <div class="card border-0 shadow-sm p-3 mb-4 bg-white">
+    <div class="row align-items-center g-3">
+      <!-- Course Selector Dropdown -->
+      <div class="col-md-6 col-lg-5">
+        <label for="courseSelect" class="form-label small fw-bold text-muted text-uppercase mb-1" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+          <i class="bi bi-journal-bookmark me-1 text-purple"></i> Select Course
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0 text-purple">
+            <i class="bi bi-collection-fill"></i>
+          </span>
+          <select
+            id="courseSelect"
+            class="form-select border-start-0 bg-light fw-semibold text-dark py-2"
+            (change)="onCourseChange($event)"
+          >
+            <option
+              *ngFor="let enrol of myEnrollments"
+              [value]="enrol.courseId"
+              [selected]="selectedEnrollment?.courseId === enrol.courseId"
+            >
+              {{ enrol.courseTitle }}
+            </option>
+          </select>
+        </div>
       </div>
-      <div *ngIf="myEnrollments.length === 0" class="text-center py-4">
-        <small class="text-muted">Not enrolled in any courses yet.</small>
+
+      <!-- Quick Context Stat Cards -->
+      <div class="col-md-6 col-lg-7" *ngIf="selectedEnrollment">
+        <div class="d-flex align-items-center justify-content-md-end gap-3 pt-2 pt-md-0">
+          <div class="bg-light px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
+            <i class="bi bi-person-badge fs-5 text-purple"></i>
+            <div>
+              <span class="d-block text-muted" style="font-size: 0.7rem; text-transform: uppercase; font-weight: 600;">Instructor</span>
+              <span class="fw-bold small text-dark">{{ selectedEnrollment.instructorName }}</span>
+            </div>
+          </div>
+
+          <div class="bg-light px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
+            <i class="bi bi-calendar-check fs-5 text-purple"></i>
+            <div>
+              <span class="d-block text-muted" style="font-size: 0.7rem; text-transform: uppercase; font-weight: 600;">Enrolled Date</span>
+              <span class="fw-bold small text-purple">{{ selectedEnrollment.enrolledAt ? (selectedEnrollment.enrolledAt | date:'mediumDate') : 'Active' }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Content Panel -->
-  <div class="col-md-9" *ngIf="selectedEnrollment">
-    <div class="card border-0 shadow-sm p-4 mb-4">
-      <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-4 flex-wrap gap-2">
-        <div>
-          <h4 class="fw-bold mb-1 text-purple">{{ selectedEnrollment.courseTitle }}</h4>
-          <p class="text-muted small mb-0">Instructor: {{ selectedEnrollment.instructorName }} </p>
-        </div>
-      </div>
-
-      <app-loader *ngIf="contentLoading" message="Loading course content..."></app-loader>
-
-      <div class="row g-4" *ngIf="!contentLoading && courseContent">
-        <!-- Lecture Notes / Materials Column -->
-        <div class="col-lg-5 border-end-lg">
-          <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-pdf text-purple me-2"></i>Handouts & Materials</h5>
-          <div class="list-group gap-2 border-0" *ngIf="courseContent.materials.length > 0; else noMaterials">
-            <div
-              *ngFor="let mat of courseContent.materials"
-              class="list-group-item border rounded d-flex justify-content-between align-items-center p-3"
-            >
-              <div class="text-truncate me-2">
-                <span class="fw-medium d-block text-truncate small">{{ mat.fileName }}</span>
-                <small class="text-muted" style="font-size: 0.75rem;">Uploaded: {{ mat.uploadedAt | date:'medium' }}</small>
-              </div>
-              <button class="btn btn-sm btn-outline-purple" (click)="downloadMaterial(mat.fileId, mat.fileName)">
-                <i class="bi bi-download"></i>
-              </button>
-            </div>
-          </div>
-          <ng-template #noMaterials>
-            <p class="text-muted small py-3">No lecture materials uploaded yet.</p>
-          </ng-template>
-        </div>
-
-        <!-- Assignments Column -->
-        <div class="col-lg-7">
-          <h5 class="fw-bold mb-3"><i class="bi bi-journal-check text-purple me-2"></i>Assignments</h5>
-          <div class="d-flex flex-column gap-3" *ngIf="courseContent.assignments.length > 0; else noAssignments">
-            <div
-              *ngFor="let assign of courseContent.assignments"
-              class="card border p-3"
-            >
-              <div class="d-flex justify-content-between align-items-start mb-2">
-                <h6 class="fw-bold mb-0">{{ assign.title }}</h6>
-                <span class="badge bg-purple">{{ assign.totalMarks }} Marks</span>
-              </div>
-              <p class="text-muted small mb-2" *ngIf="assign.instructions">{{ assign.instructions }}</p>
-              <div class="mb-3">
-                <small class="text-muted d-block"><i class="bi bi-calendar-event me-1"></i>Due Date: {{ assign.dueDate }}</small>
-              </div>
-
-              <!-- Attached Criteria File -->
-              <div class="mb-3 p-2 bg-light rounded d-flex justify-content-between align-items-center" *ngFor="let file of assign.files">
-                <span class="small text-truncate text-muted"><i class="bi bi-file-earmark-pdf me-1"></i>{{ file.fileName }}</span>
-                <button class="btn btn-sm btn-link text-purple p-0" (click)="downloadAssignment(file.fileId, file.fileName)">
-                  Download Criteria
-                </button>
-              </div>
-
-              <div class="border-top pt-3 mt-2">
-                <div *ngIf="getSubmissionForAssignment(assign.assignmentId) as sub; else uploadForm">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="small fw-bold">Status:</span>
-                    <span class="badge" [class.bg-warning]="sub.status === 'SUBMITTED'" [class.bg-success]="sub.status === 'GRADED'">
-                      {{ sub.status }}
-                    </span>
-                  </div>
-                  <div class="small p-2 bg-light rounded mb-2">
-                    <span class="d-block text-truncate text-muted"><i class="bi bi-check-circle me-1"></i>Submitted: {{ sub.fileName }}</span>
-                    <small class="text-muted">On: {{ sub.submittedAt | date:'medium' }}</small>
-                  </div>
-                  <div class="p-2 border rounded border-success bg-success-light" *ngIf="sub.status === 'GRADED'">
-                    <span class="d-block fw-bold text-success small">Grade: {{ sub.grade }} / {{ assign.totalMarks }}</span>
-                    <p class="text-muted small mb-0" *ngIf="sub.feedback"><strong>Feedback:</strong> {{ sub.feedback }}</p>
-                  </div>
-                </div>
-
-                <ng-template #uploadForm>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span class="small text-muted">Submit your PDF solution:</span>
-                    <label class="btn btn-sm btn-purple position-relative" [class.disabled]="submittingId === assign.assignmentId">
-                      <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="submittingId === assign.assignmentId"></span>
-                      {{ submittingId === assign.assignmentId ? 'Uploading...' : 'Upload PDF' }}
-                      <input
-                        type="file"
-                        accept="application/pdf"
-                        class="position-absolute opacity-0 w-100 h-100 top-0 start-0 cursor-pointer"
-                        style="z-index: 10;"
-                        [disabled]="submittingId === assign.assignmentId"
-                        (change)="handleFileUpload($event, assign.assignmentId)"
-                      >
-                    </label>
-                  </div>
-                </ng-template>
-              </div>
-            </div>
-          </div>
-          <ng-template #noAssignments>
-            <p class="text-muted small py-3">No assignments published yet.</p>
-          </ng-template>
-        </div>
+  <div class="card border-0 shadow-sm p-4 bg-white" *ngIf="selectedEnrollment">
+    
+    <!-- Course Title Header -->
+    <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-4 flex-wrap gap-2">
+      <div>
+        <h4 class="fw-bold mb-1 text-accent">{{ selectedEnrollment.courseTitle }}</h4>
+        <p class="text-muted small mb-0"><i class="bi bi-person me-1"></i>Instructor: {{ selectedEnrollment.instructorName }}</p>
       </div>
     </div>
+
+    <app-loader *ngIf="contentLoading" message="Loading course content..."></app-loader>
+
+    <!-- ── CLOSED/COMPLETED COURSE STATE CARD ── -->
+    <div *ngIf="!contentLoading && isCourseClosed" class="text-center py-5 px-3 my-2 border rounded-3 bg-light-purple">
+      <div class="icon-circle bg-white text-accent mx-auto mb-3 shadow-sm d-flex align-items-center justify-content-center rounded-circle" style="width: 64px; height: 64px;">
+        <i class="bi bi-lock-fill fs-3"></i>
+      </div>
+      <h5 class="fw-bold text-dark mb-2">Course Access Completed</h5>
+      <p class="text-muted small mb-4 mx-auto" style="max-width: 480px; line-height: 1.6;">
+        Final examination results have been published for this track. Learning materials and assignment submission portals are now closed.
+      </p>
+      <a routerLink="/student/results" class="btn btn-accent btn-sm px-4 py-2 rounded-pill fw-semibold shadow-sm">
+        <i class="bi bi-patch-check me-1.5"></i> View Your Final Scorecard
+      </a>
+    </div>
+
+    <!-- ── ACTIVE COURSE CONTENT ── -->
+    <div class="row g-4" *ngIf="!contentLoading && !isCourseClosed && courseContent">
+      
+      <!-- Lecture Notes / Materials Column -->
+      <div class="col-lg-5 border-end-lg">
+        <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-pdf text-accent me-2"></i>Handouts & Materials</h5>
+        <div class="list-group gap-2 border-0" *ngIf="courseContent.materials.length > 0; else noMaterials">
+          <div
+            *ngFor="let mat of courseContent.materials"
+            class="list-group-item border rounded d-flex justify-content-between align-items-center p-3"
+          >
+            <div class="text-truncate me-2">
+              <span class="fw-medium d-block text-truncate small text-dark">{{ mat.fileName }}</span>
+              <small class="text-muted" style="font-size: 0.75rem;">Uploaded: {{ mat.uploadedAt | date:'medium' }}</small>
+            </div>
+            <button class="btn btn-sm btn-outline-purple" (click)="downloadMaterial(mat.fileId, mat.fileName)">
+              <i class="bi bi-download"></i>
+            </button>
+          </div>
+        </div>
+        <ng-template #noMaterials>
+          <p class="text-muted small py-3">No lecture materials uploaded yet.</p>
+        </ng-template>
+      </div>
+
+      <!-- Assignments Column -->
+      <div class="col-lg-7">
+        <h5 class="fw-bold mb-3"><i class="bi bi-journal-check text-accent me-2"></i>Assignments</h5>
+        <div class="d-flex flex-column gap-3" *ngIf="courseContent.assignments.length > 0; else noAssignments">
+          <div
+            *ngFor="let assign of courseContent.assignments"
+            class="card border p-3"
+          >
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h6 class="fw-bold mb-0 text-dark">{{ assign.title }}</h6>
+              <span class="badge badge-accent-filled">{{ assign.totalMarks }} Marks</span>
+            </div>
+            <p class="text-muted small mb-2" *ngIf="assign.instructions">{{ assign.instructions }}</p>
+            <div class="mb-3">
+              <small class="text-muted d-block"><i class="bi bi-calendar-event me-1"></i>Due Date: {{ assign.dueDate }}</small>
+            </div>
+
+            <!-- Attached Criteria File -->
+            <div class="mb-3 p-2 bg-light rounded d-flex justify-content-between align-items-center" *ngFor="let file of assign.files">
+              <span class="small text-truncate text-muted"><i class="bi bi-file-earmark-pdf me-1"></i>{{ file.fileName }}</span>
+              <button class="btn btn-sm btn-link text-accent p-0" (click)="downloadAssignment(file.fileId, file.fileName)">
+                Download Criteria
+              </button>
+            </div>
+
+            <!-- Submission / Upload Section -->
+            <div class="border-top pt-3 mt-2">
+              <div *ngIf="getSubmissionForAssignment(assign.assignmentId) as sub; else uploadForm">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="small fw-bold">Status:</span>
+                  <span class="badge" [class.bg-warning-subtle]="sub.status === 'SUBMITTED'" [class.text-warning-emphasis]="sub.status === 'SUBMITTED'" [class.bg-success]="sub.status === 'GRADED'" [class.text-white]="sub.status === 'GRADED'">
+                    {{ sub.status }}
+                  </span>
+                </div>
+                <div class="small p-2 bg-light rounded mb-2">
+                  <span class="d-block text-truncate text-muted"><i class="bi bi-check-circle me-1"></i>Submitted: {{ sub.fileName }}</span>
+                  <small class="text-muted">On: {{ sub.submittedAt | date:'medium' }}</small>
+                </div>
+                <div class="p-2 border rounded border-accent bg-accent-light" *ngIf="sub.status === 'GRADED'">
+                  <span class="d-block fw-bold text-accent small">Grade: {{ sub.grade }} / {{ assign.totalMarks }}</span>
+                  <p class="text-muted small mb-0" *ngIf="sub.feedback"><strong>Feedback:</strong> {{ sub.feedback }}</p>
+                </div>
+              </div>
+
+              <ng-template #uploadForm>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="small text-muted">Submit your PDF solution:</span>
+                  <label class="btn btn-sm btn-accent position-relative" [class.disabled]="submittingId === assign.assignmentId">
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" *ngIf="submittingId === assign.assignmentId"></span>
+                    {{ submittingId === assign.assignmentId ? 'Uploading...' : 'Upload PDF' }}
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      class="position-absolute opacity-0 w-100 h-100 top-0 start-0 cursor-pointer"
+                      style="z-index: 10;"
+                      [disabled]="submittingId === assign.assignmentId"
+                      (change)="handleFileUpload($event, assign.assignmentId)"
+                    >
+                  </label>
+                </div>
+              </ng-template>
+            </div>
+
+          </div>
+        </div>
+        <ng-template #noAssignments>
+          <p class="text-muted small py-3">No assignments published yet.</p>
+        </ng-template>
+      </div>
+
+    </div>
+
   </div>
+
 </div>

@@ -13,7 +13,7 @@ public class CourseMaterialFileOutputDTO {
     private Long courseId;
     private String courseTitle;
     private String fileName;
-    private String type;       // "PDF" or "TEXT"
-    private String textContent; // populated only when type = "TEXT"
+    private String type;
+    private String textContent;
     private LocalDateTime uploadedAt;
 }

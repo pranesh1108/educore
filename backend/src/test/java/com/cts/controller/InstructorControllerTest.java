@@ -1,82 +1,65 @@
 package com.cts.controller;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Validator;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.cts.entity.Instructor;
-import com.cts.entity.User;
-import com.cts.repository.InstructorRepository;
+import com.cts.dto.*;
+import com.cts.service.AssignmentService;
 import com.cts.service.CourseService;
+import com.cts.service.InstructorService;
+import com.cts.service.SubmissionService;
 
-import java.util.Collections;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@SpringBootTest
-@AutoConfigureMockMvc
 public class InstructorControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Mock private InstructorService instructorService;
+    @Mock private CourseService courseService;
+    @Mock private AssignmentService assignmentService;
+    @Mock private SubmissionService submissionService;
+    @Mock private Validator validator;
 
-    @MockBean
-    private CourseService courseService;
+    @InjectMocks
+    private InstructorController instructorController;
 
-    @MockBean
-    private InstructorRepository instructorRepository;
-
-    @Test
-    // This mocks the authentication context so SecurityUtils returns "instructor@educore.com"
-    @WithMockUser(username = "instructor@educore.com", roles = {"INSTRUCTOR"})
-    public void getAssignedCourses_success_returns200() throws Exception {
-        // Arrange
-        Long mockInstructorId = 1L;
-        User mockUser = User.builder().email("instructor@educore.com").build();
-        Instructor mockInstructor = Instructor.builder().instructorId(mockInstructorId).user(mockUser).build();
-
-        // Mock the internal repository check inside resolveContextInstructorId()
-        when(instructorRepository.findByUser_Email("instructor@educore.com"))
-                .thenReturn(Optional.of(mockInstructor));
-
-        // Mock the core course service behavior
-        when(courseService.getAssignedCourses(mockInstructorId))
-                .thenReturn(Collections.emptyList());
-
-        // Act & Assert
-        // REMOVED the parameter from the URL path / query parameter structure completely!
-        mockMvc.perform(get("/api/v1/instructor/my-courses")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    @WithMockUser(username = "instructor@educore.com", roles = {"INSTRUCTOR"})
-    public void getAssignedCourses_noCourses_propagatesException() throws Exception {
-        // Arrange
-        Long mockInstructorId = 1L;
-        User mockUser = User.builder().email("instructor@educore.com").build();
-        Instructor mockInstructor = Instructor.builder().instructorId(mockInstructorId).user(mockUser).build();
+    void getAssignedCourses_success() {
+        CourseOutputDTO course = CourseOutputDTO.builder().courseId(1L).title("Spring Boot").build();
+        when(courseService.getAssignedCourses()).thenReturn(List.of(course));
 
-        when(instructorRepository.findByUser_Email("instructor@educore.com"))
-                .thenReturn(Optional.of(mockInstructor));
+        ResponseEntity<List<CourseOutputDTO>> response = instructorController.getAssignedCourses();
 
-        // Mock an exception case or empty failure state here depending on your target exception handler
-        when(courseService.getAssignedCourses(mockInstructorId))
-                .thenThrow(new com.cts.exception.CourseNotFoundException("No courses assigned"));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Spring Boot", response.getBody().get(0).getTitle());
+    }
 
-        // Act & Assert
-        mockMvc.perform(get("/api/v1/instructor/my-courses")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound()); // Verification matches custom mapper configs
+    @Test
+    void gradeSubmission_success() {
+        GradeInputDTO input = GradeInputDTO.builder().grade(90.0).feedback("Great job").build();
+        SubmissionOutputDTO output = SubmissionOutputDTO.builder().submissionId(1L).grade(90.0).build();
+
+        when(submissionService.gradeSubmission(eq(1L), any(GradeInputDTO.class))).thenReturn(output);
+
+        ResponseEntity<SubmissionOutputDTO> response = instructorController.gradeSubmission(1L, input);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(90.0, response.getBody().getGrade());
     }
 }

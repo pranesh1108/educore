@@ -1,14 +1,33 @@
 .text-cyan {
-  color: #00838f !important;
+  color: var(--color-warning) !important;
 }
 
 .btn-cyan {
-  background-color: #00838f;
+  background-color: var(--color-warning);
   color: white;
   border: none;
+  border-radius: var(--radius-md);
   font-weight: 500;
+  transition: all var(--transition-base);
 }
+
 .btn-cyan:hover {
-  background-color: #006064;
+  background-color: var(--color-warning-dark);
   color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.results-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-slow);
+  background-color: var(--color-surface);
+  padding: 1.25rem;
+}
+
+.results-card:hover {
+  border-color: var(--color-warning);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.1);
+  transform: translateY(-2px);
 }

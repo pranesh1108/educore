@@ -1,49 +1,77 @@
-.text-purple {
-  color: #6f42c1 !important;
+.text-accent {
+  color: var(--color-accent) !important;
 }
 
-.border-purple {
-  border-color: #6f42c1 !important;
+.border-accent {
+  border-color: var(--color-accent) !important;
 }
 
-.btn-purple {
-  background-color: #6f42c1;
+.btn-accent {
+  background-color: var(--color-accent);
   color: white;
   border: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all var(--transition-base);
 }
-.btn-purple:hover {
-  background-color: #59339e;
+
+.btn-accent:hover {
+  background-color: var(--color-accent-dark);
   color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .btn-outline-purple {
-  border-color: #6f42c1;
-  color: #6f42c1;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
   background-color: transparent;
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
+  font-weight: 500;
 }
+
 .btn-outline-purple:hover {
-  background-color: #6f42c1;
+  background-color: var(--color-accent);
   color: white;
+  border-color: var(--color-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .btn-tab {
-  color: #495057;
+  color: var(--color-text-secondary);
   font-weight: 500;
-  border-radius: 20px;
-  padding: 8px 18px;
-  background-color: #f1f3f9;
+  border-radius: var(--radius-xl);
+  padding: 0.5rem 1rem;
+  background-color: var(--color-bg-secondary);
   border: none;
+  transition: all var(--transition-base);
+  cursor: pointer;
 }
+
+.btn-tab:hover {
+  background-color: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
 .btn-tab.active {
-  background-color: #6f42c1 !important;
+  background-color: var(--color-accent) !important;
   color: white !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
 }
 
 .course-card {
-  border-radius: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  transition: all var(--transition-slow);
+  padding: 1.25rem;
 }
+
 .course-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  border-color: var(--color-accent);
 }
